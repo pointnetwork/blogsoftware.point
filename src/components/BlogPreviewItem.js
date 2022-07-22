@@ -1,12 +1,15 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { useLocation } from 'wouter';
 import CheckCircleOutlineIcon from '@mui/icons-material/CheckCircleOutline';
 import DeleteIcon from '@mui/icons-material/Delete';
 import EditIcon from '@mui/icons-material/Edit';
 import DoDisturbIcon from '@mui/icons-material/DoDisturb';
+import { ErrorButton, OutlinedButton } from './Button';
 
 const BlogPreviewItem = ({ admin }) => {
   const [location, setLocation] = useLocation();
+
+  const [requestDelete, setRequestDelete] = useState('');
 
   return (
     <div
@@ -14,6 +17,26 @@ const BlogPreviewItem = ({ admin }) => {
         admin ? 'mb-6' : ''
       } hover:shadow-lg border-gray-200 relative`}
     >
+      {/* DELETE MODAL: START */}
+      {requestDelete ? (
+        <div className='fixed z-50 top-0 left-0 h-screen w-screen'>
+          <div className='relative h-full w-full'>
+            <div className='absolute h-full w-full bg-black opacity-30'></div>
+            <div className='absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 bg-white p-5 rounded'>
+              <h3 className='text-lg font-medium'>
+                Are your sure you want to delete this blog
+              </h3>
+              <div className='flex justify-end space-x-4 mt-4'>
+                <OutlinedButton onClick={() => setRequestDelete('')}>
+                  Cancel
+                </OutlinedButton>
+                <ErrorButton>Delete</ErrorButton>
+              </div>
+            </div>
+          </div>
+        </div>
+      ) : null}
+      {/* DELETE MODAL: END */}
       {admin ? (
         <>
           <div
@@ -43,6 +66,7 @@ const BlogPreviewItem = ({ admin }) => {
               fontSize='small'
               className='opacity-50 hover:opacity-100 text-red-500 cursor-pointer'
               titleAccess='Delete'
+              onClick={() => setRequestDelete(true)}
             />
           </div>
         </>
