@@ -1,27 +1,25 @@
-import { ProvideAppContext } from './context/AppContext'
-import { Route } from 'wouter'
-import Header from './components/Header';
-import Footer from "./components/Footer";
-import Home from './pages/Home'
-import Examples from './pages/Examples'
-import Contracts from './pages/Contracts'
+import { Route, Router } from 'wouter';
+import { ProvideAppContext } from './context/AppContext';
+import Home from './pages/Home';
+import Blog from './pages/Blog';
+import Admin from './pages/Admin';
+import Create from './pages/Create';
 
 const Main = () => {
-    return (
-        <main>
-            <Header />
-                <Route path='/'>
-                    <Home/>
-                </Route>
-                <Route path='/examples'>
-                    <Examples/>
-                </Route>
-                <Route path='/contracts'>
-                    <Contracts/>
-                </Route>
-            <Footer />
-        </main>
-    )
-}
+  return (
+    <Router>
+      <Route path='/' component={Home} />
+      <Route path='/blog' component={Blog} />
+      <Route path='/admin' component={Admin} />
+      <Route path='/create' component={Create} />
+    </Router>
+  );
+};
 
-export default App = () => <ProvideAppContext><Main/></ProvideAppContext>
+const App = () => (
+  <ProvideAppContext>
+    <Main />
+  </ProvideAppContext>
+);
+
+export default App;
