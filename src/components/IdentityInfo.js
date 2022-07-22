@@ -15,10 +15,7 @@ const IdentityInfo = ({ admin }) => {
         <div className='h-56 w-56 bg-gray-200 rounded-full self-center mb-4'></div>
         <EditButton admin={admin} />
       </div>
-      <div className='relative'>
-        <h2 className='text-xl font-bold my-2'>@jatinbumbra</h2>
-        <EditButton admin={admin} />
-      </div>
+      <h2 className='text-xl font-bold my-2'>@jatinbumbra</h2>
       <div className='relative mb-4'>
         <EditButton admin={admin} />
         <p className='text-sm text-gray-600'>
