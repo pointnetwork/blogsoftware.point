@@ -78,13 +78,11 @@ const BlogPreviewItem = ({ admin, data }) => {
           alt='cover for blog'
         />
       </div>
-      <div className='flex-1 flex flex-col'>
-        <h2
-          className='font-bold text-lg cursor-pointer'
-          onClick={() => setLocation(`/blog/${data.id}`)}
-        >
-          {data?.title}
-        </h2>
+      <div
+        className='flex-1 flex flex-col cursor-pointer'
+        onClick={() => setLocation(`/blog/${data.id}`)}
+      >
+        <h2 className='font-bold text-lg'>{data?.title}</h2>
         <p
           className='text-sm mb-2 text-gray-500 flex-1'
           // TODO: Safegaurd against XSS

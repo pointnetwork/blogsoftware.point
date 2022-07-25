@@ -1,6 +1,6 @@
 {
     "/": "index.html",
     "/create": "index.html",
-    "/blog": "index.html",
+    "/blog/*": "index.html",
     "/admin": "index.html"
 }

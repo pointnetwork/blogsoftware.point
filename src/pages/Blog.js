@@ -36,7 +36,7 @@ const Blog = () => {
         <div
           // TODO: Safegaurd against XSS
           dangerouslySetInnerHTML={{
-            __html: `${data?.content.slice(0, 200)}`,
+            __html: `${data?.content}`,
           }}
         ></div>
       </main>
