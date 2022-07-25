@@ -6,7 +6,7 @@ import Header from '../components/Header';
 import IdentityInfo from '../components/IdentityInfo';
 
 const Admin = () => {
-  const [location, setLocation] = useLocation();
+  const [, setLocation] = useLocation();
 
   return (
     <div className='h-screen overflow-hidden'>

@@ -4,7 +4,7 @@ import ArrowBackIosNewIcon from '@mui/icons-material/ArrowBackIosNew';
 import { useLocation } from 'wouter';
 
 const Blog = () => {
-  const [location, setLocation] = useLocation();
+  const [, setLocation] = useLocation();
 
   return (
     <>

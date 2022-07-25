@@ -7,7 +7,7 @@ import DoDisturbIcon from '@mui/icons-material/DoDisturb';
 import { ErrorButton, OutlinedButton } from './Button';
 
 const BlogPreviewItem = ({ admin }) => {
-  const [location, setLocation] = useLocation();
+  const [, setLocation] = useLocation();
 
   const [requestDelete, setRequestDelete] = useState('');
 
