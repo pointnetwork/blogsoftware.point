@@ -1,5 +1,7 @@
 import React from 'react';
+import Avatar from 'boring-avatars';
 import EditIcon from '@mui/icons-material/Edit';
+import { useAppContext } from '../context/AppContext';
 
 const EditButton = ({ admin }) =>
   admin ? (
@@ -9,13 +11,22 @@ const EditButton = ({ admin }) =>
   ) : null;
 
 const IdentityInfo = ({ admin }) => {
+  const { identity } = useAppContext();
+
   return (
     <>
       <div className='relative'>
-        <div className='h-56 w-56 bg-gray-200 rounded-full self-center mb-4'></div>
+        <div className='h-56 w-56 bg-gray-200 rounded-full self-center mb-4'>
+          <Avatar
+            size={224}
+            name={identity}
+            variant='marble'
+            colors={['#92A1C6', '#146A7C', '#F0AB3D', '#C271B4', '#C20D90']}
+          />
+        </div>
         <EditButton admin={admin} />
       </div>
-      <h2 className='text-xl font-bold my-2'>@jatinbumbra</h2>
+      <h2 className='text-xl font-bold my-2'>@{identity}</h2>
       <div className='relative mb-4'>
         <EditButton admin={admin} />
         <p className='text-sm text-gray-600'>
