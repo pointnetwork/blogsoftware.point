@@ -6,14 +6,14 @@ import EditIcon from '@mui/icons-material/Edit';
 import DoDisturbIcon from '@mui/icons-material/DoDisturb';
 import { ErrorButton, OutlinedButton } from './Button';
 
-const BlogPreviewItem = ({ admin }) => {
+const BlogPreviewItem = ({ admin, data }) => {
   const [, setLocation] = useLocation();
 
   const [requestDelete, setRequestDelete] = useState('');
 
   return (
     <div
-      className={`flex p-3 items-center border border-white rounded my-3 ${
+      className={`flex p-3 border border-white rounded my-3 ${
         admin ? 'mb-6' : ''
       } hover:shadow-lg border-gray-200 relative`}
     >
@@ -71,19 +71,27 @@ const BlogPreviewItem = ({ admin }) => {
           </div>
         </>
       ) : null}
-      <div className='w-64 bg-slate-200 rounded h-28 mr-3'></div>
-      <div>
+      <div className='basis-48 bg-slate-200 h-32 mr-3 rounded overflow-hidden'>
+        <img
+          src={data?.coverImage}
+          className='h-full w-full object-cover'
+          alt='cover for blog'
+        />
+      </div>
+      <div className='flex-1 flex flex-col'>
         <h2
           className='font-bold text-lg cursor-pointer'
-          onClick={() => setLocation('/blog')}
+          onClick={() => setLocation(`/blog/${data.id}`)}
         >
-          Lorem ipsum dolor sit amet consectetur adipisicing elit. Quasi, dolor.
+          {data?.title}
         </h2>
-        <p className='text-sm mb-2 text-gray-500'>
-          Lorem ipsum, dolor sit amet consectetur adipisicing elit. Nam
-          molestias, quibusdam excepturi quos iure placeat facere odit dolor
-          alias! Iusto...
-        </p>
+        <p
+          className='text-sm mb-2 text-gray-500 flex-1'
+          // TODO: Safegaurd against XSS
+          dangerouslySetInnerHTML={{
+            __html: `<p>${data?.content.slice(0, 200)}...</p>`,
+          }}
+        ></p>
         <p className='text-sm'>12th July 2022</p>
       </div>
     </div>

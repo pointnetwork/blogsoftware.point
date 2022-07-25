@@ -1,6 +1,8 @@
 import React, { createContext, useContext, useState, useEffect } from 'react';
 
 const defaultContext = {
+  blogs: [],
+  setBlogs: () => {},
   identity: undefined,
   walletAddress: undefined,
   walletError: undefined,
@@ -11,6 +13,7 @@ const AppContext = createContext(defaultContext);
 export const useAppContext = () => useContext(AppContext);
 
 export const ProvideAppContext = ({ children }) => {
+  const [blogs, setBlogs] = useState([]);
   const [identity, setIdentity] = useState();
   const [walletAddress, setWalletAddress] = useState();
   const [walletError, setWallerError] = useState();
@@ -39,6 +42,8 @@ export const ProvideAppContext = ({ children }) => {
     walletAddress,
     walletError,
     identity,
+    blogs,
+    setBlogs,
   };
 
   return <AppContext.Provider value={context}>{children}</AppContext.Provider>;
