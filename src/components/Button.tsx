@@ -1,10 +1,5 @@
-import React, { ReactEventHandler } from 'react';
-
-interface ButtonProps {
-  children: string;
-  disabled?: boolean;
-  onClick?: ReactEventHandler;
-}
+import React from 'react';
+import { ButtonProps } from '../@types/interfaces';
 
 const PrimaryButton = ({
   children,

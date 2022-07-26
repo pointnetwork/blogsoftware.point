@@ -12,6 +12,7 @@ import {
   PrimaryButton,
 } from '../components/Button';
 import { useAppContext } from '../context/AppContext';
+import { Blog } from '../@types/interfaces';
 
 const Create = () => {
   const [, setLocation] = useLocation();
@@ -36,7 +37,7 @@ const Create = () => {
       content,
       publisher: walletAddress,
       createdDate: new Date().toISOString(),
-    });
+    } as Blog);
     const file = new File([form], 'blog.json', { type: 'application/json' });
 
     const formData = new FormData();

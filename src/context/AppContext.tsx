@@ -1,22 +1,19 @@
 import React, { createContext, useContext, useState, useEffect } from 'react';
+import { AppContentInterface, Blog } from '../@types/interfaces';
 
-const defaultContext = {
+const AppContext = createContext({
   blogs: [],
   setBlogs: () => {},
-  identity: undefined,
-  walletAddress: undefined,
-  walletError: undefined,
-};
-
-const AppContext = createContext(defaultContext);
+  identity: '',
+  walletAddress: '',
+} as AppContentInterface);
 
 export const useAppContext = () => useContext(AppContext);
 
 export const ProvideAppContext = ({ children }) => {
-  const [blogs, setBlogs] = useState([]);
-  const [identity, setIdentity] = useState();
-  const [walletAddress, setWalletAddress] = useState();
-  const [walletError, setWallerError] = useState();
+  const [blogs, setBlogs] = useState<Blog[]>([]);
+  const [identity, setIdentity] = useState<string>('');
+  const [walletAddress, setWalletAddress] = useState<string>('');
 
   useEffect(() => {
     (async () => {
@@ -32,19 +29,20 @@ export const ProvideAppContext = ({ children }) => {
 
         setWalletAddress(address);
         setIdentity(identity);
-      } catch (e) {
-        setWallerError(e);
-      }
+      } catch (e) {}
     })();
   }, []);
 
-  const context = {
-    walletAddress,
-    walletError,
-    identity,
-    blogs,
-    setBlogs,
-  };
-
-  return <AppContext.Provider value={context}>{children}</AppContext.Provider>;
+  return (
+    <AppContext.Provider
+      value={{
+        walletAddress,
+        identity,
+        blogs,
+        setBlogs,
+      }}
+    >
+      {children}
+    </AppContext.Provider>
+  );
 };
