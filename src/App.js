@@ -4,6 +4,7 @@ import Home from './pages/Home';
 import Blog from './pages/Blog';
 import Admin from './pages/Admin';
 import Create from './pages/Create';
+import Onboarding from './pages/Onboarding';
 
 const Main = () => {
   return (
@@ -12,6 +13,7 @@ const Main = () => {
       <Route path='/blog/:id' component={Blog} />
       <Route path='/admin' component={Admin} />
       <Route path='/create' component={Create} />
+      <Route path='/onboarding' component={Onboarding} />
     </Router>
   );
 };
