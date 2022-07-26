@@ -35,7 +35,7 @@ const Create = () => {
       title,
       content,
       publisher: walletAddress,
-      created: new Date().toISOString(),
+      createdDate: new Date().toISOString(),
     });
     const file = new File([form], 'blog.json', { type: 'application/json' });
 
@@ -118,8 +118,13 @@ const Create = () => {
       </main>
       <div className='mt-6 bg-white border-t border-gray-200 pt-3'>
         <div className='flex space-x-4 mx-auto' style={{ maxWidth: '1000px' }}>
-          <PrimaryButton onClick={handlePublish}>Publish</PrimaryButton>
-          <OutlinedButton>Save Draft</OutlinedButton>
+          <PrimaryButton
+            disabled={!cover || !title || !content}
+            onClick={handlePublish}
+          >
+            Publish
+          </PrimaryButton>
+          <OutlinedButton disabled={!title}>Save Draft</OutlinedButton>
           <ErrorButton onClick={() => setLocation('/admin')}>
             Cancel
           </ErrorButton>

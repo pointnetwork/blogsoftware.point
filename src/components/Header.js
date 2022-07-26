@@ -3,7 +3,7 @@ import { useLocation } from 'wouter';
 import { PrimaryButton } from './Button';
 
 const Header = () => {
-  const [location, setLocation] = useLocation();
+  const [, setLocation] = useLocation();
 
   return (
     <header className='py-3 sticky top-0 bg-white shadow z-10'>

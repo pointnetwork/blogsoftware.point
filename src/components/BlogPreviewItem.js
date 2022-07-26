@@ -90,7 +90,7 @@ const BlogPreviewItem = ({ admin, data }) => {
             __html: `<p>${data?.content.slice(0, 200)}...</p>`,
           }}
         ></p>
-        <p className='text-sm'>12th July 2022</p>
+        <p className='text-sm'>{data?.createdDate}</p>
       </div>
     </div>
   );
