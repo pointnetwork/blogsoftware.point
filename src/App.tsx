@@ -1,3 +1,4 @@
+import React from 'react';
 import { Route, Router } from 'wouter';
 import { ProvideAppContext } from './context/AppContext';
 import Home from './pages/Home';
