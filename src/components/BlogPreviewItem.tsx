@@ -6,10 +6,10 @@ import EditIcon from '@mui/icons-material/Edit';
 import DoDisturbIcon from '@mui/icons-material/DoDisturb';
 import { ErrorButton, OutlinedButton } from './Button';
 
-const BlogPreviewItem = ({ admin, data }) => {
+const BlogPreviewItem = ({ admin, data }: { admin?: boolean; data: any }) => {
   const [, setLocation] = useLocation();
 
-  const [requestDelete, setRequestDelete] = useState('');
+  const [requestDelete, setRequestDelete] = useState<boolean>(false);
 
   return (
     <div
@@ -27,7 +27,7 @@ const BlogPreviewItem = ({ admin, data }) => {
                 Are your sure you want to delete this blog
               </h3>
               <div className='flex justify-end space-x-4 mt-4'>
-                <OutlinedButton onClick={() => setRequestDelete('')}>
+                <OutlinedButton onClick={() => setRequestDelete(false)}>
                   Cancel
                 </OutlinedButton>
                 <ErrorButton>Delete</ErrorButton>

@@ -1,6 +1,16 @@
-import React from 'react';
+import React, { ReactEventHandler } from 'react';
 
-const PrimaryButton = ({ children, disabled = false, onClick }) => {
+interface ButtonProps {
+  children: string;
+  disabled?: boolean;
+  onClick?: ReactEventHandler;
+}
+
+const PrimaryButton = ({
+  children,
+  disabled = false,
+  onClick,
+}: ButtonProps) => {
   return (
     <button
       onClick={onClick}
@@ -12,7 +22,11 @@ const PrimaryButton = ({ children, disabled = false, onClick }) => {
   );
 };
 
-const OutlinedButton = ({ children, disabled = false, onClick }) => {
+const OutlinedButton = ({
+  children,
+  disabled = false,
+  onClick,
+}: ButtonProps) => {
   return (
     <button
       onClick={onClick}
@@ -24,7 +38,7 @@ const OutlinedButton = ({ children, disabled = false, onClick }) => {
   );
 };
 
-const ErrorButton = ({ children, disabled = false, onClick }) => {
+const ErrorButton = ({ children, disabled = false, onClick }: ButtonProps) => {
   return (
     <button
       onClick={onClick}

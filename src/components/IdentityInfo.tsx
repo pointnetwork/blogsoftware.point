@@ -3,14 +3,14 @@ import Avatar from 'boring-avatars';
 import EditIcon from '@mui/icons-material/Edit';
 import { useAppContext } from '../context/AppContext';
 
-const EditButton = ({ admin }) =>
+const EditButton = ({ admin }: { admin?: boolean }) =>
   admin ? (
     <div className='absolute top-0 -right-6 bg-white z-10 rounded-full border border-gray-500 w-6 h-6 flex items-center justify-center opacity-50 transition-all cursor-pointer hover:opacity-100'>
       <EditIcon titleAccess='Edit' sx={{ height: 16, width: 16 }} />
     </div>
   ) : null;
 
-const IdentityInfo = ({ admin }) => {
+const IdentityInfo = ({ admin }: { admin?: boolean }) => {
   const { identity } = useAppContext();
 
   return (

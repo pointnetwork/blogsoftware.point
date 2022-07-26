@@ -1,5 +1,5 @@
 import axios from 'axios';
-import { useState } from 'react';
+import React, { useState } from 'react';
 import { useLocation } from 'wouter';
 import ReactQuill from 'react-quill';
 import 'react-quill/dist/quill.snow.css';
@@ -17,9 +17,9 @@ const Create = () => {
   const [, setLocation] = useLocation();
   const { walletAddress, setBlogs } = useAppContext();
 
-  const [cover, setCover] = useState();
-  const [title, setTitle] = useState('');
-  const [content, setContent] = useState('');
+  const [cover, setCover] = useState<string | ArrayBuffer | null>('');
+  const [title, setTitle] = useState<string>('');
+  const [content, setContent] = useState<string>('');
 
   const handleFileInput = (e) => {
     const reader = new FileReader();

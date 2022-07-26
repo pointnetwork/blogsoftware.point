@@ -3,8 +3,8 @@ import { PrimaryButton } from '../components/Button';
 import ImageOutlinedIcon from '@mui/icons-material/ImageOutlined';
 
 const Onboarding = () => {
-  const [image, setImage] = useState();
-  const [about, setAbout] = useState('');
+  const [image, setImage] = useState<string | ArrayBuffer | null>(null);
+  const [about, setAbout] = useState<string>('');
 
   const handleFileInput = (e) => {
     const reader = new FileReader();
