@@ -13,6 +13,7 @@ import {
 } from '../components/Button';
 import { useAppContext } from '../context/AppContext';
 import { Blog } from '../@types/interfaces';
+import { BlogContract } from '../@types/enums';
 
 const Create = () => {
   const [, setLocation] = useLocation();
@@ -48,8 +49,8 @@ const Create = () => {
     const res = await window.point.storage.postFile(formData);
     // Save data to smart contract
     await window.point.contract.send({
-      contract: 'Blog',
-      method: 'addBlog',
+      contract: BlogContract.name,
+      method: BlogContract.addBlog,
       params: [res.data, isPublished, now],
     });
     getAllBlogs();

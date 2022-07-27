@@ -5,6 +5,7 @@ import {
   Blog,
   BlogContractData,
 } from '../@types/interfaces';
+import { BlogContract } from '../@types/enums';
 
 const AppContext = createContext({
   blogs: [],
@@ -45,8 +46,8 @@ export const ProvideAppContext = ({ children }: { chilren: any }) => {
 
   const getAllBlogs = async () => {
     const { data }: { data: any[] } = await window.point.contract.call({
-      contract: 'Blog',
-      method: 'getAllBlogs',
+      contract: BlogContract.name,
+      method: BlogContract.getAllBlogs,
     });
     const blogs = await Promise.all(
       data.map(async (contractData) => {
