@@ -23,6 +23,7 @@ export interface Blog {
 }
 
 export interface BlogContractData {
+  id: number;
   storageHash: string;
   isPublished: boolean;
   publishDate: string;

@@ -6,6 +6,8 @@ import EditIcon from '@mui/icons-material/Edit';
 import DoDisturbIcon from '@mui/icons-material/DoDisturb';
 import { ErrorButton, OutlinedButton } from './Button';
 import { Blog, BlogContractData } from '../@types/interfaces';
+import { BlogContract } from '../@types/enums';
+import { useAppContext } from '../context/AppContext';
 
 const BlogPreviewItem = ({
   admin,
@@ -14,9 +16,23 @@ const BlogPreviewItem = ({
   admin?: boolean;
   data: Blog & BlogContractData;
 }) => {
+  const { getAllBlogs } = useAppContext();
   const [, setLocation] = useLocation();
 
+  const [loading, setLoading] = useState<boolean>(false);
   const [requestDelete, setRequestDelete] = useState<boolean>(false);
+
+  const handleDelete = async () => {
+    setLoading(true);
+    await window.point.contract.send({
+      contract: BlogContract.name,
+      method: BlogContract.deleteBlog,
+      params: [data.id],
+    });
+    await getAllBlogs();
+    setRequestDelete(false);
+    setLoading(false);
+  };
 
   return (
     <div
@@ -37,7 +53,9 @@ const BlogPreviewItem = ({
                 <OutlinedButton onClick={() => setRequestDelete(false)}>
                   Cancel
                 </OutlinedButton>
-                <ErrorButton>Delete</ErrorButton>
+                <ErrorButton disabled={loading} onClick={handleDelete}>
+                  Delete
+                </ErrorButton>
               </div>
             </div>
           </div>

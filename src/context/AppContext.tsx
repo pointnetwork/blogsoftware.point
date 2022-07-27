@@ -51,9 +51,9 @@ export const ProvideAppContext = ({ children }: { chilren: any }) => {
     });
     const blogs = await Promise.all(
       data.map(async (contractData) => {
-        const [storageHash, isPublished, publishDate] = contractData;
+        const [id, storageHash, isPublished, publishDate] = contractData;
         const { data } = await axios.get(`/_storage/${storageHash}`);
-        return { ...data, storageHash, isPublished, publishDate } as Blog &
+        return { ...data, id, storageHash, isPublished, publishDate } as Blog &
           BlogContractData;
       })
     );
