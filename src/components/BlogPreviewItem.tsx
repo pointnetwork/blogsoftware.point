@@ -132,12 +132,16 @@ const BlogPreviewItem = ({
           </div>
         </>
       ) : null}
-      <div className='basis-48 bg-slate-200 h-32 mr-3 rounded overflow-hidden'>
-        <img
-          src={data.coverImage?.toString()}
-          className='h-full w-full object-cover'
-          alt='cover for blog'
-        />
+      <div className='basis-48 flex items-center justify-center bg-slate-200 h-32 mr-3 rounded overflow-hidden'>
+        {data.coverImage ? (
+          <img
+            src={data.coverImage?.toString()}
+            className='h-full w-full object-cover'
+            alt='cover for blog'
+          />
+        ) : (
+          <p className='text-sm'>No Image Uploaded</p>
+        )}
       </div>
       <div
         className='flex-1 flex flex-col cursor-pointer'
