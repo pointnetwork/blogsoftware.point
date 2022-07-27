@@ -15,8 +15,10 @@ const Home = () => {
         style={{ maxWidth: '1000px', height: window.screen.height - 220 }}
       >
         <div className='flex-1 pr-6 border-r h-full overflow-y-scroll'>
-          {blogs?.length ? (
-            blogs.map((blog, i) => <BlogPreviewItem data={blog} key={i} />)
+          {blogs.filter((blog) => blog.isPublished).length ? (
+            blogs
+              .filter((blog) => blog.isPublished)
+              .map((blog, i) => <BlogPreviewItem data={blog} key={i} />)
           ) : (
             <div>
               <p className='text-5xl font-bold mt-10'>@{identity}</p>

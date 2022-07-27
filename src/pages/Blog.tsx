@@ -3,16 +3,16 @@ import Header from '../components/Header';
 import ArrowBackIosNewIcon from '@mui/icons-material/ArrowBackIosNew';
 import { useLocation } from 'wouter';
 import { useAppContext } from '../context/AppContext';
+import { Blog, BlogContractData } from '../@types/interfaces';
 
-const Blog = () => {
+const BlogPage = () => {
   const { blogs } = useAppContext();
-  const [data, setData] = useState();
+  const [data, setData] = useState<(Blog & BlogContractData) | undefined>();
   const [location, setLocation] = useLocation();
 
   useEffect(() => {
-    setData(blogs.find((blog) => blog.id === location.slice(6)));
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [location]);
+    setData(blogs.find((blog) => blog.storageHash === location.slice(6)));
+  }, [location, blogs]);
 
   return (
     <>
@@ -26,9 +26,10 @@ const Blog = () => {
           <span>Back</span>
         </div>
         <h1 className='text-3xl font-bold mt-4'>{data?.title}</h1>
+        <p className='mt-1 text-sm text-gray-600'>{data?.publishDate}</p>
         <div className='bg-gray-200 my-6'>
           <img
-            src={data?.coverImage}
+            src={data?.coverImage?.toString()}
             alt='cover of the blog'
             className='w-full h-full rounded'
           />
@@ -44,4 +45,4 @@ const Blog = () => {
   );
 };
 
-export default Blog;
+export default BlogPage;

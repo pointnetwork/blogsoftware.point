@@ -7,8 +7,9 @@ export interface ButtonProps {
 }
 
 export interface AppContentInterface {
-  blogs: Blog[];
-  setBlogs: Dispatch<SetStateAction<Blog[]>>;
+  blogs: (Blog & BlogContractData)[];
+  setBlogs: Dispatch<SetStateAction<(Blog & BlogContractData)[]>>;
+  getAllBlogs: () => void;
   identity: string;
   walletAddress: string;
 }
@@ -19,4 +20,10 @@ export interface Blog {
   content: string;
   publisher: string;
   createdDate: string;
+}
+
+export interface BlogContractData {
+  storageHash: string;
+  isPublished: boolean;
+  publishDate: string;
 }

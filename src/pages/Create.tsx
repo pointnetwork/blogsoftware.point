@@ -1,4 +1,4 @@
-import axios from 'axios';
+import dayjs from 'dayjs';
 import React, { useState } from 'react';
 import { useLocation } from 'wouter';
 import ReactQuill from 'react-quill';
@@ -16,7 +16,7 @@ import { Blog } from '../@types/interfaces';
 
 const Create = () => {
   const [, setLocation] = useLocation();
-  const { walletAddress, setBlogs } = useAppContext();
+  const { walletAddress, getAllBlogs } = useAppContext();
 
   const [cover, setCover] = useState<string | ArrayBuffer | null>('');
   const [title, setTitle] = useState<string>('');
@@ -30,13 +30,15 @@ const Create = () => {
     reader.readAsDataURL(e.target.files[0]);
   };
 
-  const handleSave = async () => {
+  const handleSave = async (isPublished = true) => {
+    const now = dayjs().format('MMM DD, YYYY');
+
     const form = JSON.stringify({
       coverImage: cover,
       title,
       content,
       publisher: walletAddress,
-      createdDate: new Date().toISOString(),
+      createdDate: now,
     } as Blog);
     const file = new File([form], 'blog.json', { type: 'application/json' });
 
@@ -44,16 +46,18 @@ const Create = () => {
     formData.append('file', file);
     // Upload the File to arweave
     const res = await window.point.storage.postFile(formData);
-    // BELOW IS A TEMP CHECK SOLUTION ONLY
-    const data = await axios.get(`/_storage/${res.data}`);
-    setBlogs((prev) => [{ id: res.data, ...data.data }, ...prev]);
-    // Save the JSON URL to the Smart Contract
+    // Save data to smart contract
+    await window.point.contract.send({
+      contract: 'Blog',
+      method: 'addBlog',
+      params: [res.data, isPublished, now],
+    });
+    getAllBlogs();
     setLocation('/admin');
   };
 
-  const handlePublish = () => {
-    handleSave();
-  };
+  const handlePublish = () => handleSave();
+  const handleSaveDraft = () => handleSave(false);
 
   return (
     <>
@@ -95,7 +99,7 @@ const Create = () => {
             {cover ? (
               <img
                 className='w-full h-full object-cover rounded mr-3 border-2 border-gray-200'
-                src={cover}
+                src={cover.toString()}
                 alt='cover for the blog'
               />
             ) : (
@@ -125,7 +129,9 @@ const Create = () => {
           >
             Publish
           </PrimaryButton>
-          <OutlinedButton disabled={!title}>Save Draft</OutlinedButton>
+          <OutlinedButton disabled={!title} onClick={handleSaveDraft}>
+            Save Draft
+          </OutlinedButton>
           <ErrorButton onClick={() => setLocation('/admin')}>
             Cancel
           </ErrorButton>

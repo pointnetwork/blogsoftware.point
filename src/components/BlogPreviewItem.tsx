@@ -5,8 +5,15 @@ import DeleteIcon from '@mui/icons-material/Delete';
 import EditIcon from '@mui/icons-material/Edit';
 import DoDisturbIcon from '@mui/icons-material/DoDisturb';
 import { ErrorButton, OutlinedButton } from './Button';
+import { Blog, BlogContractData } from '../@types/interfaces';
 
-const BlogPreviewItem = ({ admin, data }: { admin?: boolean; data: any }) => {
+const BlogPreviewItem = ({
+  admin,
+  data,
+}: {
+  admin?: boolean;
+  data: Blog & BlogContractData;
+}) => {
   const [, setLocation] = useLocation();
 
   const [requestDelete, setRequestDelete] = useState<boolean>(false);
@@ -39,23 +46,35 @@ const BlogPreviewItem = ({ admin, data }: { admin?: boolean; data: any }) => {
       {/* DELETE MODAL: END */}
       {admin ? (
         <>
-          <div
-            style={{ fontSize: 10 }}
-            className='-top-3 -right-2 rounded-full bg-green-100 text-green-600 text-sm px-3 border border-green-300 absolute z-10'
-          >
-            Published
-          </div>
+          {data.isPublished ? (
+            <div
+              style={{ fontSize: 10 }}
+              className='-top-3 -right-2 rounded-full bg-green-100 text-green-600 text-sm px-2 border border-green-300 absolute z-10'
+            >
+              Published
+            </div>
+          ) : (
+            <div
+              style={{ fontSize: 10 }}
+              className='-top-3 -right-2 rounded-full bg-orange-100 text-orange-600 text-sm px-2 border border-orange-300 absolute z-10'
+            >
+              Unpublished
+            </div>
+          )}
           <div className='bottom-2 right-2 absolute flex space-x-2'>
-            <DoDisturbIcon
-              fontSize='small'
-              className='opacity-50 hover:opacity-100 text-orange-500 cursor-pointer'
-              titleAccess='Unpublish'
-            />
-            <CheckCircleOutlineIcon
-              fontSize='small'
-              className='opacity-50 hover:opacity-100 text-green-600 cursor-pointer'
-              titleAccess='Publish'
-            />
+            {data.isPublished ? (
+              <DoDisturbIcon
+                fontSize='small'
+                className='opacity-50 hover:opacity-100 text-orange-500 cursor-pointer'
+                titleAccess='Unpublish'
+              />
+            ) : (
+              <CheckCircleOutlineIcon
+                fontSize='small'
+                className='opacity-50 hover:opacity-100 text-green-600 cursor-pointer'
+                titleAccess='Publish'
+              />
+            )}
             <EditIcon
               fontSize='small'
               className='opacity-50 hover:opacity-100 text-gray-500 cursor-pointer'
@@ -73,24 +92,24 @@ const BlogPreviewItem = ({ admin, data }: { admin?: boolean; data: any }) => {
       ) : null}
       <div className='basis-48 bg-slate-200 h-32 mr-3 rounded overflow-hidden'>
         <img
-          src={data?.coverImage}
+          src={data.coverImage?.toString()}
           className='h-full w-full object-cover'
           alt='cover for blog'
         />
       </div>
       <div
         className='flex-1 flex flex-col cursor-pointer'
-        onClick={() => setLocation(`/blog/${data.id}`)}
+        onClick={() => setLocation(`/blog/${data.storageHash}`)}
       >
-        <h2 className='font-bold text-lg'>{data?.title}</h2>
+        <h2 className='font-bold text-lg'>{data.title}</h2>
         <p
-          className='text-sm mb-2 text-gray-500 flex-1'
+          className='text-sm mb-2 text-gray-600 flex-1'
           // TODO: Safegaurd against XSS
           dangerouslySetInnerHTML={{
-            __html: `<p>${data?.content.slice(0, 200)}...</p>`,
+            __html: `<p>${data.content.slice(0, 200)}...</p>`,
           }}
         ></p>
-        <p className='text-sm'>{data?.createdDate}</p>
+        <p className='text-sm text-gray-500'>{data.publishDate}</p>
       </div>
     </div>
   );
