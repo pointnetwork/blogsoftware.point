@@ -48,16 +48,33 @@ contract Blog is Initializable, UUPSUpgradeable, OwnableUpgradeable {
     }
 
     function deleteBlog(uint256 _id) public payable onlyOwner {
-        uint256 found;
-        for (uint256 i = 0; i < blogs.length; i++) {
-            if (blogs[i].id == _id) {
-                found = i;
-                break;
-            }
-        }
-        for (uint256 i = found; i < blogs.length - 1; i++) {
+        uint256 requiredBlogIndex = _getBlogIndexById(_id);
+        for (uint256 i = requiredBlogIndex; i < blogs.length - 1; i++) {
             blogs[i] = blogs[i + 1];
         }
         blogs.pop();
+    }
+
+    function publish(uint256 _id) public payable onlyOwner {
+        uint256 requiredBlogIndex = _getBlogIndexById(_id);
+        BlogData storage requiredBlog = blogs[requiredBlogIndex];
+        requiredBlog.isPublished = true;
+    }
+
+    function unpublish(uint256 _id) public payable onlyOwner {
+        uint256 requiredBlogIndex = _getBlogIndexById(_id);
+        BlogData storage requiredBlog = blogs[requiredBlogIndex];
+        requiredBlog.isPublished = false;
+    }
+
+    function _getBlogIndexById(uint256 _id) private view returns (uint256) {
+        uint256 index;
+        for (uint256 i = 0; i < blogs.length; i++) {
+            if (blogs[i].id == _id) {
+                index = i;
+                break;
+            }
+        }
+        return index;
     }
 }

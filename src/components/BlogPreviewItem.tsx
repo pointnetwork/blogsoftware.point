@@ -34,6 +34,28 @@ const BlogPreviewItem = ({
     setLoading(false);
   };
 
+  const handlePublish = async () => {
+    setLoading(true);
+    await window.point.contract.send({
+      contract: BlogContract.name,
+      method: BlogContract.publish,
+      params: [data.id],
+    });
+    await getAllBlogs();
+    setLoading(false);
+  };
+
+  const handleUnPublish = async () => {
+    setLoading(true);
+    await window.point.contract.send({
+      contract: BlogContract.name,
+      method: BlogContract.unpublish,
+      params: [data.id],
+    });
+    await getAllBlogs();
+    setLoading(false);
+  };
+
   return (
     <div
       className={`flex p-3 border border-white rounded my-3 ${
@@ -85,12 +107,14 @@ const BlogPreviewItem = ({
                 fontSize='small'
                 className='opacity-50 hover:opacity-100 text-orange-500 cursor-pointer'
                 titleAccess='Unpublish'
+                onClick={handleUnPublish}
               />
             ) : (
               <CheckCircleOutlineIcon
                 fontSize='small'
                 className='opacity-50 hover:opacity-100 text-green-600 cursor-pointer'
                 titleAccess='Publish'
+                onClick={handlePublish}
               />
             )}
             <EditIcon

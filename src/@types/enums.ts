@@ -3,4 +3,6 @@ export enum BlogContract {
   getAllBlogs = 'getAllBlogs',
   addBlog = 'addBlog',
   deleteBlog = 'deleteBlog',
+  publish = 'publish',
+  unpublish = 'unpublish',
 }
