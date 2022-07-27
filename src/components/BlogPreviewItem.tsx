@@ -66,17 +66,17 @@ const BlogPreviewItem = ({
       {requestDelete ? (
         <div className='fixed z-50 top-0 left-0 h-screen w-screen'>
           <div className='relative h-full w-full'>
-            <div className='absolute h-full w-full bg-black opacity-30'></div>
+            <div className='absolute h-full w-full bg-black opacity-60'></div>
             <div className='absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 bg-white p-5 rounded'>
               <h3 className='text-lg font-medium'>
-                Are your sure you want to delete this blog
+                Are your sure you want to move this blog to Trash?
               </h3>
               <div className='flex justify-end space-x-4 mt-4'>
                 <OutlinedButton onClick={() => setRequestDelete(false)}>
                   Cancel
                 </OutlinedButton>
                 <ErrorButton disabled={loading} onClick={handleDelete}>
-                  Delete
+                  Move to Trash
                 </ErrorButton>
               </div>
             </div>
