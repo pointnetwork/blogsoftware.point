@@ -10,6 +10,7 @@ export interface AppContentInterface {
   blogs: (Blog & BlogContractData)[];
   setBlogs: Dispatch<SetStateAction<(Blog & BlogContractData)[]>>;
   getAllBlogs: () => void;
+  getDeletedBlogs: () => Promise<(Blog & BlogContractData)[]>;
   identity: string;
   walletAddress: string;
 }

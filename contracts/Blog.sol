@@ -20,6 +20,7 @@ contract Blog is Initializable, UUPSUpgradeable, OwnableUpgradeable {
     }
 
     BlogData[] blogs;
+    BlogData[] deletedBlogs;
 
     function initialize() public initializer onlyProxy {
         __Ownable_init();
@@ -30,6 +31,15 @@ contract Blog is Initializable, UUPSUpgradeable, OwnableUpgradeable {
 
     function getAllBlogs() public view returns (BlogData[] memory) {
         return blogs;
+    }
+
+    function getDeletedBlogs()
+        public
+        view
+        onlyOwner
+        returns (BlogData[] memory)
+    {
+        return deletedBlogs;
     }
 
     function addBlog(
@@ -49,6 +59,7 @@ contract Blog is Initializable, UUPSUpgradeable, OwnableUpgradeable {
 
     function deleteBlog(uint256 _id) public payable onlyOwner {
         uint256 requiredBlogIndex = _getBlogIndexById(_id);
+        deletedBlogs.push(blogs[requiredBlogIndex]);
         for (uint256 i = requiredBlogIndex; i < blogs.length - 1; i++) {
             blogs[i] = blogs[i + 1];
         }

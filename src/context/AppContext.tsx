@@ -11,6 +11,7 @@ const AppContext = createContext({
   blogs: [],
   setBlogs: () => {},
   getAllBlogs: () => {},
+  getDeletedBlogs: async () => [],
   identity: '',
   walletAddress: '',
 } as AppContentInterface);
@@ -38,6 +39,7 @@ export const ProvideAppContext = ({ children }: { chilren: any }) => {
         setIdentity(identity);
 
         await getAllBlogs();
+        console.log('getDeletedBlogs', await getDeletedBlogs());
       } catch (e) {
         console.error(e);
       }
@@ -60,6 +62,22 @@ export const ProvideAppContext = ({ children }: { chilren: any }) => {
     setBlogs(blogs);
   };
 
+  const getDeletedBlogs = async () => {
+    const { data }: { data: any[] } = await window.point.contract.call({
+      contract: BlogContract.name,
+      method: BlogContract.getDeletedBlogs,
+    });
+    const blogs = await Promise.all(
+      data.map(async (contractData) => {
+        const [id, storageHash, isPublished, publishDate] = contractData;
+        const { data } = await axios.get(`/_storage/${storageHash}`);
+        return { ...data, id, storageHash, isPublished, publishDate } as Blog &
+          BlogContractData;
+      })
+    );
+    return blogs;
+  };
+
   return (
     <AppContext.Provider
       value={{
@@ -68,6 +86,7 @@ export const ProvideAppContext = ({ children }: { chilren: any }) => {
         blogs,
         setBlogs,
         getAllBlogs,
+        getDeletedBlogs,
       }}
     >
       {children}
