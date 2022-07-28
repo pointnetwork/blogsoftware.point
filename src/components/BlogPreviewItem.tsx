@@ -12,8 +12,10 @@ import { useAppContext } from '../context/AppContext';
 const BlogPreviewItem = ({
   admin,
   data,
+  deleted,
 }: {
   admin?: boolean;
+  deleted?: boolean;
   data: Blog & BlogContractData;
 }) => {
   const { getAllBlogs } = useAppContext();
@@ -84,7 +86,7 @@ const BlogPreviewItem = ({
         </div>
       ) : null}
       {/* DELETE MODAL: END */}
-      {admin ? (
+      {admin && !deleted ? (
         <>
           {data.isPublished ? (
             <div
