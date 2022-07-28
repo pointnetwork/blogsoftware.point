@@ -64,7 +64,7 @@ export const ProvideAppContext = ({ children }: { chilren: any }) => {
           BlogContractData;
       })
     );
-    setTimeout(() => setBlogs({ loading: false, data: blogs }), 3000);
+    setBlogs({ loading: false, data: blogs });
   };
 
   const getDeletedBlogs = async () => {

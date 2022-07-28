@@ -59,7 +59,7 @@ const BlogPreviewItem = ({
   return (
     <div
       className={`flex p-3 border border-white rounded my-3 ${
-        admin ? 'mb-6' : ''
+        admin ? 'mb-5' : ''
       } hover:shadow-lg border-gray-200 relative`}
     >
       {/* DELETE MODAL: START */}
