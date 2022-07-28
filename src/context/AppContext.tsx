@@ -4,11 +4,12 @@ import {
   AppContentInterface,
   Blog,
   BlogContractData,
+  BlogsState,
 } from '../@types/interfaces';
 import { BlogContract } from '../@types/enums';
 
 const AppContext = createContext({
-  blogs: [],
+  blogs: { loading: true, data: [] },
   setBlogs: () => {},
   getAllBlogs: () => {},
   getDeletedBlogs: async () => [],
@@ -19,7 +20,10 @@ const AppContext = createContext({
 export const useAppContext = () => useContext(AppContext);
 
 export const ProvideAppContext = ({ children }: { chilren: any }) => {
-  const [blogs, setBlogs] = useState<(Blog & BlogContractData)[]>([]);
+  const [blogs, setBlogs] = useState<BlogsState>({
+    loading: true,
+    data: [],
+  });
   const [identity, setIdentity] = useState<string>('');
   const [walletAddress, setWalletAddress] = useState<string>('');
 
@@ -39,7 +43,6 @@ export const ProvideAppContext = ({ children }: { chilren: any }) => {
         setIdentity(identity);
 
         await getAllBlogs();
-        console.log('getDeletedBlogs', await getDeletedBlogs());
       } catch (e) {
         console.error(e);
       }
@@ -47,6 +50,8 @@ export const ProvideAppContext = ({ children }: { chilren: any }) => {
   }, []);
 
   const getAllBlogs = async () => {
+    setBlogs((prev) => ({ ...prev, loading: true }));
+
     const { data }: { data: any[] } = await window.point.contract.call({
       contract: BlogContract.name,
       method: BlogContract.getAllBlogs,
@@ -59,7 +64,7 @@ export const ProvideAppContext = ({ children }: { chilren: any }) => {
           BlogContractData;
       })
     );
-    setBlogs(blogs);
+    setTimeout(() => setBlogs({ loading: false, data: blogs }), 3000);
   };
 
   const getDeletedBlogs = async () => {

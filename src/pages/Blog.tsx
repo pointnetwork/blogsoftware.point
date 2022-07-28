@@ -11,7 +11,7 @@ const BlogPage = () => {
   const [location, setLocation] = useLocation();
 
   useEffect(() => {
-    setData(blogs.find((blog) => blog.storageHash === location.slice(6)));
+    setData(blogs.data.find((blog) => blog.storageHash === location.slice(6)));
   }, [location, blogs]);
 
   return (

@@ -7,12 +7,17 @@ export interface ButtonProps {
 }
 
 export interface AppContentInterface {
-  blogs: (Blog & BlogContractData)[];
-  setBlogs: Dispatch<SetStateAction<(Blog & BlogContractData)[]>>;
+  blogs: BlogsState;
+  setBlogs: Dispatch<SetStateAction<BlogsState>>;
   getAllBlogs: () => void;
   getDeletedBlogs: () => Promise<(Blog & BlogContractData)[]>;
   identity: string;
   walletAddress: string;
+}
+
+export interface BlogsState {
+  loading: boolean;
+  data: (Blog & BlogContractData)[];
 }
 
 export interface Blog {

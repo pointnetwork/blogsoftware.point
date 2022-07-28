@@ -2,6 +2,7 @@ import React from 'react';
 import BlogPreviewItem from '../components/BlogPreviewItem';
 import Header from '../components/Header';
 import IdentityInfo from '../components/IdentityInfo';
+import Loader from '../components/Loader';
 import { useAppContext } from '../context/AppContext';
 
 const Home = () => {
@@ -15,8 +16,10 @@ const Home = () => {
         style={{ maxWidth: '1000px', height: window.screen.height - 220 }}
       >
         <div className='flex-1 pr-6 border-r h-full overflow-y-scroll'>
-          {blogs.filter((blog) => blog.isPublished).length ? (
-            blogs
+          {blogs.loading ? (
+            <Loader>Loading Blogs...</Loader>
+          ) : blogs.data.filter((blog) => blog.isPublished).length ? (
+            blogs.data
               .filter((blog) => blog.isPublished)
               .map((blog, i) => <BlogPreviewItem data={blog} key={i} />)
           ) : (
