@@ -17,7 +17,9 @@ const Home = () => {
       >
         <div className='flex-1 pr-6 border-r h-full overflow-y-scroll'>
           {blogs.loading ? (
-            <Loader>Loading Blogs...</Loader>
+            <div className='mt-7'>
+              <Loader>Loading Blogs...</Loader>
+            </div>
           ) : blogs.data.filter((blog) => blog.isPublished).length ? (
             blogs.data
               .filter((blog) => blog.isPublished)

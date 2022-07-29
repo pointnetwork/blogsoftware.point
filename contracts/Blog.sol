@@ -7,10 +7,15 @@ import "@openzeppelin/contracts-upgradeable/proxy/utils/Initializable.sol";
 import "@openzeppelin/contracts-upgradeable/proxy/utils/UUPSUpgradeable.sol";
 import "@openzeppelin/contracts-upgradeable/access/OwnableUpgradeable.sol";
 
-// This is an example contract. Please remove and create your own!
 contract Blog is Initializable, UUPSUpgradeable, OwnableUpgradeable {
     using Counters for Counters.Counter;
     Counters.Counter private numBlogs;
+
+    struct UserInfo {
+        address walletAddress;
+        string dataStorageHash;
+    }
+    UserInfo user;
 
     struct BlogData {
         uint256 id;
@@ -18,7 +23,6 @@ contract Blog is Initializable, UUPSUpgradeable, OwnableUpgradeable {
         bool isPublished;
         string publishDate;
     }
-
     BlogData[] blogs;
     BlogData[] deletedBlogs;
 
@@ -28,6 +32,20 @@ contract Blog is Initializable, UUPSUpgradeable, OwnableUpgradeable {
     }
 
     function _authorizeUpgrade(address) internal override onlyOwner {}
+
+    function getUserInfo() public view returns (UserInfo memory) {
+        return user;
+    }
+
+    function saveUserInfo(
+        address _walletAddress,
+        string calldata _dataStorageHash
+    ) public payable {
+        user = UserInfo({
+            walletAddress: _walletAddress,
+            dataStorageHash: _dataStorageHash
+        });
+    }
 
     function getAllBlogs() public view returns (BlogData[] memory) {
         return blogs;

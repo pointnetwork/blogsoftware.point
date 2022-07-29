@@ -5,12 +5,18 @@ import {
   Blog,
   BlogContractData,
   BlogsState,
+  UserInfoState,
 } from '../@types/interfaces';
 import { BlogContract } from '../@types/enums';
 
 const AppContext = createContext({
   blogs: { loading: true, data: [] },
   setBlogs: () => {},
+  userInfo: {
+    loading: true,
+    data: { about: '', walletAddress: '', dataStorageHash: '', avatar: '' },
+  },
+  getUserInfo: () => {},
   getAllBlogs: () => {},
   getDeletedBlogs: async () => [],
   identity: '',
@@ -23,6 +29,15 @@ export const ProvideAppContext = ({ children }: { chilren: any }) => {
   const [blogs, setBlogs] = useState<BlogsState>({
     loading: true,
     data: [],
+  });
+  const [userInfo, setUserInfo] = useState<UserInfoState>({
+    loading: true,
+    data: {
+      walletAddress: '',
+      about: '',
+      avatar: '',
+      dataStorageHash: '',
+    },
   });
   const [identity, setIdentity] = useState<string>('');
   const [walletAddress, setWalletAddress] = useState<string>('');
@@ -42,12 +57,33 @@ export const ProvideAppContext = ({ children }: { chilren: any }) => {
         setWalletAddress(address);
         setIdentity(identity);
 
-        await getAllBlogs();
+        getUserInfo();
+        getAllBlogs();
       } catch (e) {
         console.error(e);
       }
     })();
   }, []);
+
+  const getUserInfo = async () => {
+    setUserInfo((prev) => ({ ...prev, loading: true }));
+
+    const {
+      data: [walletAddress, dataStorageHash],
+    }: { data: [walletAddress: string, dataStorageHash: string] } =
+      await window.point.contract.call({
+        contract: BlogContract.name,
+        method: BlogContract.getUserInfo,
+      });
+    if (dataStorageHash) {
+      const res = await axios.get(`/_storage/${dataStorageHash}`);
+      setUserInfo((prev) => ({
+        ...prev,
+        loading: false,
+        data: { ...res.data, walletAddress, dataStorageHash },
+      }));
+    }
+  };
 
   const getAllBlogs = async () => {
     setBlogs((prev) => ({ ...prev, loading: true }));
@@ -90,6 +126,8 @@ export const ProvideAppContext = ({ children }: { chilren: any }) => {
         identity,
         blogs,
         setBlogs,
+        getUserInfo,
+        userInfo,
         getAllBlogs,
         getDeletedBlogs,
       }}

@@ -7,6 +7,8 @@ export interface ButtonProps {
 }
 
 export interface AppContentInterface {
+  userInfo: UserInfoState;
+  getUserInfo: () => void;
   blogs: BlogsState;
   setBlogs: Dispatch<SetStateAction<BlogsState>>;
   getAllBlogs: () => void;
@@ -18,6 +20,7 @@ export interface AppContentInterface {
 export interface BlogsState {
   loading: boolean;
   data: (Blog & BlogContractData)[];
+  error?: string;
 }
 
 export interface Blog {
@@ -33,4 +36,20 @@ export interface BlogContractData {
   storageHash: string;
   isPublished: boolean;
   publishDate: string;
+}
+
+export interface UserInfo {
+  avatar: string;
+  about: string;
+}
+
+export interface UserInfoContractData {
+  walletAddress: string;
+  dataStorageHash: string;
+}
+
+export interface UserInfoState {
+  loading: boolean;
+  data: UserInfoContractData & UserInfo;
+  error?: string;
 }

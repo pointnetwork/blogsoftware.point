@@ -1,7 +1,7 @@
 import React from 'react';
-import Avatar from 'boring-avatars';
 import EditIcon from '@mui/icons-material/Edit';
 import { useAppContext } from '../context/AppContext';
+import Loader from './Loader';
 
 const EditButton = ({ admin }: { admin?: boolean }) =>
   admin ? (
@@ -11,32 +11,28 @@ const EditButton = ({ admin }: { admin?: boolean }) =>
   ) : null;
 
 const IdentityInfo = ({ admin }: { admin?: boolean }) => {
-  const { identity } = useAppContext();
+  const { identity, userInfo } = useAppContext();
 
-  return (
+  return !userInfo.loading ? (
     <>
       <div className='relative'>
         <div className='h-56 w-56 bg-gray-200 rounded-full self-center mb-4'>
-          <Avatar
-            size={224}
-            name={identity}
-            variant='marble'
-            colors={['#92A1C6', '#146A7C', '#F0AB3D', '#C271B4', '#C20D90']}
+          <img
+            src={userInfo.data.avatar.toString()}
+            alt='avatar'
+            className='w-full h-full rounded-full object-cover'
           />
+          <EditButton admin={admin} />
         </div>
-        <EditButton admin={admin} />
       </div>
       <h2 className='text-xl font-bold my-2'>@{identity}</h2>
       <div className='relative mb-4'>
         <EditButton admin={admin} />
-        <p className='text-sm text-gray-600'>
-          Lorem ipsum dolor sit amet consectetur adipisicing elit. Iste officia
-          cumque repellat debitis ab tempora maiores nemo fugiat sequi odit.
-          Lorem ipsum dolor sit amet consectetur adipisicing elit. Perferendis
-          cum, minima labore dolores dolore necessitatibus at
-        </p>
+        <p className='text-sm text-gray-600'>{userInfo.data.about}</p>
       </div>
     </>
+  ) : (
+    <Loader>Loading User Info...</Loader>
   );
 };
 

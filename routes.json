@@ -3,5 +3,5 @@
     "/create": "index.html",
     "/blog/*": "index.html",
     "/admin": "index.html",
-    "/onboarding": "index.html"
+    "/onboarding_profile": "index.html"
 }

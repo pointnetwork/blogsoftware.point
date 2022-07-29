@@ -6,6 +6,8 @@ export enum BlogContract {
   deleteBlog = 'deleteBlog',
   publish = 'publish',
   unpublish = 'unpublish',
+  getUserInfo = 'getUserInfo',
+  saveUserInfo = 'saveUserInfo',
 }
 
 export enum BlogFactoryContract {
