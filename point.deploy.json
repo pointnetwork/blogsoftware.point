@@ -3,7 +3,8 @@
   "target": "blogsoftware.point",
   "keyvalue": {},
   "contracts": [
-    "Blog"
+    "Blog",
+    "BlogFactory"
   ],
   "upgradable": true,
   "pointSDKVersion": "0.0.10",

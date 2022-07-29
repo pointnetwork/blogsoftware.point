@@ -7,3 +7,9 @@ export enum BlogContract {
   publish = 'publish',
   unpublish = 'unpublish',
 }
+
+export enum BlogFactoryContract {
+  name = 'BlogFactory',
+  createBlog = 'createBlog',
+  isBlogCreated = 'isBlogCreated',
+}
