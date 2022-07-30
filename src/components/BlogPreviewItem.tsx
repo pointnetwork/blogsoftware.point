@@ -1,12 +1,12 @@
 import React, { useState } from 'react';
-import { useLocation } from 'wouter';
+import { useNavigate } from 'react-router-dom';
 import CheckCircleOutlineIcon from '@mui/icons-material/CheckCircleOutline';
 import DeleteIcon from '@mui/icons-material/Delete';
 import EditIcon from '@mui/icons-material/Edit';
 import DoDisturbIcon from '@mui/icons-material/DoDisturb';
 import { ErrorButton, OutlinedButton } from './Button';
 import { Blog, BlogContractData } from '../@types/interfaces';
-import { BlogContract } from '../@types/enums';
+import { BlogContract, RoutesEnum } from '../@types/enums';
 import { useAppContext } from '../context/AppContext';
 
 const BlogPreviewItem = ({
@@ -19,7 +19,7 @@ const BlogPreviewItem = ({
   data: Blog & BlogContractData;
 }) => {
   const { getAllBlogs } = useAppContext();
-  const [, setLocation] = useLocation();
+  const navigate = useNavigate();
 
   const [loading, setLoading] = useState<boolean>(false);
   const [requestDelete, setRequestDelete] = useState<boolean>(false);
@@ -123,7 +123,7 @@ const BlogPreviewItem = ({
               fontSize='small'
               className='opacity-50 hover:opacity-100 text-gray-500 cursor-pointer'
               titleAccess='Edit'
-              onClick={() => setLocation('/create')}
+              onClick={() => navigate(RoutesEnum.create)}
             />
             <DeleteIcon
               fontSize='small'
@@ -147,7 +147,7 @@ const BlogPreviewItem = ({
       </div>
       <div
         className='flex-1 flex flex-col cursor-pointer'
-        onClick={() => setLocation(`/blog/${data.storageHash}`)}
+        onClick={() => navigate(`/blog/${data.storageHash}`)}
       >
         <h2 className='font-bold text-lg'>{data.title}</h2>
         <p
