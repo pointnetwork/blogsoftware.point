@@ -15,3 +15,12 @@ export enum BlogFactoryContract {
   createBlog = 'createBlog',
   isBlogCreated = 'isBlogCreated',
 }
+
+export enum RoutesEnum {
+  home = '/',
+  blog = '/blog/:id',
+  admin = '/admin',
+  create = '/create',
+  onboarding_install = '/onboarding_install',
+  onboarding_profile = '/onboarding_profile',
+}
