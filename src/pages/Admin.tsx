@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { useLocation } from 'wouter';
+import { useNavigate } from 'react-router-dom';
 import BlogPreviewItem from '../components/BlogPreviewItem';
 import Header from '../components/Header';
 import IdentityInfo from '../components/IdentityInfo';
@@ -7,6 +7,7 @@ import Loader from '../components/Loader';
 import { PrimaryButton } from '../components/Button';
 import { useAppContext } from '../context/AppContext';
 import { Blog, BlogContractData } from '../@types/interfaces';
+import { RoutesEnum } from '../@types/enums';
 
 enum BlogFilterOptions {
   Published = 'Published',
@@ -44,7 +45,7 @@ const FilterOption = ({
 
 const Admin = () => {
   const { blogs, getDeletedBlogs } = useAppContext();
-  const [, setLocation] = useLocation();
+  const navigate = useNavigate();
 
   const [loading, setLoading] = useState<boolean>(false);
   const [data, setData] = useState<(Blog & BlogContractData)[]>([]);
@@ -85,7 +86,7 @@ const Admin = () => {
         <div className='flex-1 border-r'>
           <div className='flex items-center justify-between mr-5'>
             <h2 className='text-3xl font-bold'>Your Blogs</h2>
-            <PrimaryButton onClick={() => setLocation('/create')}>
+            <PrimaryButton onClick={() => navigate(RoutesEnum.create)}>
               Create New Blog
             </PrimaryButton>
           </div>

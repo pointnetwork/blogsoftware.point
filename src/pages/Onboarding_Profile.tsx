@@ -1,14 +1,17 @@
 import React, { useState } from 'react';
 import { PrimaryButton } from '../components/Button';
-import { useLocation } from 'wouter';
+import { useNavigate } from 'react-router-dom';
 import { useAppContext } from '../context/AppContext';
 import ImageOutlinedIcon from '@mui/icons-material/ImageOutlined';
-import { BlogContract } from '../@types/enums';
+import { BlogContract, RoutesEnum } from '../@types/enums';
 import { UserInfo } from '../@types/interfaces';
 
 const Onboarding_Profile = () => {
   const [avatar, setAvatar] = useState<string | ArrayBuffer | null>(null);
   const [about, setAbout] = useState<string>('');
+
+  const navigate = useNavigate();
+  const { walletAddress } = useAppContext();
 
   const handleFileInput = (e) => {
     const reader = new FileReader();
@@ -17,9 +20,6 @@ const Onboarding_Profile = () => {
     };
     reader.readAsDataURL(e.target.files[0]);
   };
-
-  const [, setLocation] = useLocation();
-  const { walletAddress } = useAppContext();
 
   const handleFinish = async () => {
     const form = JSON.stringify({
@@ -32,17 +32,13 @@ const Onboarding_Profile = () => {
     formData.append('file', file);
     // Upload the File to arweave
     const res = await window.point.storage.postFile(formData);
-    // const { data }: { data: string } = await window.point.contract.send({
-    //   contract: BlogFactoryContract.name,
-    //   method: BlogFactoryContract.createBlog,
-    //   params: [walletAddress],
-    // });
+
     await window.point.contract.send({
       contract: BlogContract.name,
       method: BlogContract.saveUserInfo,
       params: [walletAddress, res.data],
     });
-    setLocation('/');
+    navigate(RoutesEnum.home);
   };
 
   return (

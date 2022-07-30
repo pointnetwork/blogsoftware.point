@@ -1,46 +1,42 @@
-import React, { useEffect } from 'react';
-import { Route, Router } from 'wouter';
+import React from 'react';
+import { Route, Routes, BrowserRouter as Router } from 'react-router-dom';
 import { ProvideAppContext, useAppContext } from './context/AppContext';
 import Home from './pages/Home';
 import Blog from './pages/Blog';
 import Admin from './pages/Admin';
 import Create from './pages/Create';
-import Onboarding_Profile from './pages/Onboarding_Profile';
-// import { useLocation } from 'wouter';
+import OnboardingInstall from './pages/Onboarding_Install';
+import OnboardingProfile from './pages/Onboarding_Profile';
+import { RoutesEnum } from './@types/enums';
 // import { BlogFactoryContract } from './@types/enums';
 
 const Main = () => {
   const { walletAddress } = useAppContext();
-  // const [, setLocation] = useLocation();
-
-  useEffect(() => {
-    if (walletAddress)
-      (async () => {
-        // const { data }: { data: string } = await window.point.contract.call({
-        //   contract: BlogFactoryContract.name,
-        //   method: BlogFactoryContract.isBlogCreated,
-        //   params: [walletAddress],
-        // });
-        // if (data === '0x0000000000000000000000000000000000000000')
-        // setLocation('/onboarding');
-      })();
-  }, [walletAddress]);
 
   return (
-    <Router>
-      <Route path='/' component={Home} />
-      <Route path='/blog/:id' component={Blog} />
-      <Route path='/admin' component={Admin} />
-      <Route path='/create' component={Create} />
-      <Route path='/onboarding_profile' component={Onboarding_Profile} />
-    </Router>
+    <Routes>
+      <Route path={RoutesEnum.home} element={<Home />} />
+      <Route path={RoutesEnum.blog} element={<Blog />} />
+      <Route path={RoutesEnum.admin} element={<Admin />} />
+      <Route path={RoutesEnum.create} element={<Create />} />
+      <Route
+        path={RoutesEnum.onboarding_install}
+        element={<OnboardingInstall />}
+      />
+      <Route
+        path={RoutesEnum.onboarding_profile}
+        element={<OnboardingProfile />}
+      />
+    </Routes>
   );
 };
 
 const App = () => (
-  <ProvideAppContext>
-    <Main />
-  </ProvideAppContext>
+  <Router>
+    <ProvideAppContext>
+      <Main />
+    </ProvideAppContext>
+  </Router>
 );
 
 export default App;

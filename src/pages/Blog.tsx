@@ -1,18 +1,20 @@
 import React, { useEffect, useState } from 'react';
 import Header from '../components/Header';
 import ArrowBackIosNewIcon from '@mui/icons-material/ArrowBackIosNew';
-import { useLocation } from 'wouter';
+import { useNavigate, useParams } from 'react-router-dom';
 import { useAppContext } from '../context/AppContext';
 import { Blog, BlogContractData } from '../@types/interfaces';
 
 const BlogPage = () => {
   const { blogs } = useAppContext();
   const [data, setData] = useState<(Blog & BlogContractData) | undefined>();
-  const [location, setLocation] = useLocation();
+
+  const { id } = useParams();
+  const navigate = useNavigate();
 
   useEffect(() => {
-    setData(blogs.data.find((blog) => blog.storageHash === location.slice(6)));
-  }, [location, blogs]);
+    setData(blogs.data.find((blog) => blog.storageHash === id));
+  }, [id, blogs]);
 
   return (
     <>
@@ -20,7 +22,7 @@ const BlogPage = () => {
       <main className='pb-4 pt-8 mx-auto' style={{ maxWidth: '720px' }}>
         <div
           className='flex items-center opacity-40 cursor-pointer hover:opacity-90 transition-all'
-          onClick={() => setLocation('/')}
+          onClick={() => navigate(-1)}
         >
           <ArrowBackIosNewIcon />
           <span>Back</span>

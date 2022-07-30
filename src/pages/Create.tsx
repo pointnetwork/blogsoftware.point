@@ -1,6 +1,6 @@
 import dayjs from 'dayjs';
 import React, { useState } from 'react';
-import { useLocation } from 'wouter';
+import { useNavigate } from 'react-router-dom';
 import ReactQuill from 'react-quill';
 import 'react-quill/dist/quill.snow.css';
 import Header from '../components/Header';
@@ -13,10 +13,10 @@ import {
 } from '../components/Button';
 import { useAppContext } from '../context/AppContext';
 import { Blog } from '../@types/interfaces';
-import { BlogContract } from '../@types/enums';
+import { BlogContract, RoutesEnum } from '../@types/enums';
 
 const Create = () => {
-  const [, setLocation] = useLocation();
+  const navigate = useNavigate();
   const { walletAddress, getAllBlogs } = useAppContext();
 
   const [cover, setCover] = useState<string | ArrayBuffer | null>('');
@@ -54,7 +54,7 @@ const Create = () => {
       params: [res.data, isPublished, now],
     });
     getAllBlogs();
-    setLocation('/admin');
+    navigate(RoutesEnum.admin);
   };
 
   const handlePublish = () => handleSave();
@@ -133,9 +133,7 @@ const Create = () => {
           <OutlinedButton disabled={!title} onClick={handleSaveDraft}>
             Save Draft
           </OutlinedButton>
-          <ErrorButton onClick={() => setLocation('/admin')}>
-            Cancel
-          </ErrorButton>
+          <ErrorButton onClick={() => navigate(-1)}>Cancel</ErrorButton>
         </div>
       </div>
     </>
