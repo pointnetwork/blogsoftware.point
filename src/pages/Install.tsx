@@ -4,7 +4,7 @@ import { BlogFactoryContract, RoutesEnum } from '../@types/enums';
 import { PrimaryButton } from '../components/Button';
 import { useAppContext } from '../context/AppContext';
 
-const OnboardingInstall = () => {
+const Install = () => {
   const navigate = useNavigate();
 
   const { walletAddress } = useAppContext();
@@ -15,7 +15,7 @@ const OnboardingInstall = () => {
       method: BlogFactoryContract.createBlog,
       params: [walletAddress],
     });
-    navigate(RoutesEnum.onboarding_profile);
+    navigate(RoutesEnum.profile);
   };
 
   return (
@@ -82,4 +82,4 @@ const OnboardingInstall = () => {
   );
 };
 
-export default OnboardingInstall;
+export default Install;

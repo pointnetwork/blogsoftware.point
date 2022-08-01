@@ -21,6 +21,6 @@ export enum RoutesEnum {
   blog = '/blog/:id',
   admin = '/admin',
   create = '/create',
-  onboarding_install = '/onboarding_install',
-  onboarding_profile = '/onboarding_profile',
+  install = '/install',
+  profile = '/profile',
 }

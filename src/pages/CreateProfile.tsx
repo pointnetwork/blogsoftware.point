@@ -6,16 +6,16 @@ import ImageOutlinedIcon from '@mui/icons-material/ImageOutlined';
 import { BlogContract, RoutesEnum } from '../@types/enums';
 import { UserInfo } from '../@types/interfaces';
 
-const Onboarding_Profile = () => {
+const CreateProfile = () => {
   const [avatar, setAvatar] = useState<string | ArrayBuffer | null>(null);
   const [about, setAbout] = useState<string>('');
 
   const navigate = useNavigate();
   const { walletAddress } = useAppContext();
 
-  const handleFileInput = (e) => {
+  const handleFileInput = (e: any) => {
     const reader = new FileReader();
-    reader.onload = function (e) {
+    reader.onload = function (e: any) {
       setAvatar(e.target.result);
     };
     reader.readAsDataURL(e.target.files[0]);
@@ -112,4 +112,4 @@ const Onboarding_Profile = () => {
   );
 };
 
-export default Onboarding_Profile;
+export default CreateProfile;
