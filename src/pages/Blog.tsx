@@ -4,6 +4,7 @@ import ArrowBackIosNewIcon from '@mui/icons-material/ArrowBackIosNew';
 import { useNavigate, useParams } from 'react-router-dom';
 import { useAppContext } from '../context/AppContext';
 import { Blog, BlogContractData } from '../@types/interfaces';
+import PageLayout from '../layouts/PageLayout';
 
 const BlogPage = () => {
   const { blogs } = useAppContext();
@@ -17,7 +18,7 @@ const BlogPage = () => {
   }, [id, blogs]);
 
   return (
-    <>
+    <PageLayout>
       <Header />
       <main className='pb-4 pt-8 mx-auto' style={{ maxWidth: '720px' }}>
         <div
@@ -45,7 +46,7 @@ const BlogPage = () => {
           }}
         ></div>
       </main>
-    </>
+    </PageLayout>
   );
 };
 

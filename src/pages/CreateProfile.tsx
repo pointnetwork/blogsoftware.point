@@ -5,13 +5,14 @@ import { useAppContext } from '../context/AppContext';
 import ImageOutlinedIcon from '@mui/icons-material/ImageOutlined';
 import { BlogContract, RoutesEnum } from '../@types/enums';
 import { UserInfo } from '../@types/interfaces';
+import PageLayout from '../layouts/PageLayout';
 
 const CreateProfile = () => {
   const [avatar, setAvatar] = useState<string | ArrayBuffer | null>(null);
   const [about, setAbout] = useState<string>('');
 
   const navigate = useNavigate();
-  const { walletAddress } = useAppContext();
+  const { walletAddress, getUserInfo } = useAppContext();
 
   const handleFileInput = (e: any) => {
     const reader = new FileReader();
@@ -38,11 +39,12 @@ const CreateProfile = () => {
       method: BlogContract.saveUserInfo,
       params: [walletAddress, res.data],
     });
-    navigate(RoutesEnum.home);
+    await getUserInfo();
+    navigate(RoutesEnum.admin);
   };
 
   return (
-    <>
+    <PageLayout>
       <header className='py-3 sticky top-0 bg-white shadow z-10'>
         <div className='mx-auto' style={{ maxWidth: '1000px' }}>
           {/* Logo will go here */}
@@ -63,6 +65,7 @@ const CreateProfile = () => {
                 <p className='text-gray-500 mt-1'>Click to Upload</p>
                 <input
                   type='file'
+                  accept='image/*'
                   title='Upload a file'
                   className='absolute w-full h-full opacity-0 cursor-pointer'
                   onChange={handleFileInput}
@@ -108,7 +111,7 @@ const CreateProfile = () => {
           </div>
         </div>
       </main>
-    </>
+    </PageLayout>
   );
 };
 

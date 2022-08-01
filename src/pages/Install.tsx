@@ -3,12 +3,13 @@ import { useNavigate } from 'react-router-dom';
 import { BlogFactoryContract, RoutesEnum } from '../@types/enums';
 import { PrimaryButton } from '../components/Button';
 import { useAppContext } from '../context/AppContext';
+import PageLayout from '../layouts/PageLayout';
 
 const InstallationSteps = () => {
   const steps = [
     {
       title: 'Click "Start Installation"',
-      text: 'Clicking "Install" will open the transaction window to host the BlogSoftware on your domain space',
+      text: 'Clicking "Start Installation" will open the transaction window to host the BlogSoftware on your domain space',
     },
     {
       title: 'Confirm the Transaction',
@@ -52,7 +53,7 @@ const Install = () => {
   };
 
   return (
-    <>
+    <PageLayout>
       <header className='py-3 sticky top-0 bg-white shadow z-10'>
         <div className='mx-auto' style={{ maxWidth: '1000px' }}>
           {/* Logo will go here */}
@@ -76,7 +77,7 @@ const Install = () => {
           </p>
         </div>
       </main>
-    </>
+    </PageLayout>
   );
 };
 

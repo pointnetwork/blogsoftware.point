@@ -14,6 +14,7 @@ import {
 import { useAppContext } from '../context/AppContext';
 import { Blog } from '../@types/interfaces';
 import { BlogContract, RoutesEnum } from '../@types/enums';
+import PageLayout from '../layouts/PageLayout';
 
 const Create = () => {
   const navigate = useNavigate();
@@ -23,9 +24,9 @@ const Create = () => {
   const [title, setTitle] = useState<string>('');
   const [content, setContent] = useState<string>('');
 
-  const handleFileInput = (e) => {
+  const handleFileInput = (e: any) => {
     const reader = new FileReader();
-    reader.onload = function (e) {
+    reader.onload = function (e: any) {
       setCover(e.target.result);
     };
     reader.readAsDataURL(e.target.files[0]);
@@ -61,7 +62,7 @@ const Create = () => {
   const handleSaveDraft = () => handleSave(false);
 
   return (
-    <>
+    <PageLayout>
       <Header />
       <main
         className='flex mx-auto pt-4 overflow-hidden'
@@ -136,7 +137,7 @@ const Create = () => {
           <ErrorButton onClick={() => navigate(-1)}>Cancel</ErrorButton>
         </div>
       </div>
-    </>
+    </PageLayout>
   );
 };
 

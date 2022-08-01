@@ -8,6 +8,7 @@ import { PrimaryButton } from '../components/Button';
 import { useAppContext } from '../context/AppContext';
 import { Blog, BlogContractData } from '../@types/interfaces';
 import { RoutesEnum } from '../@types/enums';
+import PageLayout from '../layouts/PageLayout';
 
 enum BlogFilterOptions {
   Published = 'Published',
@@ -77,58 +78,60 @@ const Admin = () => {
   };
 
   return (
-    <div className='h-screen overflow-hidden'>
-      <Header />
-      <main
-        className='flex mt-4 mx-auto'
-        style={{ maxWidth: '1000px', height: window.screen.height - 220 }}
-      >
-        <div className='flex-1 border-r'>
-          <div className='flex items-center justify-between mr-5'>
-            <h2 className='text-3xl font-bold'>Your Blogs</h2>
-            <PrimaryButton onClick={() => navigate(RoutesEnum.create)}>
-              Create New Blog
-            </PrimaryButton>
+    <PageLayout>
+      <div className='h-screen overflow-hidden'>
+        <Header />
+        <main
+          className='flex mt-4 mx-auto'
+          style={{ maxWidth: '1000px', height: window.screen.height - 220 }}
+        >
+          <div className='flex-1 border-r'>
+            <div className='flex items-center justify-between mr-5'>
+              <h2 className='text-3xl font-bold'>Your Blogs</h2>
+              <PrimaryButton onClick={() => navigate(RoutesEnum.create)}>
+                Create New Blog
+              </PrimaryButton>
+            </div>
+            <div className='mt-4 mb-2 flex items-center text-sm border-b border-gray-200'>
+              <FilterOption filter={filter} onClick={handleFilterChange}>
+                {BlogFilterOptions.Published}
+              </FilterOption>
+              <FilterOption filter={filter} onClick={handleFilterChange}>
+                {BlogFilterOptions.Drafts}
+              </FilterOption>
+              <FilterOption filter={filter} onClick={handleFilterChange}>
+                {BlogFilterOptions.Trash}
+              </FilterOption>
+            </div>
+            <div
+              className='overflow-y-scroll pr-6'
+              style={{ height: window.screen.height - 300 }}
+            >
+              {loading || blogs.loading ? (
+                <Loader>Loading Blogs...</Loader>
+              ) : data.length ? (
+                data.map((blog, i) => (
+                  <BlogPreviewItem
+                    deleted={filter === BlogFilterOptions.Trash}
+                    data={blog}
+                    admin
+                    key={i}
+                  />
+                ))
+              ) : (
+                <div className='font-medium pt-2 text-gray-500'>
+                  <p className='text-2xl'>{emptyMessages[filter]}</p>
+                </div>
+              )}
+            </div>
           </div>
-          <div className='mt-4 mb-2 flex items-center text-sm border-b border-gray-200'>
-            <FilterOption filter={filter} onClick={handleFilterChange}>
-              {BlogFilterOptions.Published}
-            </FilterOption>
-            <FilterOption filter={filter} onClick={handleFilterChange}>
-              {BlogFilterOptions.Drafts}
-            </FilterOption>
-            <FilterOption filter={filter} onClick={handleFilterChange}>
-              {BlogFilterOptions.Trash}
-            </FilterOption>
+          <div className='basis-72 flex flex-col overflow-y-scroll px-8 -mr-4'>
+            <h2 className='text-3xl font-bold mb-6'>Your Info</h2>
+            <IdentityInfo admin />
           </div>
-          <div
-            className='overflow-y-scroll pr-6'
-            style={{ height: window.screen.height - 300 }}
-          >
-            {loading || blogs.loading ? (
-              <Loader>Loading Blogs...</Loader>
-            ) : data.length ? (
-              data.map((blog, i) => (
-                <BlogPreviewItem
-                  deleted={filter === BlogFilterOptions.Trash}
-                  data={blog}
-                  admin
-                  key={i}
-                />
-              ))
-            ) : (
-              <div className='font-medium pt-2 text-gray-500'>
-                <p className='text-2xl'>{emptyMessages[filter]}</p>
-              </div>
-            )}
-          </div>
-        </div>
-        <div className='basis-72 flex flex-col overflow-y-scroll px-8 -mr-4'>
-          <h2 className='text-3xl font-bold mb-6'>Your Info</h2>
-          <IdentityInfo admin />
-        </div>
-      </main>
-    </div>
+        </main>
+      </div>
+    </PageLayout>
   );
 };
 

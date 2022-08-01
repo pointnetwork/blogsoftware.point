@@ -7,9 +7,12 @@ import {
   BlogsState,
   UserInfoState,
 } from '../@types/interfaces';
-import { BlogContract } from '../@types/enums';
+import { BlogContract, BlogFactoryContract, RoutesEnum } from '../@types/enums';
+import { useNavigate } from 'react-router-dom';
 
 const AppContext = createContext({
+  loading: true,
+  isOwner: false,
   blogs: { loading: true, data: [] },
   setBlogs: () => {},
   userInfo: {
@@ -25,7 +28,11 @@ const AppContext = createContext({
 
 export const useAppContext = () => useContext(AppContext);
 
-export const ProvideAppContext = ({ children }: { chilren: any }) => {
+export const ProvideAppContext = ({ children }: { children: any }) => {
+  const navigate = useNavigate();
+
+  const [loading, setLoading] = useState<boolean>(true);
+  const [isOwner, isIsOwner] = useState<boolean>(false);
   const [blogs, setBlogs] = useState<BlogsState>({
     loading: true,
     data: [],
@@ -45,25 +52,63 @@ export const ProvideAppContext = ({ children }: { chilren: any }) => {
   useEffect(() => {
     (async () => {
       try {
-        const {
-          data: { address },
-        } = await window.point.wallet.address();
-        const {
-          data: { identity },
-        } = await window.point.identity.ownerToIdentity({
-          owner: address,
-        });
+        setLoading(true);
 
-        setWalletAddress(address);
-        setIdentity(identity);
+        const address = await getWalletAddress();
+        const identity = await getIdentityFromAddress(address);
 
-        getUserInfo();
+        const dataStorageHash = await getUserInfo();
+
+        // Check the domain host
+        const host = window.location.hostname.split('.')[0];
+        // IF domain host and identity match, then check if there is blog for the address in the factory
+        if (identity.toLowerCase() === host.toLowerCase()) {
+          isIsOwner(true);
+          const isBlogCreated = await isBlogCreatedForUser(address);
+          if (!isBlogCreated) {
+            navigate(RoutesEnum.install);
+          } else {
+            if (dataStorageHash) navigate(RoutesEnum.admin);
+            else navigate(RoutesEnum.profile);
+          }
+        }
+        setLoading(false);
+
         getAllBlogs();
       } catch (e) {
         console.error(e);
       }
     })();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
+
+  const getWalletAddress = async () => {
+    const {
+      data: { address },
+    } = await window.point.wallet.address();
+    setWalletAddress(address);
+    return address;
+  };
+
+  const getIdentityFromAddress = async (address: string) => {
+    const {
+      data: { identity },
+    } = await window.point.identity.ownerToIdentity({
+      owner: address,
+    });
+    setIdentity(identity);
+    return identity;
+  };
+
+  const isBlogCreatedForUser = async (address: string) => {
+    const { data } = await window.point.contract.call({
+      contract: BlogFactoryContract.name,
+      method: BlogFactoryContract.isBlogCreated,
+      params: [address],
+    });
+    if (data === '0x0000000000000000000000000000000000000000') return false;
+    return true;
+  };
 
   const getUserInfo = async () => {
     setUserInfo((prev) => ({ ...prev, loading: true }));
@@ -83,6 +128,7 @@ export const ProvideAppContext = ({ children }: { chilren: any }) => {
         data: { ...res.data, walletAddress, dataStorageHash },
       }));
     }
+    return dataStorageHash;
   };
 
   const getAllBlogs = async () => {
@@ -122,6 +168,8 @@ export const ProvideAppContext = ({ children }: { chilren: any }) => {
   return (
     <AppContext.Provider
       value={{
+        loading,
+        isOwner,
         walletAddress,
         identity,
         blogs,

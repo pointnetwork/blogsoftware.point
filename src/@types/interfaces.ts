@@ -7,6 +7,8 @@ export interface ButtonProps {
 }
 
 export interface AppContentInterface {
+  loading: boolean;
+  isOwner: boolean;
   userInfo: UserInfoState;
   getUserInfo: () => void;
   blogs: BlogsState;
