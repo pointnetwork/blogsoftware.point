@@ -4,6 +4,39 @@ import { BlogFactoryContract, RoutesEnum } from '../@types/enums';
 import { PrimaryButton } from '../components/Button';
 import { useAppContext } from '../context/AppContext';
 
+const InstallationSteps = () => {
+  const steps = [
+    {
+      title: 'Click "Start Installation"',
+      text: 'Clicking "Install" will open the transaction window to host the BlogSoftware on your domain space',
+    },
+    {
+      title: 'Confirm the Transaction',
+      text: 'This will install the BlogSoftware on your domain space and create a Blog Smart Contract with your wallet address',
+    },
+    {
+      title: 'Create your Profile',
+      text: 'Write a few lines describing your blog, upload an image and start blogging!',
+    },
+  ];
+
+  return (
+    <>
+      {steps.map((step, i) => (
+        <div className='flex space-x-3 mt-6'>
+          <p className='w-8 h-8 flex items-center justify-center rounded-full text-sm text-white bg-indigo-500 mt-1'>
+            {i + 1}
+          </p>
+          <div>
+            <p className='text-lg'>{step.title}</p>
+            <p className='text-sm text-gray-600 mt-0.5'>{step.text}</p>
+          </div>
+        </div>
+      ))}
+    </>
+  );
+};
+
 const Install = () => {
   const navigate = useNavigate();
 
@@ -26,46 +59,11 @@ const Install = () => {
           <span className='font-medium'>BlogSoftware</span>
         </div>
       </header>
-      <main className='mt-10 mx-auto' style={{ maxWidth: '800px' }}>
+      <main className='mt-8 mx-auto' style={{ maxWidth: '800px' }}>
         <h1 className='text-3xl font-bold pt-6'>
           Launch your own blog in 3 simple steps
         </h1>
-        <div className='flex space-x-3 mt-4'>
-          <p className='w-8 h-8 flex items-center justify-center rounded-full text-white bg-indigo-500 mt-1'>
-            1
-          </p>
-          <div>
-            <p className='text-lg'>Click "Start Installation"</p>
-            <p className='text-sm text-gray-600 mt-0.5'>
-              Clicking "Install" will open the transaction window to host the
-              BlogSoftware on your domain space
-            </p>
-          </div>
-        </div>
-        <div className='flex space-x-3 mt-4'>
-          <p className='w-8 h-8 flex items-center justify-center rounded-full text-white bg-indigo-500 mt-1'>
-            2
-          </p>
-          <div>
-            <p className='text-lg'>Confirm the Transaction</p>
-            <p className='text-sm text-gray-600 mt-0.5'>
-              This will install the BlogSoftware on your domain space and create
-              a Blog Smart Contract with your wallet address
-            </p>
-          </div>
-        </div>
-        <div className='flex space-x-3 mt-4'>
-          <p className='w-8 h-8 flex items-center justify-center rounded-full text-white bg-indigo-500 mt-1'>
-            3
-          </p>
-          <div>
-            <p className='text-lg'>Create your Profile</p>
-            <p className='text-sm text-gray-600 mt-0.5'>
-              Write a few lines describing your blog, upload an image and start
-              blogging!
-            </p>
-          </div>
-        </div>
+        <InstallationSteps />
         <div className='mt-10'>
           <PrimaryButton onClick={handleStartInstallation}>
             Start Installation
