@@ -11,15 +11,15 @@ import { RoutesEnum } from '../@types/enums';
 import PageLayout from '../layouts/PageLayout';
 
 enum BlogFilterOptions {
-  Published = 'Published',
-  Drafts = 'Drafts',
-  Trash = 'Trash',
+  published = 'published',
+  drafts = 'drafts',
+  trash = 'trash',
 }
 
 const emptyMessages = {
-  [BlogFilterOptions.Published]: 'You have not published any blogs yet.',
-  [BlogFilterOptions.Drafts]: `You have not created any drafts yet.`,
-  [BlogFilterOptions.Trash]: `Trash is empty.`,
+  [BlogFilterOptions.published]: 'You have not published any blogs yet.',
+  [BlogFilterOptions.drafts]: `You have not created any drafts yet.`,
+  [BlogFilterOptions.trash]: `Trash is empty.`,
 };
 
 const FilterOption = ({
@@ -33,7 +33,7 @@ const FilterOption = ({
 }) => (
   <div
     id={children}
-    className={`mr-6 font-medium cursor-pointer border-b-2 border-transparent pb-2 ${
+    className={`mr-6 font-medium cursor-pointer border-b-2 border-transparent pb-2 capitalize ${
       filter === children
         ? 'text-indigo-500 border-b-indigo-500'
         : 'text-gray-400 hover:text-gray-800'
@@ -51,19 +51,22 @@ const Admin = () => {
   const [loading, setLoading] = useState<boolean>(false);
   const [data, setData] = useState<(Blog & BlogContractData)[]>([]);
   const [filter, setFilter] = useState<keyof typeof BlogFilterOptions>(
-    BlogFilterOptions.Published
+    new URL(window.location.href).searchParams.get(
+      'filter'
+    ) as keyof typeof BlogFilterOptions
   );
 
   useEffect(() => {
     (async () => {
+      if (!filter) setFilter(BlogFilterOptions.published);
       switch (filter) {
-        case BlogFilterOptions.Published:
+        case BlogFilterOptions.published:
           setData(blogs.data.filter((d) => d.isPublished));
           break;
-        case BlogFilterOptions.Drafts:
+        case BlogFilterOptions.drafts:
           setData(blogs.data.filter((d) => !d.isPublished));
           break;
-        case BlogFilterOptions.Trash:
+        case BlogFilterOptions.trash:
           setLoading(true);
           setData(await getDeletedBlogs());
           setLoading(false);
@@ -74,6 +77,7 @@ const Admin = () => {
   }, [filter, blogs.data]);
 
   const handleFilterChange = (e: any) => {
+    navigate(`${RoutesEnum.admin}?filter=${e.target.id}`);
     setFilter(e.target.id);
   };
 
@@ -94,13 +98,13 @@ const Admin = () => {
             </div>
             <div className='mt-4 mb-2 flex items-center text-sm border-b border-gray-200'>
               <FilterOption filter={filter} onClick={handleFilterChange}>
-                {BlogFilterOptions.Published}
+                {BlogFilterOptions.published}
               </FilterOption>
               <FilterOption filter={filter} onClick={handleFilterChange}>
-                {BlogFilterOptions.Drafts}
+                {BlogFilterOptions.drafts}
               </FilterOption>
               <FilterOption filter={filter} onClick={handleFilterChange}>
-                {BlogFilterOptions.Trash}
+                {BlogFilterOptions.trash}
               </FilterOption>
             </div>
             <div
@@ -112,7 +116,7 @@ const Admin = () => {
               ) : data.length ? (
                 data.map((blog, i) => (
                   <BlogPreviewItem
-                    deleted={filter === BlogFilterOptions.Trash}
+                    deleted={filter === BlogFilterOptions.trash}
                     data={blog}
                     admin
                     key={i}
