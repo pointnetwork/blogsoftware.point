@@ -66,9 +66,10 @@ export const ProvideAppContext = ({ children }: { children: any }) => {
           isIsOwner(true);
           const isBlogCreated = await isBlogCreatedForUser(address);
           if (!isBlogCreated) {
-            navigate(RoutesEnum.install);
+            navigate(RoutesEnum.install, { replace: true });
           } else {
-            if (!dataStorageHash) navigate(RoutesEnum.profile);
+            if (!dataStorageHash)
+              navigate(RoutesEnum.profile, { replace: true });
           }
         }
         setLoading(false);
@@ -168,7 +169,7 @@ export const ProvideAppContext = ({ children }: { children: any }) => {
     const blogs = await Promise.all(
       data.map(async (contractData) => {
         const [id, storageHash, isPublished, publishDate] = contractData;
-        const { data } = await axios.get(`/_storage/${storageHash}`);
+        const data = await getDataFromStorage(storageHash);
         return { ...data, id, storageHash, isPublished, publishDate } as Blog &
           BlogContractData;
       })
