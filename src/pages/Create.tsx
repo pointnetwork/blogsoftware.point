@@ -13,7 +13,7 @@ import {
 } from '../components/Button';
 import { useAppContext } from '../context/AppContext';
 import { Blog } from '../@types/interfaces';
-import { BlogContract, RoutesEnum } from '../@types/enums';
+import { BlogContract } from '../@types/enums';
 import PageLayout from '../layouts/PageLayout';
 import { AddBlogContractParams, EditBlogContractParams } from '../@types/types';
 
@@ -79,7 +79,7 @@ const Create = ({ edit }: { edit?: boolean }) => {
         params: [res.data, isPublished, now] as AddBlogContractParams,
       });
     getAllBlogs();
-    navigate(RoutesEnum.admin);
+    navigate(-1);
   };
 
   const handlePublish = () => handleSave();
