@@ -15,6 +15,7 @@ export interface AppContentInterface {
   setBlogs: Dispatch<SetStateAction<BlogsState>>;
   getAllBlogs: () => void;
   getDeletedBlogs: () => Promise<(Blog & BlogContractData)[]>;
+  getDataFromStorage: (storageHash: string) => any;
   identity: string;
   walletAddress: string;
 }

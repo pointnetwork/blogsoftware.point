@@ -22,6 +22,7 @@ const AppContext = createContext({
   getUserInfo: () => {},
   getAllBlogs: () => {},
   getDeletedBlogs: async () => [],
+  getDataFromStorage: async () => {},
   identity: '',
   walletAddress: '',
 } as AppContentInterface);
@@ -154,7 +155,7 @@ export const ProvideAppContext = ({ children }: { children: any }) => {
           storageHash,
           isPublished,
           publishDate,
-          previousStorageHashes,
+          previousStorageHashes: previousStorageHashes.reverse(),
         } as Blog & BlogContractData;
       })
     );
@@ -195,6 +196,7 @@ export const ProvideAppContext = ({ children }: { children: any }) => {
         userInfo,
         getAllBlogs,
         getDeletedBlogs,
+        getDataFromStorage,
       }}
     >
       {children}
