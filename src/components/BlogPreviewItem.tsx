@@ -6,7 +6,7 @@ import EditIcon from '@mui/icons-material/Edit';
 import DoDisturbIcon from '@mui/icons-material/DoDisturb';
 import { ErrorButton, OutlinedButton } from './Button';
 import { Blog, BlogContractData } from '../@types/interfaces';
-import { BlogContract, RoutesEnum } from '../@types/enums';
+import { BlogContract } from '../@types/enums';
 import { useAppContext } from '../context/AppContext';
 
 const BlogPreviewItem = ({
@@ -88,21 +88,16 @@ const BlogPreviewItem = ({
       {/* DELETE MODAL: END */}
       {admin && !deleted ? (
         <>
-          {data.isPublished ? (
-            <div
-              style={{ fontSize: 10 }}
-              className='-top-3 -right-2 rounded-full bg-green-100 text-green-600 text-sm px-2 border border-green-300 absolute z-10'
-            >
-              Published
-            </div>
-          ) : (
-            <div
-              style={{ fontSize: 10 }}
-              className='-top-3 -right-2 rounded-full bg-orange-100 text-orange-600 text-sm px-2 border border-orange-300 absolute z-10'
-            >
-              Unpublished
-            </div>
-          )}
+          <div className='-top-3 -right-2 absolute z-10'>
+            {data.previousStorageHashes?.length ? (
+              <div
+                style={{ fontSize: 10 }}
+                className='rounded-full bg-indigo-100 text-indigo-600 text-sm px-2 border border-indigo-300'
+              >
+                {data.previousStorageHashes.length} Revisions
+              </div>
+            ) : null}
+          </div>
           <div className='bottom-2 right-2 absolute flex space-x-2'>
             {data.isPublished ? (
               <DoDisturbIcon
@@ -123,7 +118,7 @@ const BlogPreviewItem = ({
               fontSize='small'
               className='opacity-50 hover:opacity-100 text-gray-500 cursor-pointer'
               titleAccess='Edit'
-              onClick={() => navigate(RoutesEnum.create)}
+              onClick={() => navigate(`/edit/${data.storageHash}`)}
             />
             <DeleteIcon
               fontSize='small'

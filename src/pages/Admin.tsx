@@ -126,7 +126,7 @@ const Admin = () => {
             </div>
           </div>
           <div className='basis-72 flex flex-col overflow-y-scroll px-8 -mr-4'>
-            <h2 className='text-3xl font-bold mb-6'>Your Info</h2>
+            <h2 className='text-3xl font-bold mb-6'>Your Profile</h2>
             <IdentityInfo admin />
           </div>
         </main>

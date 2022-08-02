@@ -1,5 +1,5 @@
 import dayjs from 'dayjs';
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import ReactQuill from 'react-quill';
 import 'react-quill/dist/quill.snow.css';
@@ -15,14 +15,29 @@ import { useAppContext } from '../context/AppContext';
 import { Blog } from '../@types/interfaces';
 import { BlogContract, RoutesEnum } from '../@types/enums';
 import PageLayout from '../layouts/PageLayout';
+import { AddBlogContractParams, EditBlogContractParams } from '../@types/types';
 
-const Create = () => {
+const Create = ({ edit }: { edit?: boolean }) => {
   const navigate = useNavigate();
-  const { walletAddress, getAllBlogs } = useAppContext();
+  const { walletAddress, blogs, getAllBlogs } = useAppContext();
 
+  const [editId, setEditId] = useState<number | undefined>();
+  const [loading, setLoading] = useState<boolean>(false);
   const [cover, setCover] = useState<string | ArrayBuffer | null>('');
   const [title, setTitle] = useState<string>('');
   const [content, setContent] = useState<string>('');
+
+  useEffect(() => {
+    if (edit && !blogs.loading) {
+      const reqBlog = blogs.data.find(
+        (blog) => blog.storageHash === window.location.pathname.slice(6)
+      );
+      setEditId(reqBlog!.id);
+      setCover(reqBlog!.coverImage);
+      setTitle(reqBlog!.title);
+      setContent(reqBlog!.content);
+    }
+  }, [blogs, edit]);
 
   const handleFileInput = (e: any) => {
     const reader = new FileReader();
@@ -33,6 +48,7 @@ const Create = () => {
   };
 
   const handleSave = async (isPublished = true) => {
+    setLoading(true);
     const now = dayjs().format('MMM DD, YYYY');
 
     const form = JSON.stringify({
@@ -48,12 +64,20 @@ const Create = () => {
     formData.append('file', file);
     // Upload the File to arweave
     const res = await window.point.storage.postFile(formData);
+    setLoading(false);
     // Save data to smart contract
-    await window.point.contract.send({
-      contract: BlogContract.name,
-      method: BlogContract.addBlog,
-      params: [res.data, isPublished, now],
-    });
+    if (edit)
+      await window.point.contract.send({
+        contract: BlogContract.name,
+        method: BlogContract.editBlog,
+        params: [editId, res.data, now] as EditBlogContractParams,
+      });
+    else
+      await window.point.contract.send({
+        contract: BlogContract.name,
+        method: BlogContract.addBlog,
+        params: [res.data, isPublished, now] as AddBlogContractParams,
+      });
     getAllBlogs();
     navigate(RoutesEnum.admin);
   };
@@ -126,15 +150,22 @@ const Create = () => {
       <div className='mt-6 bg-white border-t border-gray-200 pt-3'>
         <div className='flex space-x-4 mx-auto' style={{ maxWidth: '1000px' }}>
           <PrimaryButton
-            disabled={!cover || !title || !content}
+            disabled={loading || (!edit && (!cover || !title || !content))}
             onClick={handlePublish}
           >
-            Publish
+            {edit ? 'Update' : 'Publish'}
           </PrimaryButton>
-          <OutlinedButton disabled={!title} onClick={handleSaveDraft}>
-            Save Draft
-          </OutlinedButton>
-          <ErrorButton onClick={() => navigate(-1)}>Cancel</ErrorButton>
+          {!edit ? (
+            <OutlinedButton
+              disabled={!title || loading}
+              onClick={handleSaveDraft}
+            >
+              Save Draft
+            </OutlinedButton>
+          ) : null}
+          <ErrorButton disabled={loading} onClick={() => navigate(-1)}>
+            Cancel
+          </ErrorButton>
         </div>
       </div>
     </PageLayout>

@@ -16,7 +16,7 @@ const Main = () => {
       <Route path={RoutesEnum.blog} element={<Blog />} />
       <Route path={RoutesEnum.admin} element={<Admin />} />
       <Route path={RoutesEnum.create} element={<Create />} />
-      <Route path={RoutesEnum.edit} element={<Create />} />
+      <Route path={RoutesEnum.edit} element={<Create edit />} />
       <Route path={RoutesEnum.install} element={<Install />} />
       <Route path={RoutesEnum.profile} element={<CreateProfile />} />
       <Route path={RoutesEnum.edit_profile} element={<CreateProfile edit />} />

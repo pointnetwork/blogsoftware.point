@@ -120,11 +120,11 @@ export const ProvideAppContext = ({ children }: { children: any }) => {
         method: BlogContract.getUserInfo,
       });
     if (dataStorageHash) {
-      const res = await axios.get(`/_storage/${dataStorageHash}`);
+      const data = await getDataFromStorage(dataStorageHash);
       setUserInfo((prev) => ({
         ...prev,
         loading: false,
-        data: { ...res.data, walletAddress, dataStorageHash },
+        data: { ...data, walletAddress, dataStorageHash },
       }));
     }
     return dataStorageHash;
@@ -139,10 +139,22 @@ export const ProvideAppContext = ({ children }: { children: any }) => {
     });
     const blogs = await Promise.all(
       data.map(async (contractData) => {
-        const [id, storageHash, isPublished, publishDate] = contractData;
-        const { data } = await axios.get(`/_storage/${storageHash}`);
-        return { ...data, id, storageHash, isPublished, publishDate } as Blog &
-          BlogContractData;
+        const [
+          id,
+          storageHash,
+          isPublished,
+          publishDate,
+          previousStorageHashes,
+        ] = contractData;
+        const data = await getDataFromStorage(storageHash);
+        return {
+          ...data,
+          id,
+          storageHash,
+          isPublished,
+          publishDate,
+          previousStorageHashes,
+        } as Blog & BlogContractData;
       })
     );
     setBlogs({ loading: false, data: blogs });
@@ -162,6 +174,11 @@ export const ProvideAppContext = ({ children }: { children: any }) => {
       })
     );
     return blogs;
+  };
+
+  const getDataFromStorage = async (storageHash: string) => {
+    const { data } = await axios.get(`/_storage/${storageHash}`);
+    return data;
   };
 
   return (

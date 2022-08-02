@@ -22,6 +22,7 @@ contract Blog is Initializable, UUPSUpgradeable, OwnableUpgradeable {
         string storageHash;
         bool isPublished;
         string publishDate;
+        string[] previousStorageHashes;
     }
     BlogData[] blogs;
     BlogData[] deletedBlogs;
@@ -65,14 +66,27 @@ contract Blog is Initializable, UUPSUpgradeable, OwnableUpgradeable {
         bool _isPublished,
         string calldata _publishDate
     ) public payable onlyOwner {
+        string[] memory _previousStorageHashes;
         numBlogs.increment();
         BlogData memory blog = BlogData({
             id: numBlogs.current(),
             storageHash: _storageHash,
             isPublished: _isPublished,
-            publishDate: _publishDate
+            publishDate: _publishDate,
+            previousStorageHashes: _previousStorageHashes
         });
         blogs.push(blog);
+    }
+
+    function editBlog(
+        uint256 id,
+        string calldata _storageHash,
+        string calldata _publishDate
+    ) public payable onlyOwner {
+        uint256 index = _getBlogIndexById(id);
+        blogs[index].previousStorageHashes.push(blogs[index].storageHash);
+        blogs[index].storageHash = _storageHash;
+        blogs[index].publishDate = _publishDate;
     }
 
     function deleteBlog(uint256 _id) public payable onlyOwner {
