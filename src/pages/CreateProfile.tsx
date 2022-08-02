@@ -1,18 +1,28 @@
-import React, { useState } from 'react';
-import { PrimaryButton } from '../components/Button';
+import React, { useEffect, useState } from 'react';
+import { OutlinedButton, PrimaryButton } from '../components/Button';
 import { useNavigate } from 'react-router-dom';
 import { useAppContext } from '../context/AppContext';
+import PageLayout from '../layouts/PageLayout';
 import ImageOutlinedIcon from '@mui/icons-material/ImageOutlined';
 import { BlogContract, RoutesEnum } from '../@types/enums';
 import { UserInfo } from '../@types/interfaces';
-import PageLayout from '../layouts/PageLayout';
 
-const CreateProfile = () => {
+const CreateProfile = ({ edit }: { edit?: boolean }) => {
+  const [loading, setLoading] = useState<boolean>(false);
   const [avatar, setAvatar] = useState<string | ArrayBuffer | null>(null);
   const [about, setAbout] = useState<string>('');
 
   const navigate = useNavigate();
-  const { walletAddress, getUserInfo } = useAppContext();
+  const { walletAddress, userInfo, getUserInfo } = useAppContext();
+
+  useEffect(() => {
+    if (edit) {
+      setLoading(true);
+      setAvatar(userInfo.data.avatar);
+      setAbout(userInfo.data.about);
+      setLoading(false);
+    }
+  }, [edit, userInfo]);
 
   const handleFileInput = (e: any) => {
     const reader = new FileReader();
@@ -23,6 +33,7 @@ const CreateProfile = () => {
   };
 
   const handleFinish = async () => {
+    setLoading(true);
     const form = JSON.stringify({
       avatar,
       about,
@@ -33,6 +44,7 @@ const CreateProfile = () => {
     formData.append('file', file);
     // Upload the File to arweave
     const res = await window.point.storage.postFile(formData);
+    setLoading(false);
 
     await window.point.contract.send({
       contract: BlogContract.name,
@@ -52,7 +64,9 @@ const CreateProfile = () => {
         </div>
       </header>
       <main className='mt-8 mx-auto' style={{ maxWidth: '1000px' }}>
-        <h1 className='text-3xl font-bold mb-6'>Complete Your Profile</h1>
+        <h1 className='text-3xl font-bold mb-6'>
+          {edit ? 'Update' : 'Complete'} Your Profile
+        </h1>
         <div className='flex mb-8'>
           <div className='mr-24'>
             <h3 className='font-bold text-lg mb-4'>Upload a Profile Image</h3>
@@ -105,9 +119,19 @@ const CreateProfile = () => {
             <div className='flex justify-end mb-3 text-sm text-gray-500 m-1'>
               {about.length}/1000
             </div>
-            <PrimaryButton disabled={!avatar || !about} onClick={handleFinish}>
-              Finish
-            </PrimaryButton>
+            <div className='flex space-x-3'>
+              <PrimaryButton
+                disabled={!avatar || !about || loading}
+                onClick={handleFinish}
+              >
+                {loading ? 'Please Wait' : edit ? 'Update Profile' : 'Finish'}
+              </PrimaryButton>
+              {edit ? (
+                <OutlinedButton onClick={() => navigate(-1)}>
+                  Cancel
+                </OutlinedButton>
+              ) : null}
+            </div>
           </div>
         </div>
       </main>

@@ -68,8 +68,7 @@ export const ProvideAppContext = ({ children }: { children: any }) => {
           if (!isBlogCreated) {
             navigate(RoutesEnum.install);
           } else {
-            if (dataStorageHash) navigate(RoutesEnum.admin);
-            else navigate(RoutesEnum.profile);
+            if (!dataStorageHash) navigate(RoutesEnum.profile);
           }
         }
         setLoading(false);
