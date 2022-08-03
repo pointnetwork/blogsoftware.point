@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import Header from '../components/Header';
-import { useNavigate, useParams } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 import { useAppContext } from '../context/AppContext';
 import { Blog, BlogContractData } from '../@types/interfaces';
 import PageLayout from '../layouts/PageLayout';
@@ -9,6 +9,7 @@ import ArrowBackIosNewIcon from '@mui/icons-material/ArrowBackIosNew';
 const BlogPage = () => {
   const { blogs, getDataFromStorage } = useAppContext();
 
+  const [id, setId] = useState<string>('');
   const [original, setOriginal] = useState<
     (Blog & BlogContractData) | undefined
   >();
@@ -17,14 +18,16 @@ const BlogPage = () => {
     (Blog & BlogContractData) | undefined
   >();
 
-  const { id } = useParams();
   const navigate = useNavigate();
 
   useEffect(() => {
-    const requiredBlog = blogs.data.find((blog) => blog.storageHash === id);
-    setOriginal(requiredBlog);
-    setDisplayData(requiredBlog);
-    setSelectedHash(id!);
+    setId(window.location.search.slice(4));
+    if (!blogs.loading) {
+      const requiredBlog = blogs.data.find((blog) => blog.storageHash === id);
+      setOriginal(requiredBlog);
+      setDisplayData(requiredBlog);
+      setSelectedHash(id!);
+    }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [id, blogs]);
 

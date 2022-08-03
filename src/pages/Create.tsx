@@ -28,10 +28,9 @@ const Create = ({ edit }: { edit?: boolean }) => {
   const [content, setContent] = useState<string>('');
 
   useEffect(() => {
+    const id = window.location.search.slice(4);
     if (edit && !blogs.loading) {
-      const reqBlog = blogs.data.find(
-        (blog) => blog.storageHash === window.location.pathname.slice(6)
-      );
+      const reqBlog = blogs.data.find((blog) => blog.storageHash === id);
       setEditId(reqBlog!.id);
       setCover(reqBlog!.coverImage);
       setTitle(reqBlog!.title);

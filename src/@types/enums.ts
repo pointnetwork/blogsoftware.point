@@ -19,10 +19,10 @@ export enum BlogFactoryContract {
 
 export enum RoutesEnum {
   home = '/',
-  blog = '/blog/:id',
+  blog = '/blog',
   admin = '/admin',
   create = '/create',
-  edit = '/edit/:id',
+  edit = '/edit',
   install = '/install',
   profile = '/profile',
   edit_profile = '/edit_profile',

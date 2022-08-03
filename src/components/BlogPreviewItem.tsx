@@ -118,7 +118,7 @@ const BlogPreviewItem = ({
               fontSize='small'
               className='opacity-50 hover:opacity-100 text-gray-500 cursor-pointer'
               titleAccess='Edit'
-              onClick={() => navigate(`/edit/${data.storageHash}`)}
+              onClick={() => navigate(`/edit?id=${data.storageHash}`)}
             />
             <DeleteIcon
               fontSize='small'
@@ -142,7 +142,7 @@ const BlogPreviewItem = ({
       </div>
       <div
         className='flex-1 flex flex-col cursor-pointer'
-        onClick={() => navigate(`/blog/${data.storageHash}`)}
+        onClick={() => navigate(`/blog?id=${data.storageHash}`)}
       >
         <h2 className='font-bold text-lg'>{data.title}</h2>
         <p

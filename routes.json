@@ -1,8 +1,8 @@
 {
     "/": "index.html",
     "/create": "index.html",
-    "/edit/*": "index.html",
-    "/blog/*": "index.html",
+    "/edit": "index.html",
+    "/blog": "index.html",
     "/admin": "index.html",
     "/install": "index.html",
     "/profile": "index.html",
