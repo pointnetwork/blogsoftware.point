@@ -1,18 +1,14 @@
 import React, { createContext, useContext, useState, useEffect } from 'react';
-import axios from 'axios';
-import {
-  AppContentInterface,
-  Blog,
-  BlogContractData,
-  BlogsState,
-  UserInfoState,
-} from '../@types/interfaces';
+import { AppContentInterface, UserInfoState } from '../@types/interfaces';
 import { BlogContract, BlogFactoryContract, RoutesEnum } from '../@types/enums';
 import { useNavigate } from 'react-router-dom';
+import utils from './utils';
+import useBlogs from './useBlogs';
 
 const AppContext = createContext({
   loading: true,
   isOwner: false,
+  isBlogCreated: true,
   blogs: { loading: true, data: [] },
   setBlogs: () => {},
   userInfo: {
@@ -24,7 +20,8 @@ const AppContext = createContext({
   getDeletedBlogs: async () => [],
   getDataFromStorage: async () => {},
   identity: '',
-  walletAddress: '',
+  visitorAddress: '',
+  ownerAddress: '',
 } as AppContentInterface);
 
 export const useAppContext = () => useContext(AppContext);
@@ -32,12 +29,11 @@ export const useAppContext = () => useContext(AppContext);
 export const ProvideAppContext = ({ children }: { children: any }) => {
   const navigate = useNavigate();
 
+  const Blogs = useBlogs();
+
   const [loading, setLoading] = useState<boolean>(true);
-  const [isOwner, isIsOwner] = useState<boolean>(false);
-  const [blogs, setBlogs] = useState<BlogsState>({
-    loading: true,
-    data: [],
-  });
+  const [isOwner, setIsOwner] = useState<boolean>(false);
+  const [isBlogCreated, setIsBlogCreated] = useState<boolean>(true);
   const [userInfo, setUserInfo] = useState<UserInfoState>({
     loading: true,
     data: {
@@ -48,58 +44,53 @@ export const ProvideAppContext = ({ children }: { children: any }) => {
     },
   });
   const [identity, setIdentity] = useState<string>('');
-  const [walletAddress, setWalletAddress] = useState<string>('');
+  const [visitorAddress, setVisitorAddress] = useState<string>('');
+  const [ownerAddress, setOwnerAddress] = useState<string>('');
 
   useEffect(() => {
+    /**
+     * 1. Slice the identity from the current domain. Also set the identity from there
+     * 2. Get the address of the visiting user and the blog owner
+     * 3. Check if the visiting user has a blog contract deployed or not
+     * 4. If no, then proceed and check if visiting user is the blog owner then set isAdmin to true
+     * 5. Proceed to get the user info and blogs.
+     */
     (async () => {
-      try {
-        setLoading(true);
+      setLoading(true);
 
-        const address = await getWalletAddress();
-        const identity = await getIdentityFromAddress(address);
+      const identity = window.location.hostname.split('.')[0];
+      setIdentity(identity);
+      console.log('identity', identity);
 
-        const dataStorageHash = await getUserInfo();
+      const visitorAddress = await utils.getWalletAddress();
+      setVisitorAddress(visitorAddress);
+      console.log('visitorAddress', visitorAddress);
+      const ownerAddress = await utils.getAddressFromIdentity(identity);
+      setOwnerAddress(ownerAddress);
+      console.log('ownerAddress', ownerAddress);
 
-        // Check the domain host
-        const host = window.location.hostname.split('.')[0];
-        // IF domain host and identity match, then check if there is blog for the address in the factory
-        if (identity.toLowerCase() === host.toLowerCase()) {
-          isIsOwner(true);
-          const isBlogCreated = await isBlogCreatedForUser(address);
-          if (!isBlogCreated) {
-            navigate(RoutesEnum.install, { replace: true });
-          } else {
-            if (!dataStorageHash)
-              navigate(RoutesEnum.profile, { replace: true });
-          }
-        }
-        setLoading(false);
-
-        getAllBlogs();
-      } catch (e) {
-        console.error(e);
+      if (visitorAddress.toLowerCase() === ownerAddress.toLowerCase()) {
+        setIsOwner(true);
+        console.log('isOwner');
       }
+
+      let isCreated = true;
+      if (window.location.hostname === 'blogsoftware.point') {
+        isCreated = await isBlogCreatedForUser(visitorAddress);
+        setIsBlogCreated(isCreated);
+      }
+      console.log('isCreated', isCreated);
+
+      if (isCreated) {
+        const hash = await getUserInfo();
+        if (!hash) navigate(RoutesEnum.profile, { replace: true });
+        else Blogs.getAllBlogs();
+      }
+
+      setLoading(false);
     })();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
-
-  const getWalletAddress = async () => {
-    const {
-      data: { address },
-    } = await window.point.wallet.address();
-    setWalletAddress(address);
-    return address;
-  };
-
-  const getIdentityFromAddress = async (address: string) => {
-    const {
-      data: { identity },
-    } = await window.point.identity.ownerToIdentity({
-      owner: address,
-    });
-    setIdentity(identity);
-    return identity;
-  };
 
   const isBlogCreatedForUser = async (address: string) => {
     const { data } = await window.point.contract.call({
@@ -122,7 +113,7 @@ export const ProvideAppContext = ({ children }: { children: any }) => {
         method: BlogContract.getUserInfo,
       });
     if (dataStorageHash) {
-      const data = await getDataFromStorage(dataStorageHash);
+      const data = await utils.getDataFromStorage(dataStorageHash);
       setUserInfo((prev) => ({
         ...prev,
         loading: false,
@@ -132,71 +123,19 @@ export const ProvideAppContext = ({ children }: { children: any }) => {
     return dataStorageHash;
   };
 
-  const getAllBlogs = async () => {
-    setBlogs((prev) => ({ ...prev, loading: true }));
-
-    const { data }: { data: any[] } = await window.point.contract.call({
-      contract: BlogContract.name,
-      method: BlogContract.getAllBlogs,
-    });
-    const blogs = await Promise.all(
-      data.map(async (contractData) => {
-        const [
-          id,
-          storageHash,
-          isPublished,
-          publishDate,
-          previousStorageHashes,
-        ] = contractData;
-        const data = await getDataFromStorage(storageHash);
-        return {
-          ...data,
-          id,
-          storageHash,
-          isPublished,
-          publishDate,
-          previousStorageHashes: previousStorageHashes.reverse(),
-        } as Blog & BlogContractData;
-      })
-    );
-    setBlogs({ loading: false, data: blogs });
-  };
-
-  const getDeletedBlogs = async () => {
-    const { data }: { data: any[] } = await window.point.contract.call({
-      contract: BlogContract.name,
-      method: BlogContract.getDeletedBlogs,
-    });
-    const blogs = await Promise.all(
-      data.map(async (contractData) => {
-        const [id, storageHash, isPublished, publishDate] = contractData;
-        const data = await getDataFromStorage(storageHash);
-        return { ...data, id, storageHash, isPublished, publishDate } as Blog &
-          BlogContractData;
-      })
-    );
-    return blogs;
-  };
-
-  const getDataFromStorage = async (storageHash: string) => {
-    const { data } = await axios.get(`/_storage/${storageHash}`);
-    return data;
-  };
-
   return (
     <AppContext.Provider
       value={{
         loading,
         isOwner,
-        walletAddress,
+        ...Blogs,
+        isBlogCreated,
+        visitorAddress,
+        ownerAddress,
         identity,
-        blogs,
-        setBlogs,
         getUserInfo,
         userInfo,
-        getAllBlogs,
-        getDeletedBlogs,
-        getDataFromStorage,
+        getDataFromStorage: utils.getDataFromStorage,
       }}
     >
       {children}
