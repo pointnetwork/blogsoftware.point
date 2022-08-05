@@ -13,7 +13,7 @@ const CreateProfile = ({ edit }: { edit?: boolean }) => {
   const [about, setAbout] = useState<string>('');
 
   const navigate = useNavigate();
-  const { walletAddress, userInfo, getUserInfo } = useAppContext();
+  const { ownerAddress, userInfo, getUserInfo, getAllBlogs } = useAppContext();
 
   useEffect(() => {
     if (edit) {
@@ -49,9 +49,10 @@ const CreateProfile = ({ edit }: { edit?: boolean }) => {
     await window.point.contract.send({
       contract: BlogContract.name,
       method: BlogContract.saveUserInfo,
-      params: [walletAddress, res.data],
+      params: [ownerAddress, res.data],
     });
-    await getUserInfo();
+    getUserInfo();
+    getAllBlogs();
     navigate(RoutesEnum.admin);
   };
 

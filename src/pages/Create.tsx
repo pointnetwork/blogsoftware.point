@@ -19,7 +19,7 @@ import { AddBlogContractParams, EditBlogContractParams } from '../@types/types';
 
 const Create = ({ edit }: { edit?: boolean }) => {
   const navigate = useNavigate();
-  const { walletAddress, blogs, getAllBlogs } = useAppContext();
+  const { ownerAddress, blogs, getAllBlogs } = useAppContext();
 
   const [editId, setEditId] = useState<number | undefined>();
   const [loading, setLoading] = useState<boolean>(false);
@@ -54,7 +54,7 @@ const Create = ({ edit }: { edit?: boolean }) => {
       coverImage: cover,
       title,
       content,
-      publisher: walletAddress,
+      publisher: ownerAddress,
       createdDate: now,
     } as Blog);
     const file = new File([form], 'blog.json', { type: 'application/json' });
