@@ -32,7 +32,8 @@
     "watch:docker": "./watch.docker.js",
     "build": "npm run clear && cp src/*.html ./public/. && cp src/*.css ./public/. && parcel build src/index.js --dist-dir ./public --no-source-maps",
     "watch": "npm run clear && cp src/*.html ./public/. && cp src/*.css ./public/. && parcel watch src/index.js --dist-dir ./public/",
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "lint": "eslint --ext .ts --ext .js --ext .jsx --ext .tsx ."
   },
   "eslintConfig": {
     "extends": [
@@ -59,6 +60,7 @@
     "@openzeppelin/hardhat-upgrades": "^1.19.0",
     "@parcel/transformer-image": "^2.0.0-rc.0",
     "autoprefixer": "^10.4.7",
+    "eslint-plugin-prefer-arrow": "^1.2.3",
     "ethers": "^5.6.9",
     "hardhat": "^2.10.1",
     "parcel": "^2.0.0-rc.0",
