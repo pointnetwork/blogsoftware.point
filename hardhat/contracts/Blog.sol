@@ -3,11 +3,9 @@ pragma solidity >=0.8.0;
 pragma experimental ABIEncoderV2;
 
 import "@openzeppelin/contracts/utils/Counters.sol";
-import "@openzeppelin/contracts-upgradeable/proxy/utils/Initializable.sol";
-import "@openzeppelin/contracts-upgradeable/proxy/utils/UUPSUpgradeable.sol";
-import "@openzeppelin/contracts-upgradeable/access/OwnableUpgradeable.sol";
+import "@openzeppelin/contracts/access/Ownable.sol";
 
-contract Blog is Initializable, UUPSUpgradeable, OwnableUpgradeable {
+contract Blog is Ownable {
     using Counters for Counters.Counter;
     Counters.Counter private numBlogs;
 
@@ -26,13 +24,6 @@ contract Blog is Initializable, UUPSUpgradeable, OwnableUpgradeable {
     }
     BlogData[] blogs;
     BlogData[] deletedBlogs;
-
-    function initialize() public initializer onlyProxy {
-        __Ownable_init();
-        __UUPSUpgradeable_init();
-    }
-
-    function _authorizeUpgrade(address) internal override onlyOwner {}
 
     function getUserInfo() public view returns (UserInfo memory) {
         return user;

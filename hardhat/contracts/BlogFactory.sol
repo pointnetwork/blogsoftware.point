@@ -20,12 +20,14 @@ contract BlogFactory is Initializable, UUPSUpgradeable, OwnableUpgradeable {
 
     function _authorizeUpgrade(address) internal override onlyOwner {}
 
-    function createBlog(address _blogOwner) public payable {
+    function createBlog() public {
+        address _blogOwner = msg.sender;
         require(
             address(deployedBlogs[_blogOwner]) == address(0),
             "Blog Contract already deployed for user"
         );
         Blog blog = new Blog();
+        blog.transferOwnership(_blogOwner);
         deployedBlogs[_blogOwner] = blog;
     }
 
