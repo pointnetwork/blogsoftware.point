@@ -1,4 +1,4 @@
-import { ReactEventHandler } from 'react';
+import {ReactEventHandler} from 'react';
 
 export interface ButtonProps {
   children: string;

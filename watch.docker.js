@@ -2,7 +2,7 @@
 
 const Bundler = require('parcel');
 const path = require('path');
-const { execSync } = require('child_process');
+const {execSync} = require('child_process');
 
 const outDir = path.join(__dirname, 'public');
 const srcDir = path.join(__dirname, 'src');
@@ -17,7 +17,7 @@ const options = {
     hmr: false,
     sourceMaps: true,
     hmrHostname: '',
-    autoInstall: true,
+    autoInstall: true
 };
 
 const container = 'pointnetwork_website_owner';
