@@ -57,50 +57,35 @@ export const ProvideAppContext = ({ children }: { children: any }) => {
      */
     (async () => {
       setLoading(true);
+      try {
+        const ownerAddress = (
+          await window.point.contract.call({
+            contract: BlogContract.name,
+            method: BlogContract.owner,
+          })
+        ).data;
+        setOwnerAddress(ownerAddress);
+        console.log('ownerAddress', ownerAddress);
 
-      const identity = window.location.hostname.split('.')[0];
-      setIdentity(identity);
-      console.log('identity', identity);
+        const visitorAddress = await utils.getWalletAddress();
+        setVisitorAddress(visitorAddress);
+        console.log('visitorAddress', visitorAddress);
 
-      const visitorAddress = await utils.getWalletAddress();
-      setVisitorAddress(visitorAddress);
-      console.log('visitorAddress', visitorAddress);
-      const ownerAddress = await utils.getAddressFromIdentity(identity);
-      setOwnerAddress(ownerAddress);
-      console.log('ownerAddress', ownerAddress);
+        if (visitorAddress.toLowerCase() === ownerAddress.toLowerCase()) {
+          setIsOwner(true);
+          console.log('isOwner');
+        }
 
-      if (visitorAddress.toLowerCase() === ownerAddress.toLowerCase()) {
-        setIsOwner(true);
-        console.log('isOwner');
-      }
-
-      let isCreated = true;
-      if (window.location.hostname === 'blogsoftware.point') {
-        isCreated = await isBlogCreatedForUser(visitorAddress);
-        setIsBlogCreated(isCreated);
-      }
-      console.log('isCreated', isCreated);
-
-      if (isCreated) {
         const hash = await getUserInfo();
         if (!hash) navigate(RoutesEnum.profile, { replace: true });
         else Blogs.getAllBlogs();
+      } catch (error) {
+        console.log('error', error);
       }
-
       setLoading(false);
     })();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
-
-  const isBlogCreatedForUser = async (address: string) => {
-    const { data } = await window.point.contract.call({
-      contract: BlogFactoryContract.name,
-      method: BlogFactoryContract.isBlogCreated,
-      params: [address],
-    });
-    if (data === '0x0000000000000000000000000000000000000000') return false;
-    return true;
-  };
 
   const getUserInfo = async () => {
     setUserInfo((prev) => ({ ...prev, loading: true }));

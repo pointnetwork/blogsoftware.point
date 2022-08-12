@@ -1,5 +1,6 @@
 export enum BlogContract {
   name = 'Blog',
+  owner = 'owner',
   getAllBlogs = 'getAllBlogs',
   getDeletedBlogs = 'getDeletedBlogs',
   addBlog = 'addBlog',
