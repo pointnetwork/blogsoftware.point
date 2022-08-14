@@ -9,16 +9,16 @@ export interface ButtonProps {
 export interface AppContentInterface {
   loading: boolean;
   isOwner: boolean;
-  isBlogCreated: boolean;
   userInfo: UserInfoState;
   getUserInfo: () => void;
   blogs: BlogsState;
   getAllBlogs: () => void;
   getDeletedBlogs: () => Promise<(Blog & BlogContractData)[]>;
   getDataFromStorage: (storageHash: string) => any;
-  identity: string;
-  visitorAddress: string;
   ownerAddress: string;
+  ownerIdentity: string;
+  visitorAddress: string;
+  visitorIdentity: string;
 }
 
 export interface BlogsState {

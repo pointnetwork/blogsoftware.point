@@ -4,7 +4,6 @@
     "/edit": "index.html",
     "/blog": "index.html",
     "/admin": "index.html",
-    "/install": "index.html",
     "/profile": "index.html",
     "/edit_profile": "index.html"
 }

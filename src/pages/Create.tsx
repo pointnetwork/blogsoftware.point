@@ -46,7 +46,7 @@ const Create = ({edit}: { edit?: boolean }) => {
         reader.readAsDataURL(e.target.files[0]);
     };
 
-    const handleSave = async (isPublished = true) => {
+    const handleSave = async (isPublished: boolean) => {
         setLoading(true);
         const now = dayjs().format('MMM DD, YYYY');
 
@@ -79,10 +79,10 @@ const Create = ({edit}: { edit?: boolean }) => {
             });
         }
         getAllBlogs();
-        navigate(-1);
+        navigate('/');
     };
 
-    const handlePublish = () => handleSave();
+    const handlePublish = () => handleSave(true);
     const handleSaveDraft = () => handleSave(false);
 
     return (
