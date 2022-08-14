@@ -7,7 +7,7 @@ import {RoutesEnum} from '../@types/enums';
 
 const IdentityInfo = ({admin}: { admin?: boolean }) => {
     const navigate = useNavigate();
-    const {identity, userInfo} = useAppContext();
+    const {ownerIdentity, userInfo} = useAppContext();
 
     return !userInfo.loading ? (
         <>
@@ -29,7 +29,7 @@ const IdentityInfo = ({admin}: { admin?: boolean }) => {
                     />
                 </div>
             </div>
-            <h2 className='text-xl font-bold my-2'>@{identity}</h2>
+            <h2 className='text-xl font-bold my-2'>@{ownerIdentity}</h2>
             <div className='relative mb-4'>
                 <p className='text-sm text-gray-600'>{userInfo.data.about}</p>
             </div>

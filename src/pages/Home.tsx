@@ -7,7 +7,7 @@ import {useAppContext} from '../context/AppContext';
 import PageLayout from '../layouts/PageLayout';
 
 const Home = () => {
-    const {blogs, identity} = useAppContext();
+    const {blogs, ownerIdentity} = useAppContext();
 
     return (
         <PageLayout>
@@ -28,7 +28,7 @@ const Home = () => {
                                 .map((blog, i) => <BlogPreviewItem data={blog} key={i} />)
                         ) : (
                             <div>
-                                <p className='text-5xl font-bold mt-10'>@{identity}</p>
+                                <p className='text-5xl font-bold mt-10'>@{ownerIdentity}</p>
                                 <p className='text-3xl font-medium text-gray-500 mt-2'>
                   has not created any blogs yet.
                                 </p>

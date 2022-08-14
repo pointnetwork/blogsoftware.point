@@ -1,5 +1,6 @@
 export enum BlogContract {
   name = 'Blog',
+  owner = 'owner',
   getAllBlogs = 'getAllBlogs',
   getDeletedBlogs = 'getDeletedBlogs',
   addBlog = 'addBlog',
@@ -11,19 +12,12 @@ export enum BlogContract {
   saveUserInfo = 'saveUserInfo',
 }
 
-export enum BlogFactoryContract {
-  name = 'BlogFactory',
-  createBlog = 'createBlog',
-  isBlogCreated = 'isBlogCreated',
-}
-
 export enum RoutesEnum {
   home = '/',
   blog = '/blog',
   admin = '/admin',
   create = '/create',
   edit = '/edit',
-  install = '/install',
   profile = '/profile',
   edit_profile = '/edit_profile',
 }
