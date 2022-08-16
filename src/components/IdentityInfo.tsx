@@ -7,7 +7,7 @@ import { BlogContract, RoutesEnum } from '../@types/enums';
 
 const IdentityInfo = ({ admin }: { admin?: boolean }) => {
   const navigate = useNavigate();
-  const { ownerIdentity, userInfo } = useAppContext();
+  const { ownerIdentity, userInfo, isOwner } = useAppContext();
 
   const [isFollowing, setIsFollowing] = useState<boolean>(false);
   const [numFollowers, setNumFollowers] = useState<number | string>('');
@@ -60,19 +60,21 @@ const IdentityInfo = ({ admin }: { admin?: boolean }) => {
           <EditIcon fontSize='small' />
         </div>
       ) : null}
-      <div className='flex justify-end'>
-        <button
-          className={`rounded-full px-3 py-1 font-medium ${
-            isFollowing
-              ? 'text-indigo-500 hover:text-indigo-700'
-              : 'text-white bg-indigo-500 hover:bg-indigo-700'
-          } border border-indigo-500 hover:border-indigo-700 transition-all`}
-          style={{ fontSize: 12 }}
-          onClick={isFollowing ? unfollow : follow}
-        >
-          {isFollowing ? 'Unfollow' : 'Follow'}
-        </button>
-      </div>
+      {!isOwner ? (
+        <div className='flex justify-end'>
+          <button
+            className={`rounded-full px-3 py-1 font-medium ${
+              isFollowing
+                ? 'text-indigo-500 hover:text-indigo-700'
+                : 'text-white bg-indigo-500 hover:bg-indigo-700'
+            } border border-indigo-500 hover:border-indigo-700 transition-all`}
+            style={{ fontSize: 12 }}
+            onClick={isFollowing ? unfollow : follow}
+          >
+            {isFollowing ? 'Unfollow' : 'Follow'}
+          </button>
+        </div>
+      ) : null}
       <div className='relative'>
         <div className='h-56 w-56 bg-gray-200 rounded-full self-center mb-4'>
           <img
