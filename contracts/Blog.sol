@@ -219,6 +219,10 @@ contract Blog is Initializable, UUPSUpgradeable, OwnableUpgradeable {
     }
 
     // Followers methods
+    function getNumFollowers() public view returns (uint256) {
+        return followers.length;
+    }
+
     function isFollowing() public view returns (bool) {
         for (uint256 i = 0; i < followers.length; i++) {
             if (followers[i] == msg.sender) return true;

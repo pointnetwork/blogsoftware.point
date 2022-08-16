@@ -10,6 +10,10 @@ export enum BlogContract {
   unpublish = 'unpublish',
   getUserInfo = 'getUserInfo',
   saveUserInfo = 'saveUserInfo',
+  follow = 'follow',
+  unfollow = 'unfollow',
+  isFollowing = 'isFollowing',
+  getNumFollowers = 'getNumFollowers',
 }
 
 export enum RoutesEnum {
