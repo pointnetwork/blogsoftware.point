@@ -14,6 +14,9 @@ export enum BlogContract {
   unfollow = 'unfollow',
   isFollowing = 'isFollowing',
   getNumFollowers = 'getNumFollowers',
+  likeBlogPost = 'likeBlogPost',
+  unlikeBlogPost = 'unlikeBlogPost',
+  getLikesForBlogPost = 'getLikesForBlogPost',
 }
 
 export enum RoutesEnum {
