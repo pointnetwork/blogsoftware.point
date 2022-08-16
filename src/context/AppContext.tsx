@@ -1,6 +1,6 @@
-import React, { createContext, useContext, useState, useEffect } from 'react';
+import { createContext, useContext, useState, useEffect } from 'react';
 import { AppContentInterface, UserInfoState } from '../@types/interfaces';
-import { BlogContract, BlogFactoryContract, RoutesEnum } from '../@types/enums';
+import { BlogContract, RoutesEnum } from '../@types/enums';
 import { useNavigate } from 'react-router-dom';
 import utils from './utils';
 import useBlogs from './useBlogs';
@@ -8,7 +8,6 @@ import useBlogs from './useBlogs';
 const AppContext = createContext({
   loading: true,
   isOwner: false,
-  isBlogCreated: true,
   blogs: { loading: true, data: [] },
   setBlogs: () => {},
   userInfo: {
@@ -19,9 +18,10 @@ const AppContext = createContext({
   getAllBlogs: () => {},
   getDeletedBlogs: async () => [],
   getDataFromStorage: async () => {},
-  identity: '',
+  ownerIdentity: '',
   visitorAddress: '',
   ownerAddress: '',
+  visitorIdentity: '',
 } as AppContentInterface);
 
 export const useAppContext = () => useContext(AppContext);
@@ -33,7 +33,6 @@ export const ProvideAppContext = ({ children }: { children: any }) => {
 
   const [loading, setLoading] = useState<boolean>(true);
   const [isOwner, setIsOwner] = useState<boolean>(false);
-  const [isBlogCreated, setIsBlogCreated] = useState<boolean>(true);
   const [userInfo, setUserInfo] = useState<UserInfoState>({
     loading: true,
     data: {
@@ -43,48 +42,48 @@ export const ProvideAppContext = ({ children }: { children: any }) => {
       dataStorageHash: '',
     },
   });
-  const [identity, setIdentity] = useState<string>('');
   const [visitorAddress, setVisitorAddress] = useState<string>('');
+  const [visitorIdentity, setVisitorIdentity] = useState<string>('');
   const [ownerAddress, setOwnerAddress] = useState<string>('');
+  const [ownerIdentity, setOwnerIdentity] = useState<string>('');
 
   useEffect(() => {
-    /**
-     * 1. Slice the identity from the current domain. Also set the identity from there
-     * 2. Get the address of the visiting user and the blog owner
-     * 3. Check if the visiting user has a blog contract deployed or not
-     * 4. If no, then proceed and check if visiting user is the blog owner then set isAdmin to true
-     * 5. Proceed to get the user info and blogs.
-     */
     (async () => {
       setLoading(true);
-      try {
-        const ownerAddress = (
-          await window.point.contract.call({
-            contract: BlogContract.name,
-            method: BlogContract.owner,
-          })
-        ).data;
-        setOwnerAddress(ownerAddress);
-        console.log('ownerAddress', ownerAddress);
 
-        const visitorAddress = await utils.getWalletAddress();
-        setVisitorAddress(visitorAddress);
-        console.log('visitorAddress', visitorAddress);
+      const { data: owner } = await window.point.contract.call({
+        contract: BlogContract.name,
+        method: BlogContract.owner,
+        params: [],
+      });
+      console.log('owner: ', owner);
+      setOwnerAddress(owner);
 
-        if (visitorAddress.toLowerCase() === ownerAddress.toLowerCase()) {
-          setIsOwner(true);
-          console.log('isOwner');
-        }
+      const ownerId = await utils.getIdentityFromAddress(owner);
+      console.log('identity', ownerId);
+      setOwnerIdentity(ownerId);
 
-        const hash = await getUserInfo();
-        if (!hash) navigate(RoutesEnum.profile, { replace: true });
-        else Blogs.getAllBlogs();
-      } catch (error) {
-        console.log('error', error);
+      const visitor = await utils.getWalletAddress();
+      setVisitorAddress(visitor);
+      console.log('visitorAddress', visitor);
+
+      const visitorId = await utils.getIdentityFromAddress(visitor);
+      setVisitorIdentity(visitorId);
+      console.log('visitorIdentity', visitorId);
+
+      const visitorIsOwner = visitor.toLowerCase() === owner.toLowerCase();
+      console.log('isOwner', visitorIsOwner);
+      setIsOwner(visitorIsOwner);
+
+      const hash = await getUserInfo();
+      if (!hash && visitorIsOwner) {
+        navigate(RoutesEnum.profile, { replace: true });
+      } else {
+        Blogs.getAllBlogs();
       }
+
       setLoading(false);
     })();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   const getUserInfo = async () => {
@@ -114,12 +113,12 @@ export const ProvideAppContext = ({ children }: { children: any }) => {
         loading,
         isOwner,
         ...Blogs,
-        isBlogCreated,
         visitorAddress,
         ownerAddress,
-        identity,
+        ownerIdentity,
         getUserInfo,
         userInfo,
+        visitorIdentity,
         getDataFromStorage: utils.getDataFromStorage,
       }}
     >
