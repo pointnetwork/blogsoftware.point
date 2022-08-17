@@ -3,8 +3,11 @@ import Header from '../components/Header';
 import { useNavigate } from 'react-router-dom';
 import { useAppContext } from '../context/AppContext';
 import PageLayout from '../layouts/PageLayout';
+import { PrimaryButton } from '../components/Button';
+import utils from '../context/utils';
 import ArrowBackIosNewIcon from '@mui/icons-material/ArrowBackIosNew';
 import RecommendIcon from '@mui/icons-material/Recommend';
+import { Comment } from '../@types/types';
 import { BlogContract } from '../@types/enums';
 import { Blog, BlogContractData } from '../@types/interfaces';
 
@@ -21,6 +24,8 @@ const BlogPage = () => {
   >();
   const [isLiked, setIsLiked] = useState<boolean>(false);
   const [numLikes, setNumLikes] = useState<number>(0);
+  const [commentText, setCommentText] = useState<string>('');
+  const [comments, setComments] = useState<Comment[]>([]);
 
   const navigate = useNavigate();
 
@@ -37,26 +42,39 @@ const BlogPage = () => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [id, blogs]);
 
-  const getLikesForBlogPost = () => {
-    window.point.contract
-      .call({
-        contract: BlogContract.name,
-        method: BlogContract.getLikesForBlogPost,
-        params: [original?.id],
-      })
-      .then(({ data }: { data: string[] }) => {
-        if (
-          data
-            .map((i) => i.toLowerCase())
-            .includes(visitorAddress.toLowerCase())
-        )
-          setIsLiked(true);
-        else setIsLiked(false);
-        setNumLikes(data.length);
-      });
+  const getLikesForBlogPost = async () => {
+    const { data }: { data: string[] } = await window.point.contract.call({
+      contract: BlogContract.name,
+      method: BlogContract.getLikesForBlogPost,
+      params: [original?.id],
+    });
+    if (data.map((i) => i.toLowerCase()).includes(visitorAddress.toLowerCase()))
+      setIsLiked(true);
+    else setIsLiked(false);
+    setNumLikes(data.length);
   };
 
-  useEffect(getLikesForBlogPost, [original]);
+  const getCommentsForBlogPost = async () => {
+    const { data }: { data: Comment[] } = await window.point.contract.call({
+      contract: BlogContract.name,
+      method: BlogContract.getCommentsForBlogPost,
+      params: [original?.id],
+    });
+    const _comments = await Promise.all(
+      data.map(async ([id, commentedBy, comment]) => {
+        const identity = await utils.getIdentityFromAddress(commentedBy);
+        return [id, identity, comment] as Comment;
+      })
+    );
+    setComments(_comments);
+  };
+
+  useEffect(() => {
+    if (original) {
+      getLikesForBlogPost();
+      getCommentsForBlogPost();
+    }
+  }, [original]);
 
   const handleIterationSelect = async (hash: string) => {
     const requiredBlog = await getDataFromStorage(hash);
@@ -85,6 +103,16 @@ const BlogPage = () => {
       params: [original?.id],
     });
     getLikesForBlogPost();
+  };
+
+  const handleAddComment = async () => {
+    await window.point.contract.send({
+      contract: BlogContract.name,
+      method: BlogContract.addCommentToBlogPost,
+      params: [original?.id, commentText],
+    });
+    setCommentText('');
+    getCommentsForBlogPost();
   };
 
   return (
@@ -157,21 +185,29 @@ const BlogPage = () => {
         </div>
 
         <div className='mt-8 mb-12 relative'>
-          <div className='sticky bg-white top-14 pt-4 pb-3'>
-            <h6 className='text-lg font-bold mb-3'>Leave a comment</h6>
-            <textarea className='w-full p-1 rounded border border-gray-400'></textarea>
+          <div className='sticky bg-white top-14 py-3'>
+            <h6 className='text-lg font-bold'>Leave a comment</h6>
+            <textarea
+              value={commentText}
+              onChange={(e) => setCommentText(e.target.value)}
+              className='w-full p-1 rounded border border-gray-400 my-2'
+            ></textarea>
+            <PrimaryButton onClick={handleAddComment}>
+              Add Comment
+            </PrimaryButton>
           </div>
-          {Array(10)
-            .fill(true)
-            .map((_, i) => (
-              <div className='py-3 my-3 border-b border-gray-300' key={i}>
-                <p className='font-bold'>username</p>
-                <p className='text-sm'>
-                  Lorem, ipsum dolor sit amet consectetur adipisicing elit.
-                  Doloremque, saepe?
-                </p>
+          {comments.length ? (
+            comments.map(([id, commentedBy, comment]) => (
+              <div className='pb-3 my-3 border-b border-gray-300' key={id}>
+                <p className='font-bold'>{commentedBy}</p>
+                <p className='text-sm'>{comment}</p>
               </div>
-            ))}
+            ))
+          ) : (
+            <p className='mt-1'>
+              No comments yet. Be the first one to comment.
+            </p>
+          )}
         </div>
       </main>
     </PageLayout>

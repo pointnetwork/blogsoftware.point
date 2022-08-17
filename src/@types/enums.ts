@@ -17,6 +17,10 @@ export enum BlogContract {
   likeBlogPost = 'likeBlogPost',
   unlikeBlogPost = 'unlikeBlogPost',
   getLikesForBlogPost = 'getLikesForBlogPost',
+  getCommentsForBlogPost = 'getCommentsForBlogPost',
+  addCommentToBlogPost = 'addCommentToBlogPost',
+  editCommentForBlogPost = 'editCommentForBlogPost',
+  deleteCommentForBlogPost = 'deleteCommentForBlogPost',
 }
 
 export enum RoutesEnum {
