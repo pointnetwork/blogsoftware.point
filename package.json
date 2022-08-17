@@ -33,10 +33,11 @@
     "start": "react-scripts start",
     "watch:docker": "./watch.docker.js",
     "build": "npm run clear && cp src/*.html ./public/. && cp src/*.css ./public/. && parcel build src/index.js --dist-dir ./public --no-source-maps",
-    "watch": "npm run clear && cp src/*.html ./public/. && cp src/*.css ./public/. && parcel watch src/index.js --dist-dir ./public/",
+    "watch": "npm run clear && cp src/*.html ./public/. && cp src/*.css ./public/. && npm run copy_contracts && parcel watch src/index.js --dist-dir ./public/",
     "test": "echo \"Error: no test specified\" && exit 1",
     "lint": "eslint --ext .ts --ext .js --ext .jsx --ext .tsx .",
-    "fix": "eslint --ext .ts --ext .js --ext .jsx --ext .tsx --fix ."
+    "fix": "eslint --ext .ts --ext .js --ext .jsx --ext .tsx --fix .",
+    "copy_contracts": "rm -rf ./contracts && mkdir contracts && cp -r ./hardhat/contracts ."
   },
   "eslintConfig": {
     "extends": [
