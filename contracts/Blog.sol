@@ -157,6 +157,11 @@ contract Blog is Initializable, UUPSUpgradeable, OwnableUpgradeable {
     ) public payable {
         for (uint256 i = 0; i < commentsByBlogPostId[_blogId].length; i++) {
             if (commentsByBlogPostId[_blogId][i].id == _commentId) {
+                if (
+                    commentsByBlogPostId[_blogId][i].commentedBy != msg.sender
+                ) {
+                    revert("You cannot edit somebody else's comment");
+                }
                 commentsByBlogPostId[_blogId][i].comment = _comment;
                 break;
             }
@@ -170,6 +175,11 @@ contract Blog is Initializable, UUPSUpgradeable, OwnableUpgradeable {
         uint256 index;
         for (uint256 i = 0; i < commentsByBlogPostId[_blogId].length; i++) {
             if (commentsByBlogPostId[_blogId][i].id == _commentId) {
+                if (
+                    commentsByBlogPostId[_blogId][i].commentedBy != msg.sender
+                ) {
+                    revert("You cannot delete somebody else's comment");
+                }
                 index = i;
                 break;
             }
