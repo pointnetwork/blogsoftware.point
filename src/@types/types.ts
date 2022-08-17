@@ -10,4 +10,9 @@ export type AddBlogContractParams = [
   _publishDate: string
 ];
 
-export type Comment = [id: string, comment: string, commentedBy: string];
+export type Comment = [
+  id: string,
+  comment: string,
+  commentedBy: string,
+  identity?: string
+];

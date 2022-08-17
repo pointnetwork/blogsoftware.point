@@ -3,9 +3,11 @@ import Header from '../components/Header';
 import { useNavigate } from 'react-router-dom';
 import { useAppContext } from '../context/AppContext';
 import PageLayout from '../layouts/PageLayout';
-import { PrimaryButton } from '../components/Button';
+import { OutlinedButton, PrimaryButton } from '../components/Button';
 import utils from '../context/utils';
 import ArrowBackIosNewIcon from '@mui/icons-material/ArrowBackIosNew';
+import DeleteOutlineOutlinedIcon from '@mui/icons-material/DeleteOutlineOutlined';
+import EditOutlinedIcon from '@mui/icons-material/EditOutlined';
 import RecommendIcon from '@mui/icons-material/Recommend';
 import { Comment } from '../@types/types';
 import { BlogContract } from '../@types/enums';
@@ -24,6 +26,7 @@ const BlogPage = () => {
   >();
   const [isLiked, setIsLiked] = useState<boolean>(false);
   const [numLikes, setNumLikes] = useState<number>(0);
+  const [editCommentId, setEditCommentId] = useState<string>('');
   const [commentText, setCommentText] = useState<string>('');
   const [comments, setComments] = useState<Comment[]>([]);
 
@@ -63,10 +66,10 @@ const BlogPage = () => {
     const _comments = await Promise.all(
       data.map(async ([id, commentedBy, comment]) => {
         const identity = await utils.getIdentityFromAddress(commentedBy);
-        return [id, identity, comment] as Comment;
+        return [id, commentedBy, comment, identity] as Comment;
       })
     );
-    setComments(_comments);
+    setComments(_comments.reverse());
   };
 
   useEffect(() => {
@@ -75,6 +78,12 @@ const BlogPage = () => {
       getCommentsForBlogPost();
     }
   }, [original]);
+
+  useEffect(() => {
+    if (editCommentId)
+      setCommentText(comments.find(([id]) => id === editCommentId)![2]);
+    else setCommentText('');
+  }, [editCommentId]);
 
   const handleIterationSelect = async (hash: string) => {
     const requiredBlog = await getDataFromStorage(hash);
@@ -112,6 +121,26 @@ const BlogPage = () => {
       params: [original?.id, commentText],
     });
     setCommentText('');
+    getCommentsForBlogPost();
+  };
+
+  const handleDeleteComment = async (commentId: string) => {
+    await window.point.contract.send({
+      contract: BlogContract.name,
+      method: BlogContract.deleteCommentForBlogPost,
+      params: [original?.id, commentId],
+    });
+    setCommentText('');
+    getCommentsForBlogPost();
+  };
+
+  const handleEditComment = async () => {
+    await window.point.contract.send({
+      contract: BlogContract.name,
+      method: BlogContract.editCommentForBlogPost,
+      params: [original?.id, editCommentId, commentText],
+    });
+    setEditCommentId('');
     getCommentsForBlogPost();
   };
 
@@ -192,14 +221,47 @@ const BlogPage = () => {
               onChange={(e) => setCommentText(e.target.value)}
               className='w-full p-1 rounded border border-gray-400 my-2'
             ></textarea>
-            <PrimaryButton onClick={handleAddComment}>
-              Add Comment
-            </PrimaryButton>
+            {editCommentId ? (
+              <div className='flex items-center space-x-2'>
+                <PrimaryButton onClick={handleEditComment}>
+                  Update Comment
+                </PrimaryButton>
+                <OutlinedButton onClick={() => setEditCommentId('')}>
+                  Cancel
+                </OutlinedButton>
+              </div>
+            ) : (
+              <PrimaryButton onClick={handleAddComment}>
+                Add Comment
+              </PrimaryButton>
+            )}
           </div>
           {comments.length ? (
-            comments.map(([id, commentedBy, comment]) => (
-              <div className='pb-3 my-3 border-b border-gray-300' key={id}>
-                <p className='font-bold'>{commentedBy}</p>
+            comments.map(([id, commentedBy, comment, identity]) => (
+              <div
+                className={`py-3 mb-3 border-b border-gray-300 ${
+                  editCommentId === id ? 'bg-indigo-100' : ''
+                }`}
+                key={id}
+              >
+                <div className='flex justify-between'>
+                  <p className='font-bold'>{identity}</p>
+                  {commentedBy.toLowerCase() ===
+                  visitorAddress.toLowerCase() ? (
+                    <div className='flex items-center space-x-2'>
+                      <EditOutlinedIcon
+                        onClick={() => setEditCommentId(id)}
+                        className='text-gray-400 hover:text-gray-900 cursor-pointer transition-all'
+                        sx={{ width: 18, height: 18 }}
+                      />
+                      <DeleteOutlineOutlinedIcon
+                        onClick={() => handleDeleteComment(id)}
+                        className='text-red-400 hover:text-red-500 cursor-pointer transition-all'
+                        sx={{ width: 18, height: 18 }}
+                      />
+                    </div>
+                  ) : null}
+                </div>
                 <p className='text-sm'>{comment}</p>
               </div>
             ))
