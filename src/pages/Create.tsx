@@ -13,19 +13,24 @@ import {
 } from '../components/Button';
 import { useAppContext } from '../context/AppContext';
 import { Blog } from '../@types/interfaces';
-import { BlogContract } from '../@types/enums';
+import { BlogContract, RoutesEnum } from '../@types/enums';
 import PageLayout from '../layouts/PageLayout';
 import { AddBlogContractParams, EditBlogContractParams } from '../@types/types';
 
 const Create = ({ edit }: { edit?: boolean }) => {
   const navigate = useNavigate();
-  const { ownerAddress, blogs, getAllBlogs } = useAppContext();
+  const { ownerAddress, blogs, getAllBlogs, isOwner, loading } =
+    useAppContext();
 
   const [editId, setEditId] = useState<number | undefined>();
-  const [loading, setLoading] = useState<boolean>(false);
+  const [isLoading, setLoading] = useState<boolean>(false);
   const [cover, setCover] = useState<string | ArrayBuffer | null>('');
   const [title, setTitle] = useState<string>('');
   const [content, setContent] = useState<string>('');
+
+  useEffect(() => {
+    if (!loading && !isOwner) navigate(RoutesEnum.home, { replace: true });
+  }, [isOwner, loading]);
 
   useEffect(() => {
     const id = window.location.search.slice(4);
@@ -150,20 +155,20 @@ const Create = ({ edit }: { edit?: boolean }) => {
       <div className='mt-6 bg-white border-t border-gray-200 pt-3'>
         <div className='flex space-x-4 mx-auto' style={{ maxWidth: '1000px' }}>
           <PrimaryButton
-            disabled={loading || (!edit && (!title || !content))}
+            disabled={isLoading || (!edit && (!title || !content))}
             onClick={handlePublish}
           >
             {edit ? 'Update' : 'Publish'}
           </PrimaryButton>
           {!edit ? (
             <OutlinedButton
-              disabled={!title || loading}
+              disabled={!title || isLoading}
               onClick={handleSaveDraft}
             >
               Save Draft
             </OutlinedButton>
           ) : null}
-          <ErrorButton disabled={loading} onClick={() => navigate(-1)}>
+          <ErrorButton disabled={isLoading} onClick={() => navigate(-1)}>
             Cancel
           </ErrorButton>
         </div>

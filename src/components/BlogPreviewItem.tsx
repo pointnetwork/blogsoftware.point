@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import CheckCircleOutlineIcon from '@mui/icons-material/CheckCircleOutline';
 import DeleteIcon from '@mui/icons-material/Delete';
@@ -142,7 +142,11 @@ const BlogPreviewItem = ({
       </div>
       <div
         className='flex-1 flex flex-col cursor-pointer'
-        onClick={() => navigate(`/blog?id=${data.storageHash}`)}
+        onClick={() =>
+          navigate(
+            `/blog?id=${data.storageHash}${deleted ? '?deleted=true' : ''}`
+          )
+        }
       >
         <h2 className='font-bold text-lg'>{data.title}</h2>
         <p
