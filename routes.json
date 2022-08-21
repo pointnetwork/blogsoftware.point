@@ -1,9 +1,3 @@
 {
-    "/": "index.html",
-    "/create": "index.html",
-    "/edit": "index.html",
-    "/blog": "index.html",
-    "/admin": "index.html",
-    "/profile": "index.html",
-    "/edit_profile": "index.html"
+    "/": "index.html"
 }
