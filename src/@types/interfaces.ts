@@ -28,7 +28,7 @@ export interface BlogsState {
 }
 
 export interface Blog {
-  coverImage: string | ArrayBuffer | null;
+  coverImage: string;
   title: string;
   content: string;
   publisher: string;
