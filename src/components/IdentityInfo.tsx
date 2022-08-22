@@ -9,18 +9,25 @@ const IdentityInfo = ({admin}: { admin?: boolean }) => {
     const navigate = useNavigate();
     const {ownerIdentity, userInfo, isOwner} = useAppContext();
 
+    const [avatar, setAvatar] = useState<Blob | null>(null);
     const [isFollowing, setIsFollowing] = useState<boolean>(false);
     const [numFollowers, setNumFollowers] = useState<number | string>('');
 
+    const getInitialData = async () => {
+        const {data} = await window.point.contract.call({
+            contract: BlogContract.name,
+            method: BlogContract.isFollowing
+        });
+        setIsFollowing(data);
+        if (userInfo.data.avatar) {
+            const blob = await window.point.storage.getFile({id: userInfo.data.avatar});
+            setAvatar(blob);
+        }
+        getNumFollowers();
+    };
+
     useEffect(() => {
-        (async () => {
-            const {data} = await window.point.contract.call({
-                contract: BlogContract.name,
-                method: BlogContract.isFollowing
-            });
-            setIsFollowing(data);
-            getNumFollowers();
-        })();
+        getInitialData();
     }, []);
 
     const getNumFollowers = async () => {
@@ -77,11 +84,11 @@ const IdentityInfo = ({admin}: { admin?: boolean }) => {
             ) : null}
             <div className='relative'>
                 <div className='h-56 w-56 bg-gray-200 rounded-full self-center mb-4'>
-                    <img
-                        src={userInfo.data.avatar.toString()}
+                    {avatar && <img
+                        src={URL.createObjectURL(avatar)}
                         alt='avatar'
                         className='w-full h-full rounded-full object-cover'
-                    />
+                    />}
                 </div>
             </div>
             <h2 className='text-xl font-bold mt-2'>{ownerIdentity}</h2>

@@ -1,4 +1,4 @@
-import {useState} from 'react';
+import {useEffect, useState} from 'react';
 import {useNavigate} from 'react-router-dom';
 import CheckCircleOutlineIcon from '@mui/icons-material/CheckCircleOutline';
 import DeleteIcon from '@mui/icons-material/Delete';
@@ -23,6 +23,16 @@ const BlogPreviewItem = ({
 
     const [loading, setLoading] = useState<boolean>(false);
     const [requestDelete, setRequestDelete] = useState<boolean>(false);
+    const [coverImage, setCoverImage] = useState<Blob | null>(null);
+    const getCoverImage = async () => {
+        if (data.coverImage) {
+            const blob = await window.point.storage.getFile({id: data.coverImage});
+            setCoverImage(blob);
+        }
+    };
+    useEffect(() => {
+        getCoverImage();
+    }, [data]);
 
     const handleDelete = async () => {
         setLoading(true);
@@ -130,9 +140,9 @@ const BlogPreviewItem = ({
                 </>
             ) : null}
             <div className='basis-48 flex items-center justify-center bg-slate-200 h-32 mr-3 rounded overflow-hidden'>
-                {data.coverImage ? (
+                {coverImage ? (
                     <img
-                        src={data.coverImage?.toString()}
+                        src={URL.createObjectURL(coverImage)}
                         className='h-full w-full object-cover'
                         alt='cover for blog'
                     />

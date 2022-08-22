@@ -1,6 +1,6 @@
-import {useEffect, useState} from 'react';
+import {useEffect, useMemo, useState} from 'react';
 import Header from '../components/Header';
-import {useNavigate} from 'react-router-dom';
+import {useLocation, useNavigate} from 'react-router-dom';
 import {useAppContext} from '../context/AppContext';
 import PageLayout from '../layouts/PageLayout';
 import {OutlinedButton, PrimaryButton} from '../components/Button';
@@ -14,6 +14,11 @@ import {BlogContract, RoutesEnum} from '../@types/enums';
 import {Blog, BlogContractData} from '../@types/interfaces';
 
 const BlogPage = () => {
+    const {search} = useLocation();
+    const query = useMemo(() => new URLSearchParams(search), [search]);
+    const isDeleted = query.get('deleted');
+    const id = query.get('id');
+    
     const {
         blogs,
         getDataFromStorage,
@@ -22,42 +27,36 @@ const BlogPage = () => {
         getDeletedBlogs
     } = useAppContext();
 
-    const [id, setId] = useState<string>('');
-    const [original, setOriginal] = useState<
-    (Blog & BlogContractData) | undefined
-  >();
+    const [original, setOriginal] = useState<(Omit<Blog, 'coverImage'> & BlogContractData) | undefined>();
     const [selectedHash, setSelectedHash] = useState<string>('');
     const [displayData, setDisplayData] = useState<
-    (Blog & BlogContractData) | undefined
-  >();
+        (Omit<Blog, 'coverImage'> & BlogContractData & {coverImage?: File}) | undefined
+    >();
     const [isLiked, setIsLiked] = useState<boolean>(false);
     const [numLikes, setNumLikes] = useState<number>(0);
     const [editCommentId, setEditCommentId] = useState<string>('');
     const [commentText, setCommentText] = useState<string>('');
     const [comments, setComments] = useState<Comment[]>([]);
-    const [isDeleted, setIsDeleted] = useState<boolean>(true);
 
     const navigate = useNavigate();
 
     useEffect(() => {
         (async () => {
-            let deleted = false;
-            let id = window.location.search.slice(4);
-            if (window.location.search.includes('?deleted=true')) {
-                deleted = true;
-                id = id.split('?deleted=true')[0];
-            }
-            setIsDeleted(deleted);
-            setId(id);
-            if (!blogs.loading) {
-                const _blogs = deleted ? await getDeletedBlogs() : blogs.data;
+            if (id && !blogs.loading) {
+                const _blogs = isDeleted ? await getDeletedBlogs() : blogs.data;
                 const requiredBlog = _blogs.find((blog) => blog.storageHash === id);
-                setOriginal(requiredBlog);
-                setDisplayData(requiredBlog);
-                setSelectedHash(id!);
+                if (requiredBlog) {
+                    const _displayData = {...requiredBlog, coverImage: undefined};
+                    if (requiredBlog?.coverImage) {
+                        const blob = await window.point.storage.getFile({id: requiredBlog.coverImage});
+                        _displayData.coverImage = blob;
+                    }
+                    setOriginal(_displayData);
+                    setDisplayData(_displayData);
+                    setSelectedHash(id);
+                }
             }
         })();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [id, blogs]);
 
     const getLikesForBlogPost = async () => {
@@ -77,9 +76,9 @@ const BlogPage = () => {
             params: [original?.id]
         });
         const _comments = await Promise.all(
-            data.map(async ([id, commentedBy, comment]) => {
+            data.map(async ([_id, commentedBy, comment]) => {
                 const identity = await utils.getIdentityFromAddress(commentedBy);
-                return [id, commentedBy, comment, identity] as Comment;
+                return [_id, commentedBy, comment, identity] as Comment;
             })
         );
         setComments(_comments.reverse());
@@ -93,7 +92,11 @@ const BlogPage = () => {
     }, [original]);
 
     useEffect(() => {
-        if (editCommentId) {setCommentText(comments.find(([id]) => id === editCommentId)![2]);} else setCommentText('');
+        if (editCommentId) {
+            setCommentText(comments.find(([_id]) => _id === editCommentId)![2]);
+        } else {
+            setCommentText('');
+        }
     }, [editCommentId]);
 
     const handleIterationSelect = async (hash: string) => {
@@ -205,7 +208,7 @@ const BlogPage = () => {
                         {displayData?.coverImage ? (
                             <div className='bg-gray-200 mb-6'>
                                 <img
-                                    src={displayData?.coverImage?.toString()}
+                                    src={URL.createObjectURL(displayData.coverImage)}
                                     alt='cover of the blog'
                                     className='w-full h-full rounded'
                                 />
