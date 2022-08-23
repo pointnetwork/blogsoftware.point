@@ -1,8 +1,10 @@
-import React from 'react';
 import {useNavigate} from 'react-router-dom';
+import {useAppContext} from '../context/AppContext';
 import {PrimaryButton} from './Button';
 
 const Header = () => {
+    const {isOwner} = useAppContext();
+
     const navigate = useNavigate();
 
     return (
@@ -15,9 +17,11 @@ const Header = () => {
                     {/* Logo will go here */}
                     <span className='font-medium'>BlogSoftware</span>
                 </div>
-                <PrimaryButton onClick={() => navigate('/admin')}>
-          Manage Your Blog
-                </PrimaryButton>
+                {isOwner ? (
+                    <PrimaryButton onClick={() => navigate('/admin')}>
+            Manage Your Blog
+                    </PrimaryButton>
+                ) : null}
             </div>
         </header>
     );

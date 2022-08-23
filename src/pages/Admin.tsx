@@ -45,16 +45,20 @@ const FilterOption = ({
 );
 
 const Admin = () => {
-    const {blogs, getDeletedBlogs} = useAppContext();
     const navigate = useNavigate();
+    const {blogs, getDeletedBlogs, isOwner, loading} = useAppContext();
 
-    const [loading, setLoading] = useState<boolean>(false);
+    const [isLoading, setLoading] = useState<boolean>(false);
     const [data, setData] = useState<(Blog & BlogContractData)[]>([]);
     const [filter, setFilter] = useState<keyof typeof BlogFilterOptions>(
     new URL(window.location.href).searchParams.get(
         'filter'
     ) as keyof typeof BlogFilterOptions
     );
+
+    useEffect(() => {
+        if (!loading && !isOwner) navigate(RoutesEnum.home, {replace: true});
+    }, [isOwner, loading]);
 
     useEffect(() => {
         (async () => {
@@ -111,7 +115,7 @@ const Admin = () => {
                             className='overflow-y-scroll pr-6'
                             style={{height: window.screen.height - 300}}
                         >
-                            {loading || blogs.loading ? (
+                            {isLoading || blogs.loading ? (
                                 <Loader>Loading Blogs...</Loader>
                             ) : data.length ? (
                                 data.map((blog, i) => (

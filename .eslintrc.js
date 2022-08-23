@@ -7,7 +7,7 @@ module.exports = {
     parser: '@typescript-eslint/parser',
     extends: [
         'plugin:@typescript-eslint/recommended'
-        // 'plugin:import/recommended'``
+    // 'plugin:import/recommended'``
     ],
     parserOptions: {
         ecmaVersion: 13,
@@ -30,28 +30,35 @@ module.exports = {
         'curly': ['error', 'multi-line'],
         'react/prop-types': 'off',
         'no-implicit-coercion': ['error'],
-        'indent': ['error', 4, {
-            SwitchCase: 1,
-            MemberExpression: 1,
-            ArrayExpression: 1,
-            ObjectExpression: 1,
-            VariableDeclarator: 1,
-            CallExpression: {arguments: 1},
-            offsetTernaryExpressions: true
-        }],
+        'indent': [
+            'error',
+            4,
+            {
+                SwitchCase: 1,
+                MemberExpression: 1,
+                ArrayExpression: 1,
+                ObjectExpression: 1,
+                VariableDeclarator: 1,
+                CallExpression: {arguments: 1},
+                offsetTernaryExpressions: true
+            }
+        ],
         'semi': ['error', 'always'],
-        'linebreak-style': ['error', 'unix'],
+        'linebreak-style': 'off',
         'no-fallthrough': 'off',
         'no-console': 'warn', // TODO: replace console with logger in helpers and set to error
         'no-debugger': 'error',
-        'max-len': ['warn', {
-            code: 100,
-            ignoreStrings: true,
-            ignoreRegExpLiterals: true,
-            ignoreTemplateLiterals: true,
-            tabWidth: 4,
-            ignoreComments: true // TODO: set to false
-        }],
+        'max-len': [
+            'warn',
+            {
+                code: 100,
+                ignoreStrings: true,
+                ignoreRegExpLiterals: true,
+                ignoreTemplateLiterals: true,
+                tabWidth: 4,
+                ignoreComments: true // TODO: set to false
+            }
+        ],
         'comma-dangle': ['error', 'never'],
         'space-in-parens': ['error', 'never'],
         'comma-spacing': 'error',
@@ -62,19 +69,25 @@ module.exports = {
         'no-useless-call': 'error',
         'prefer-promise-reject-errors': 'error',
         'no-underscore-dangle': 'off', // TODO: enable
-        'prefer-const': ['error', {destructuring: 'all', ignoreReadBeforeAssign: false}],
+        'prefer-const': [
+            'error',
+            {destructuring: 'all', ignoreReadBeforeAssign: false}
+        ],
         'no-bitwise': 'off',
         'no-caller': 'error',
         'no-useless-return': 'error',
         'no-duplicate-imports': 'error',
         'no-unused-expressions': 'error',
         'arrow-body-style': ['error', 'as-needed'],
-        'prefer-arrow/prefer-arrow-functions': ['off', {
-            // TODO: enable
-            disallowPrototype: true,
-            singleReturnOnly: false,
-            classPropertiesAllowed: false
-        }],
+        'prefer-arrow/prefer-arrow-functions': [
+            'off',
+            {
+                // TODO: enable
+                disallowPrototype: true,
+                singleReturnOnly: false,
+                classPropertiesAllowed: false
+            }
+        ],
         'brace-style': ['error', '1tbs', {allowSingleLine: true}],
         'space-infix-ops': ['error'],
         'quote-props': ['error', 'consistent-as-needed'],
@@ -93,9 +106,9 @@ module.exports = {
         '@typescript-eslint/no-unused-vars': 'error',
         'no-unused-vars': 'off',
         '@typescript-eslint/keyword-spacing': ['error']
-        // 'import/no-extraneous-dependencies': 'error',
-        // 'import/imports-first': ['error', 'absolute-first'],
-        // 'import/extensions': ['error', 'never'],
-        // 'import/no-unresolved': 'off',
+    // 'import/no-extraneous-dependencies': 'error',
+    // 'import/imports-first': ['error', 'absolute-first'],
+    // 'import/extensions': ['error', 'never'],
+    // 'import/no-unresolved': 'off',
     }
 };

@@ -7,6 +7,8 @@
     "@emotion/react": "^11.10.0",
     "@emotion/styled": "^11.9.3",
     "@mui/icons-material": "^5.8.4",
+    "@openzeppelin/contracts": "^4.7.3",
+    "@openzeppelin/contracts-upgradeable": "^4.7.3",
     "@testing-library/jest-dom": "^5.11.4",
     "@testing-library/react": "^11.1.0",
     "@testing-library/user-event": "^12.1.10",
@@ -30,11 +32,12 @@
     "clear": "rm -rf ./public/* .cache .parcel-cache",
     "start": "react-scripts start",
     "watch:docker": "./watch.docker.js",
-    "build": "npm run clear && cp src/*.html ./public/. && cp src/*.css ./public/. && parcel build src/index.js --dist-dir ./public --no-source-maps",
-    "watch": "npm run clear && cp src/*.html ./public/. && cp src/*.css ./public/. && parcel watch src/index.js --dist-dir ./public/",
+    "build": "mkdir -p ./public && npm run clear && cp src/*.html ./public/. && cp src/*.css ./public/. && npm run copy_contracts && parcel build src/index.js --dist-dir ./public --no-source-maps",
+    "watch": "npm run clear && cp src/*.html ./public/. && cp src/*.css ./public/. && npm run copy_contracts && parcel watch src/index.js --dist-dir ./public/",
     "test": "echo \"Error: no test specified\" && exit 1",
     "lint": "eslint --ext .ts --ext .js --ext .jsx --ext .tsx .",
-    "fix": "eslint --ext .ts --ext .js --ext .jsx --ext .tsx --fix ."
+    "fix": "eslint --ext .ts --ext .js --ext .jsx --ext .tsx --fix .",
+    "copy_contracts": "mkdir -p ./contracts && rm -rf ./contracts && mkdir contracts && cp -r ./hardhat/contracts ."
   },
   "eslintConfig": {
     "extends": [

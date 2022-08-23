@@ -1,4 +1,4 @@
-import React, {createContext, useContext, useState, useEffect} from 'react';
+import {createContext, useContext, useState, useEffect} from 'react';
 import {AppContentInterface, UserInfoState} from '../@types/interfaces';
 import {BlogContract, RoutesEnum} from '../@types/enums';
 import {useNavigate} from 'react-router-dom';
@@ -89,12 +89,11 @@ export const ProvideAppContext = ({children}: { children: any }) => {
     const getUserInfo = async () => {
         setUserInfo((prev) => ({...prev, loading: true}));
 
-        const {data: [walletAddress, dataStorageHash]}:
-            { data: [walletAddress: string, dataStorageHash: string] } =
-            await window.point.contract.call({
-                contract: BlogContract.name,
-                method: BlogContract.getUserInfo
-            });
+        const {data: [walletAddress, dataStorageHash]}: { data: [walletAddress: string, dataStorageHash: string] } =
+      await window.point.contract.call({
+          contract: BlogContract.name,
+          method: BlogContract.getUserInfo
+      });
         if (dataStorageHash) {
             const data = await utils.getDataFromStorage(dataStorageHash);
             setUserInfo((prev) => ({

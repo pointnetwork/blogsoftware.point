@@ -1,4 +1,4 @@
-import React, {useEffect, useState} from 'react';
+import React, {ChangeEvent, useEffect, useState} from 'react';
 import {OutlinedButton, PrimaryButton} from '../components/Button';
 import {useNavigate} from 'react-router-dom';
 import {useAppContext} from '../context/AppContext';
@@ -9,39 +9,49 @@ import {UserInfo} from '../@types/interfaces';
 
 const CreateProfile = ({edit}: { edit?: boolean }) => {
     const [loading, setLoading] = useState<boolean>(false);
-    const [avatar, setAvatar] = useState<string | ArrayBuffer | null>(null);
+    const [avatar, setAvatar] = useState<Blob | null>(null);
     const [about, setAbout] = useState<string>('');
 
     const navigate = useNavigate();
     const {ownerAddress, userInfo, getUserInfo, getAllBlogs} = useAppContext();
 
-    useEffect(() => {
+    const getInitialData = async () => {
         if (edit) {
             setLoading(true);
-            setAvatar(userInfo.data.avatar);
             setAbout(userInfo.data.about);
+            if (userInfo.data.avatar) {
+                const blob = await window.point.storage.getFile({id: userInfo.data.avatar});
+                setAvatar(blob);
+            }
             setLoading(false);
         }
+    };
+
+    useEffect(() => {
+        getInitialData();
     }, [edit, userInfo]);
 
-    const handleFileInput = (e: any) => {
-        const reader = new FileReader();
-        reader.onload = function (e: any) {
-            setAvatar(e.target.result);
-        };
-        reader.readAsDataURL(e.target.files[0]);
+    const handleFileInput = (e: ChangeEvent<HTMLInputElement>) => {
+        setAvatar(e.target.files ? e.target.files[0] : null);
     };
 
     const handleFinish = async () => {
         setLoading(true);
+        let avatarImage = '';
+        if (avatar) {
+            const avatarFormData = new FormData();
+            avatarFormData.append('files', avatar);
+            const {data} = await window.point.storage.postFile(avatarFormData);
+            avatarImage = data;
+        }
         const form = JSON.stringify({
-            avatar,
+            avatar: avatarImage,
             about
         } as UserInfo);
         const file = new File([form], 'user.json', {type: 'application/json'});
 
         const formData = new FormData();
-        formData.append('file', file);
+        formData.append('files', file);
         // Upload the File to arweave
         const res = await window.point.storage.postFile(formData);
         setLoading(false);
@@ -88,7 +98,7 @@ const CreateProfile = ({edit}: { edit?: boolean }) => {
                             </div>
                         ) : (
                             <img
-                                src={avatar.toString()}
+                                src={URL.createObjectURL(avatar)}
                                 className='w-56 h-56 rounded-full border-2 border-gray-200 object-cover'
                                 alt='profile'
                             />
