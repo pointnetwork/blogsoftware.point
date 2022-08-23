@@ -30,7 +30,7 @@ const Home = () => {
                             <div>
                                 <p className='text-5xl font-bold mt-10'>@{ownerIdentity}</p>
                                 <p className='text-3xl font-medium text-gray-500 mt-2'>
-                  has not created any blogs yet.
+                  has not created any blog posts yet.
                                 </p>
                             </div>
                         )}

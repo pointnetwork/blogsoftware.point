@@ -1,4 +1,4 @@
-import React, {useEffect, useState} from 'react';
+import {useEffect, useState} from 'react';
 import {useNavigate} from 'react-router-dom';
 import BlogPreviewItem from '../components/BlogPreviewItem';
 import Header from '../components/Header';
@@ -17,7 +17,7 @@ enum BlogFilterOptions {
 }
 
 const emptyMessages = {
-    [BlogFilterOptions.published]: 'You have not published any blogs yet.',
+    [BlogFilterOptions.published]: 'You have not published any blog posts yet.',
     [BlogFilterOptions.drafts]: `You have not created any drafts yet.`,
     [BlogFilterOptions.trash]: `Trash is empty.`
 };
@@ -95,9 +95,9 @@ const Admin = () => {
                 >
                     <div className='flex-1 border-r'>
                         <div className='flex items-center justify-between mr-5'>
-                            <h2 className='text-3xl font-bold'>Your Blogs</h2>
+                            <h2 className='text-3xl font-bold'>Your Blog Posts</h2>
                             <PrimaryButton onClick={() => navigate(RoutesEnum.create)}>
-                Create New Blog
+                Create New Blog Post
                             </PrimaryButton>
                         </div>
                         <div className='mt-4 mb-2 flex items-center text-sm border-b border-gray-200'>
@@ -116,7 +116,7 @@ const Admin = () => {
                             style={{height: window.screen.height - 300}}
                         >
                             {isLoading || blogs.loading ? (
-                                <Loader>Loading Blogs...</Loader>
+                                <Loader>Loading Blog Posts...</Loader>
                             ) : data.length ? (
                                 data.map((blog, i) => (
                                     <BlogPreviewItem
