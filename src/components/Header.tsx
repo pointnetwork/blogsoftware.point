@@ -1,6 +1,6 @@
 import {useNavigate} from 'react-router-dom';
 import {useAppContext} from '../context/AppContext';
-import {PrimaryButton} from './Button';
+import {OutlinedButton, PrimaryButton} from './Button';
 
 const Header = () => {
     const {isOwner} = useAppContext();
@@ -18,9 +18,12 @@ const Header = () => {
                     <span className='font-medium'>BlogSoftware</span>
                 </div>
                 {isOwner ? (
-                    <PrimaryButton onClick={() => navigate('/admin')}>
-            Manage Your Blog
-                    </PrimaryButton>
+                    <div className='flex items-center space-x-2'>
+                        <OutlinedButton>Customize</OutlinedButton>
+                        <PrimaryButton onClick={() => navigate('/admin')}>
+              Manage Your Blog
+                        </PrimaryButton>
+                    </div>
                 ) : null}
             </div>
         </header>

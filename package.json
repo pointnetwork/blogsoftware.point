@@ -37,7 +37,7 @@
     "test": "echo \"Error: no test specified\" && exit 1",
     "lint": "eslint --ext .ts --ext .js --ext .jsx --ext .tsx .",
     "fix": "eslint --ext .ts --ext .js --ext .jsx --ext .tsx --fix .",
-    "copy_contracts": "mkdir -p ./contracts && rm -rf ./contracts && mkdir contracts && cp -r ./hardhat/contracts ."
+    "copy_contracts": "rm -rf ./contracts && mkdir contracts && cp -r ./hardhat/contracts ."
   },
   "eslintConfig": {
     "extends": [
