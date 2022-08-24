@@ -16,3 +16,5 @@ export type Comment = [
   commentedBy: string,
   identity?: string
 ];
+
+export type Theme = [background: string, primary: string, text: string];

@@ -4,6 +4,7 @@ import {BlogContract, RoutesEnum} from '../@types/enums';
 import {useNavigate} from 'react-router-dom';
 import utils from './utils';
 import useBlogs from './useBlogs';
+import {Theme} from '../@types/types';
 
 const AppContext = createContext({
     loading: true,
@@ -46,33 +47,35 @@ export const ProvideAppContext = ({children}: { children: any }) => {
     const [visitorIdentity, setVisitorIdentity] = useState<string>('');
     const [ownerAddress, setOwnerAddress] = useState<string>('');
     const [ownerIdentity, setOwnerIdentity] = useState<string>('');
+    const [theme, setTheme] = useState<Theme>(['white', 'indigo', 'black']);
 
     useEffect(() => {
         (async () => {
             setLoading(true);
+
+            const {data}: { data: Theme } = await window.point.contract.call({
+                contract: BlogContract.name,
+                method: BlogContract.getTheme
+            });
+            setTheme(data);
 
             const {data: owner} = await window.point.contract.call({
                 contract: BlogContract.name,
                 method: BlogContract.owner,
                 params: []
             });
-            console.log('owner: ', owner);
             setOwnerAddress(owner);
 
             const ownerId = await utils.getIdentityFromAddress(owner);
-            console.log('identity', ownerId);
             setOwnerIdentity(ownerId);
 
             const visitor = await utils.getWalletAddress();
             setVisitorAddress(visitor);
-            console.log('visitorAddress', visitor);
 
             const visitorId = await utils.getIdentityFromAddress(visitor);
             setVisitorIdentity(visitorId);
-            console.log('visitorIdentity', visitorId);
 
             const visitorIsOwner = visitor.toLowerCase() === owner.toLowerCase();
-            console.log('isOwner', visitorIsOwner);
             setIsOwner(visitorIsOwner);
 
             const hash = await getUserInfo();
@@ -117,7 +120,9 @@ export const ProvideAppContext = ({children}: { children: any }) => {
                 getUserInfo,
                 userInfo,
                 visitorIdentity,
-                getDataFromStorage: utils.getDataFromStorage
+                getDataFromStorage: utils.getDataFromStorage,
+                theme,
+                setTheme
             }}
         >
             {children}

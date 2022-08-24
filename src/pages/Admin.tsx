@@ -30,19 +30,23 @@ const FilterOption = ({
   children: string;
   filter: string;
   onClick: any;
-}) => (
-    <div
-        id={children}
-        className={`mr-6 font-medium cursor-pointer border-b-2 border-transparent pb-2 capitalize ${
-            filter === children
-                ? 'text-indigo-500 border-b-indigo-500'
-                : 'text-gray-400 hover:text-gray-800'
-        }`}
-        onClick={onClick}
-    >
-        {children}
-    </div>
-);
+}) => {
+    const {theme} = useAppContext();
+
+    return (
+        <div
+            id={children}
+            className={`font-medium cursor-pointer mb-2 capitalize p-1 px-3 rounded-full ${
+                filter === children
+                    ? `text-white bg-${theme[1]}-500`
+                    : 'opacity-50 hover:opacity-90'
+            }`}
+            onClick={onClick}
+        >
+            {children}
+        </div>
+    );
+};
 
 const Admin = () => {
     const navigate = useNavigate();
@@ -93,14 +97,14 @@ const Admin = () => {
                     className='flex mt-4 mx-auto'
                     style={{maxWidth: '1000px', height: window.screen.height - 220}}
                 >
-                    <div className='flex-1 border-r'>
+                    <div className='flex-1'>
                         <div className='flex items-center justify-between mr-5'>
                             <h2 className='text-3xl font-bold'>Your Blog Posts</h2>
                             <PrimaryButton onClick={() => navigate(RoutesEnum.create)}>
                 Create New Blog Post
                             </PrimaryButton>
                         </div>
-                        <div className='mt-4 mb-2 flex items-center text-sm border-b border-gray-200'>
+                        <div className='mt-4 mb-2 flex items-center text-sm'>
                             <FilterOption filter={filter} onClick={handleFilterChange}>
                                 {BlogFilterOptions.published}
                             </FilterOption>
@@ -127,13 +131,13 @@ const Admin = () => {
                                     />
                                 ))
                             ) : (
-                                <div className='font-medium pt-2 text-gray-500'>
+                                <div className='font-medium pt-2 opacity-70'>
                                     <p className='text-2xl'>{emptyMessages[filter]}</p>
                                 </div>
                             )}
                         </div>
                     </div>
-                    <div className='basis-72 flex flex-col overflow-y-scroll px-8 -mr-4'>
+                    <div className='basis-72 flex flex-col overflow-y-scroll px-8 -mr-8'>
                         <h2 className='text-3xl font-bold mb-6'>Your Profile</h2>
                         <IdentityInfo admin />
                     </div>

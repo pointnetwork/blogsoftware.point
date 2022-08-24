@@ -13,7 +13,8 @@ const CreateProfile = ({edit}: { edit?: boolean }) => {
     const [about, setAbout] = useState<string>('');
 
     const navigate = useNavigate();
-    const {ownerAddress, userInfo, getUserInfo, getAllBlogs} = useAppContext();
+    const {ownerAddress, userInfo, getUserInfo, getAllBlogs, theme} =
+    useAppContext();
 
     const getInitialData = async () => {
         if (edit) {
@@ -68,7 +69,7 @@ const CreateProfile = ({edit}: { edit?: boolean }) => {
 
     return (
         <PageLayout>
-            <header className='py-3 sticky top-0 bg-white shadow z-10'>
+            <header className={`py-3 sticky top-0 bg-${theme[0]} shadow z-10`}>
                 <div className='mx-auto' style={{maxWidth: '1000px'}}>
                     {/* Logo will go here */}
                     <span className='font-medium'>BlogSoftware</span>
@@ -104,7 +105,9 @@ const CreateProfile = ({edit}: { edit?: boolean }) => {
                             />
                         )}
                         {avatar ? (
-                            <p className='relative text-sm mt-4 transition-all text-gray-500 hover:text-black'>
+                            <p
+                                className={`relative text-sm mt-4 transition-all text-${theme[2]} text-opacity-50 hover:text-opacity-100`}
+                            >
                                 <span className='absolute left-1/2 -translate-x-1/2 cursor-pointer underline'>
                   Change
                                 </span>
@@ -120,14 +123,16 @@ const CreateProfile = ({edit}: { edit?: boolean }) => {
                     <div className='flex-1'>
                         <h3 className='font-bold text-lg mb-2'>A Little About You</h3>
                         <textarea
-                            className='w-full h-40 p-2 border-2 border-gray-200 resize-none rounded'
+                            className={`w-full h-40 p-2 border-2 border-${theme[2]} border-opacity-10 resize-none rounded bg-transparent`}
                             value={about}
                             onChange={(e) =>
                                 e.target.value.length <= 1000 && setAbout(e.target.value)
                             }
                             maxLength={1000}
                         ></textarea>
-                        <div className='flex justify-end mb-3 text-sm text-gray-500 m-1'>
+                        <div
+                            className={`flex justify-end mb-3 text-sm text-${theme[2]} text-opacity-40 m-1`}
+                        >
                             {about.length}/1000
                         </div>
                         <div className='flex space-x-3'>

@@ -12,6 +12,12 @@ contract Blog is Initializable, UUPSUpgradeable, OwnableUpgradeable {
     Counters.Counter private numBlogPosts;
     Counters.Counter internal commentIds;
 
+    struct Theme{
+        string background;
+        string primary;
+        string text;
+    }
+
     struct UserInfo {
         address walletAddress;
         string dataStorageHash;
@@ -31,6 +37,7 @@ contract Blog is Initializable, UUPSUpgradeable, OwnableUpgradeable {
         string[] previousStorageHashes;
     }
 
+    Theme theme;
     UserInfo user;
     BlogPost[] blogPosts;
     BlogPost[] deletedBlogPosts;
@@ -44,6 +51,11 @@ contract Blog is Initializable, UUPSUpgradeable, OwnableUpgradeable {
     function initialize() public initializer onlyProxy {
         __Ownable_init();
         __UUPSUpgradeable_init();
+        theme = Theme({
+            background:'white',
+            primary:'indigo',
+            text:'black'
+        });
     }
 
     function _authorizeUpgrade(address) internal override onlyOwner {}
@@ -292,6 +304,19 @@ contract Blog is Initializable, UUPSUpgradeable, OwnableUpgradeable {
             emailSubscribers[i] = emailSubscribers[i + 1];
         }
         emailSubscribers.pop();
+    }
+
+    // Theming
+    function getTheme() public view returns (Theme memory) {
+        return theme;
+    }
+
+    function setTheme(string calldata _background, string calldata _primary, string calldata _text) public payable {
+        theme = Theme({
+            background: _background,
+            primary: _primary,
+            text: _text
+        });
     }
 
     // Helpers

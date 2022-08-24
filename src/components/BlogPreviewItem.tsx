@@ -18,7 +18,7 @@ const BlogPreviewItem = ({
   deleted?: boolean;
   data: Blog & BlogContractData;
 }) => {
-    const {getAllBlogs} = useAppContext();
+    const {getAllBlogs, theme} = useAppContext();
     const navigate = useNavigate();
 
     const [loading, setLoading] = useState<boolean>(false);
@@ -70,16 +70,18 @@ const BlogPreviewItem = ({
 
     return (
         <div
-            className={`flex p-3 border border-white rounded my-3 ${
+            className={`flex p-3 rounded my-3 border border-${theme[2]} ${
                 admin ? 'mb-5' : ''
-            } hover:shadow-lg border-gray-200 relative`}
+            } hover:shadow-lg border-opacity-20 relative`}
         >
             {/* DELETE MODAL: START */}
             {requestDelete ? (
                 <div className='fixed z-50 top-0 left-0 h-screen w-screen'>
                     <div className='relative h-full w-full'>
                         <div className='absolute h-full w-full bg-black opacity-60'></div>
-                        <div className='absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 bg-white p-5 rounded'>
+                        <div
+                            className={`absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 bg-${theme[0]} p-5 rounded`}
+                        >
                             <h3 className='text-lg font-medium'>
                 Are your sure you want to move this blog to Trash?
                             </h3>
@@ -98,48 +100,46 @@ const BlogPreviewItem = ({
             {/* DELETE MODAL: END */}
             {admin && !deleted ? (
                 <>
-                    <div className='-top-3 -right-2 absolute z-10'>
-                        {data.previousStorageHashes?.length ? (
+                    {data.previousStorageHashes?.length ? (
+                        <div className={`-top-3 -right-2 absolute z-10 bg-${theme[0]}`}>
                             <div
                                 style={{fontSize: 10}}
-                                className='rounded-full bg-indigo-100 text-indigo-600 text-sm px-2 border border-indigo-300'
+                                className={`rounded-full bg-${theme[1]}-100 text-${theme[1]}-600 text-sm px-2 border border-${theme[1]}-300`}
                             >
                                 {data.previousStorageHashes.length} Revisions
                             </div>
-                        ) : null}
-                    </div>
-                    <div className='bottom-2 right-2 absolute flex space-x-2'>
+                        </div>
+                    ) : null}
+                    <div className='bottom-2 right-2 absolute flex space-x-3 z-20'>
                         {data.isPublished ? (
                             <DoDisturbIcon
-                                fontSize='small'
-                                className='opacity-50 hover:opacity-100 text-orange-500 cursor-pointer'
+                                className='text-orange-500 cursor-pointer'
                                 titleAccess='Unpublish'
                                 onClick={handleUnPublish}
                             />
                         ) : (
                             <CheckCircleOutlineIcon
-                                fontSize='small'
-                                className='opacity-50 hover:opacity-100 text-green-600 cursor-pointer'
+                                className='text-green-600 cursor-pointer'
                                 titleAccess='Publish'
                                 onClick={handlePublish}
                             />
                         )}
                         <EditIcon
-                            fontSize='small'
-                            className='opacity-50 hover:opacity-100 text-gray-500 cursor-pointer'
+                            className={`text-${theme[2]} text-opacity-70 cursor-pointer`}
                             titleAccess='Edit'
                             onClick={() => navigate(`/edit?id=${data.storageHash}`)}
                         />
                         <DeleteIcon
-                            fontSize='small'
-                            className='opacity-50 hover:opacity-100 text-red-500 cursor-pointer'
+                            className='text-red-500 cursor-pointer'
                             titleAccess='Delete'
                             onClick={() => setRequestDelete(true)}
                         />
                     </div>
                 </>
             ) : null}
-            <div className='basis-48 flex items-center justify-center bg-slate-200 h-32 mr-3 rounded overflow-hidden'>
+            <div
+                className={`basis-48 h-32 mr-3 rounded overflow-hidden bg-${theme[2]} bg-opacity-10 flex items-center justify-center`}
+            >
                 {coverImage ? (
                     <img
                         src={URL.createObjectURL(coverImage)}
@@ -147,7 +147,7 @@ const BlogPreviewItem = ({
                         alt='cover for blog'
                     />
                 ) : (
-                    <p className='text-sm'>No Image Uploaded</p>
+                    <p className={`text-sm ${theme[2]}`}>No Image Uploaded</p>
                 )}
             </div>
             <div
@@ -160,11 +160,11 @@ const BlogPreviewItem = ({
             >
                 <h2 className='font-bold text-lg'>{data.title}</h2>
                 <p
-                    className='text-sm mb-2 text-gray-600 flex-1'
+                    className='text-sm mb-2 opacity-60 flex-1'
                     // TODO: Safegaurd against XSS
                     dangerouslySetInnerHTML={{__html: `<p>${data.content.slice(0, 200)}...</p>`}}
                 ></p>
-                <p className='text-sm text-gray-500'>{data.publishDate}</p>
+                <p className='text-sm opacity-50'>{data.publishDate}</p>
             </div>
         </div>
     );

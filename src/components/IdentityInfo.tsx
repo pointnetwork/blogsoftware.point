@@ -7,7 +7,7 @@ import {BlogContract, RoutesEnum} from '../@types/enums';
 
 const IdentityInfo = ({admin}: { admin?: boolean }) => {
     const navigate = useNavigate();
-    const {ownerIdentity, userInfo, isOwner} = useAppContext();
+    const {ownerIdentity, userInfo, isOwner, theme} = useAppContext();
 
     const [avatar, setAvatar] = useState<Blob | null>(null);
     const [isFollowing, setIsFollowing] = useState<boolean>(false);
@@ -72,9 +72,11 @@ const IdentityInfo = ({admin}: { admin?: boolean }) => {
                     <button
                         className={`rounded-full px-3 py-1 font-medium ${
                             isFollowing
-                                ? 'text-indigo-500 hover:text-indigo-700'
-                                : 'text-white bg-indigo-500 hover:bg-indigo-700'
-                        } border border-indigo-500 hover:border-indigo-700 transition-all`}
+                                ? `text-${theme[1]}-500 hover:text-${theme[1]}-700`
+                                : `text-white bg-${theme[1]}-500 hover:bg-${theme[1]}-700`
+                        } border border-${theme[1]}-500 hover:border-${
+                            theme[1]
+                        }-700 transition-all`}
                         style={{fontSize: 12}}
                         onClick={isFollowing ? unfollow : follow}
                     >
@@ -84,17 +86,19 @@ const IdentityInfo = ({admin}: { admin?: boolean }) => {
             ) : null}
             <div className='relative'>
                 <div className='h-56 w-56 bg-gray-200 rounded-full self-center mb-4'>
-                    {avatar && <img
-                        src={URL.createObjectURL(avatar)}
-                        alt='avatar'
-                        className='w-full h-full rounded-full object-cover'
-                    />}
+                    {avatar && (
+                        <img
+                            src={URL.createObjectURL(avatar)}
+                            alt='avatar'
+                            className='w-full h-full rounded-full object-cover'
+                        />
+                    )}
                 </div>
             </div>
             <h2 className='text-xl font-bold mt-2'>{ownerIdentity}</h2>
             <p className='text-sm'>{numFollowers} followers</p>
             <div className='relative mt-2 mb-4'>
-                <p className='text-sm text-gray-600'>{userInfo.data.about}</p>
+                <p className='text-sm opacity-80'>{userInfo.data.about}</p>
             </div>
         </>
     ) : (

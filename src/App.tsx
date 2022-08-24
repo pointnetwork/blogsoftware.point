@@ -1,12 +1,13 @@
-import React from 'react';
 import {Route, Routes, BrowserRouter as Router} from 'react-router-dom';
 import Home from './pages/Home';
 import Blog from './pages/Blog';
 import Admin from './pages/Admin';
 import Create from './pages/Create';
 import CreateProfile from './pages/CreateProfile';
+import Customize from './pages/Customize';
 import {ProvideAppContext} from './context/AppContext';
 import {RoutesEnum} from './@types/enums';
+import ColorImports from './components/ColorImports';
 
 const Main = () => (
     <Routes>
@@ -17,6 +18,7 @@ const Main = () => (
         <Route path={RoutesEnum.edit} element={<Create edit />} />
         <Route path={RoutesEnum.profile} element={<CreateProfile />} />
         <Route path={RoutesEnum.edit_profile} element={<CreateProfile edit />} />
+        <Route path={RoutesEnum.customize} element={<Customize />} />
     </Routes>
 );
 
@@ -24,6 +26,7 @@ const App = () => (
     <Router>
         <ProvideAppContext>
             <Main />
+            <ColorImports />
         </ProvideAppContext>
     </Router>
 );
