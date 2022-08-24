@@ -21,6 +21,8 @@ export enum BlogContract {
   addCommentToBlogPost = 'addCommentToBlogPost',
   editCommentForBlogPost = 'editCommentForBlogPost',
   deleteCommentForBlogPost = 'deleteCommentForBlogPost',
+  getTheme = 'getTheme',
+  setTheme = 'setTheme',
 }
 
 export enum RoutesEnum {
@@ -31,4 +33,5 @@ export enum RoutesEnum {
   edit = '/edit',
   profile = '/profile',
   edit_profile = '/edit_profile',
+  customize = '/customize',
 }

@@ -18,20 +18,24 @@ const BlogPage = () => {
     const query = useMemo(() => new URLSearchParams(search), [search]);
     const isDeleted = query.get('deleted');
     const id = query.get('id');
-    
+
     const {
         blogs,
         getDataFromStorage,
         visitorAddress,
         isOwner,
-        getDeletedBlogs
+        getDeletedBlogs,
+        theme
     } = useAppContext();
 
-    const [original, setOriginal] = useState<(Omit<Blog, 'coverImage'> & BlogContractData) | undefined>();
+    const [original, setOriginal] = useState<
+    (Omit<Blog, 'coverImage'> & BlogContractData) | undefined
+  >();
     const [selectedHash, setSelectedHash] = useState<string>('');
     const [displayData, setDisplayData] = useState<
-        (Omit<Blog, 'coverImage'> & BlogContractData & {coverImage?: File}) | undefined
-    >();
+    | (Omit<Blog, 'coverImage'> & BlogContractData & { coverImage?: File })
+    | undefined
+  >();
     const [isLiked, setIsLiked] = useState<boolean>(false);
     const [numLikes, setNumLikes] = useState<number>(0);
     const [editCommentId, setEditCommentId] = useState<string>('');
@@ -65,7 +69,11 @@ const BlogPage = () => {
             method: BlogContract.getLikesForBlogPost,
             params: [original?.id]
         });
-        if (data.map((i) => i.toLowerCase()).includes(visitorAddress.toLowerCase())) {setIsLiked(true);} else setIsLiked(false);
+        if (
+            data.map((i) => i.toLowerCase()).includes(visitorAddress.toLowerCase())
+        ) {
+            setIsLiked(true);
+        } else setIsLiked(false);
         setNumLikes(data.length);
     };
 
@@ -174,12 +182,14 @@ const BlogPage = () => {
 
                         {isOwner && original?.previousStorageHashes ? (
                             <div className='flex items-center my-4 justify-end'>
-                                <p className='text-gray-500 mr-4'>Iterations:</p>
+                                <p className={`text-${theme[2]} text-opacity-50 mr-4`}>
+                  Iterations:
+                                </p>
                                 <p
                                     className={`py-1 px-3 text-sm ${
                                         selectedHash === id
-                                            ? 'text-white bg-indigo-500'
-                                            : 'bg-gray-100 hover:bg-gray-200'
+                                            ? `text-white bg-${theme[1]}-500`
+                                            : 'opacity-50 hover:opacity-100'
                                     } cursor-pointer rounded mr-2`}
                                     onClick={handleSelectLatest}
                                 >
@@ -189,8 +199,8 @@ const BlogPage = () => {
                                     <p
                                         className={`py-1 px-3 text-sm ${
                                             selectedHash === hash
-                                                ? 'text-white bg-indigo-500'
-                                                : 'bg-gray-100 hover:bg-gray-200'
+                                                ? `text-white bg-${theme[1]}-500`
+                                                : 'opacity-50 hover:opacity-100'
                                         } cursor-pointer rounded mr-2`}
                                         key={hash}
                                         onClick={() => handleIterationSelect(hash)}
@@ -202,7 +212,7 @@ const BlogPage = () => {
                         ) : null}
 
                         <h1 className='text-3xl font-bold mt-4'>{displayData?.title}</h1>
-                        <p className='mt-1 text-sm text-gray-600 mb-6'>
+                        <p className='mt-1 text-sm opacity-70 mb-6'>
                             {displayData?.publishDate}
                         </p>
                         {displayData?.coverImage ? (
@@ -223,8 +233,8 @@ const BlogPage = () => {
                             <div
                                 className={`fixed rounded-full bottom-2 border left-1/2 -translate-x-1/2 p-2 pr-4 shadow-xl z-30 flex items-center cursor-pointer transition-all ${
                                     isLiked
-                                        ? 'bg-indigo-500 text-white hover:bg-indigo-700'
-                                        : 'bg-white text-gray-500 hover:text-gray-900'
+                                        ? `bg-${theme[1]}-500 text-white hover:bg-${theme[1]}-700`
+                                        : 'bg-gray-100 hover:bg-white text-black'
                                 }`}
                                 onClick={isLiked ? handleUnlike : handleLike}
                                 title={isLiked ? 'Unlike' : 'Like'}
@@ -235,7 +245,7 @@ const BlogPage = () => {
                         ) : null}
 
                         <div className='mt-8 mb-12 relative'>
-                            <div className='sticky bg-white top-14 py-3'>
+                            <div className={`sticky bg-${theme[0]} top-14 py-3`}>
                                 <h6 className='text-lg font-bold'>
                                     {isDeleted ? 'Comments' : 'Leave a comment'}
                                 </h6>
@@ -244,7 +254,7 @@ const BlogPage = () => {
                                         <textarea
                                             value={commentText}
                                             onChange={(e) => setCommentText(e.target.value)}
-                                            className='w-full p-1 rounded border border-gray-400 my-2'
+                                            className='w-full p-1 rounded border border-gray-400 my-2 bg-transparent'
                                         ></textarea>
                                         {editCommentId ? (
                                             <div className='flex items-center space-x-2'>
@@ -266,8 +276,10 @@ const BlogPage = () => {
                             {comments.length ? (
                                 comments.map(([id, commentedBy, comment, identity]) => (
                                     <div
-                                        className={`py-3 mb-3 border-b border-gray-300 ${
-                                            editCommentId === id ? 'bg-indigo-100' : ''
+                                        className={`py-3 mb-3 border-b border-${
+                                            theme[2]
+                                        } border-opacity-30 ${
+                                            editCommentId === id ? `bg-${theme[2]} bg-opacity-10` : ''
                                         }`}
                                         key={id}
                                     >
@@ -278,7 +290,7 @@ const BlogPage = () => {
                                                         <div className='flex items-center space-x-2'>
                                                             <EditOutlinedIcon
                                                                 onClick={() => setEditCommentId(id)}
-                                                                className='text-gray-400 hover:text-gray-900 cursor-pointer transition-all'
+                                                                className={`text-${theme[2]} opacity-50 hover:opacity-90 cursor-pointer transition-all`}
                                                                 sx={{width: 18, height: 18}}
                                                             />
                                                             <DeleteOutlineOutlinedIcon

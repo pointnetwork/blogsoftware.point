@@ -1,5 +1,11 @@
 import dayjs from 'dayjs';
-import {ChangeEvent, FunctionComponent, useEffect, useMemo, useState} from 'react';
+import {
+    ChangeEvent,
+    FunctionComponent,
+    useEffect,
+    useMemo,
+    useState
+} from 'react';
 import {useLocation, useNavigate} from 'react-router-dom';
 import ReactQuill from 'react-quill';
 import 'react-quill/dist/quill.snow.css';
@@ -21,7 +27,8 @@ const Create: FunctionComponent<{ edit?: boolean }> = ({edit}) => {
     const {search} = useLocation();
     const query = useMemo(() => new URLSearchParams(search), [search]);
     const navigate = useNavigate();
-    const {ownerAddress, blogs, getAllBlogs, isOwner, loading} = useAppContext();
+    const {ownerAddress, blogs, getAllBlogs, isOwner, loading, theme} =
+    useAppContext();
 
     const [editId, setEditId] = useState<number | undefined>();
     const [isLoading, setLoading] = useState<boolean>(false);
@@ -121,7 +128,7 @@ const Create: FunctionComponent<{ edit?: boolean }> = ({edit}) => {
                         type='text'
                         value={title}
                         onChange={(e) => setTitle(e.target.value)}
-                        className='p-1 rounded border border-gray-300 w-full'
+                        className='p-1 rounded border border-gray-300 w-full bg-transparent'
                     />
                     <h3 className='text-lg font-bold mt-6 mb-2'>Content</h3>
                     <ReactQuill
@@ -152,13 +159,16 @@ const Create: FunctionComponent<{ edit?: boolean }> = ({edit}) => {
                                 />
                             </>
                         ) : (
-                            <div className='relative w-full bg-gray-50 rounded h-48 mr-3 border-2 border-gray-200 flex flex-col items-center justify-center'>
+                            <div
+                                className={`relative w-full bg-${theme[2]} bg-opacity-10 rounded h-48 mr-3 border-2 border-${theme[2]} border-opacity-20 flex flex-col items-center justify-center`}
+                            >
                                 <ImageOutlinedIcon
                                     sx={{height: 56, width: 56}}
-                                    color='disabled'
-                                    className='-mt-2'
+                                    className={`text-${theme[2]} text-opacity-40 -mt-2`}
                                 />
-                                <p className='text-gray-500 mt-1'>Select a Cover Image</p>
+                                <p className={`text-${theme[2]} text-opacity-40 mt-1`}>
+                  Select a Cover Image
+                                </p>
                                 <input
                                     type='file'
                                     accept='image/*'
@@ -170,7 +180,7 @@ const Create: FunctionComponent<{ edit?: boolean }> = ({edit}) => {
                     </div>
                 </div>
             </main>
-            <div className='mt-6 bg-white border-t border-gray-200 pt-3'>
+            <div className='mt-6 bg-transparent border-t border-gray-200 pt-3'>
                 <div className='flex space-x-4 mx-auto' style={{maxWidth: '1000px'}}>
                     <PrimaryButton
                         disabled={isLoading || (!edit && (!title || !content))}

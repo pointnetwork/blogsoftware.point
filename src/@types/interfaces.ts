@@ -1,4 +1,5 @@
-import {ReactEventHandler} from 'react';
+import {Dispatch, ReactEventHandler, SetStateAction} from 'react';
+import {Theme} from './types';
 
 export interface ButtonProps {
   children: string;
@@ -19,6 +20,8 @@ export interface AppContentInterface {
   ownerIdentity: string;
   visitorAddress: string;
   visitorIdentity: string;
+  theme: Theme;
+  setTheme: Dispatch<SetStateAction<Theme>>;
 }
 
 export interface BlogsState {
