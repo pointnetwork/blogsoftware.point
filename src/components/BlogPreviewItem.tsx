@@ -70,7 +70,7 @@ const BlogPreviewItem = ({
 
     return (
         <div
-            className={`flex p-3 rounded my-3 border border-${theme[2]} ${
+            className={`flex p-3 rounded-lg my-3 border border-${theme[2]} ${
                 admin ? 'mb-5' : ''
             } hover:shadow-lg border-opacity-20 relative`}
         >
