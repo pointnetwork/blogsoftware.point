@@ -13,6 +13,7 @@ const CreateProfile = ({edit}: { edit?: boolean }) => {
     const [about, setAbout] = useState<string>('');
 
     const navigate = useNavigate();
+
     const {ownerAddress, userInfo, getUserInfo, getAllBlogs, theme, setToast} =
     useAppContext();
 

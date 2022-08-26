@@ -27,6 +27,7 @@ const Create: FunctionComponent<{ edit?: boolean }> = ({edit}) => {
     const {search} = useLocation();
     const query = useMemo(() => new URLSearchParams(search), [search]);
     const navigate = useNavigate();
+
     const {
         ownerAddress,
         blogs,
