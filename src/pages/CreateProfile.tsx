@@ -13,7 +13,7 @@ const CreateProfile = ({edit}: { edit?: boolean }) => {
     const [about, setAbout] = useState<string>('');
 
     const navigate = useNavigate();
-    const {ownerAddress, userInfo, getUserInfo, getAllBlogs, theme} =
+    const {ownerAddress, userInfo, getUserInfo, getAllBlogs, theme, setToast} =
     useAppContext();
 
     const getInitialData = async () => {
@@ -62,6 +62,7 @@ const CreateProfile = ({edit}: { edit?: boolean }) => {
             method: BlogContract.saveUserInfo,
             params: [ownerAddress, res.data]
         });
+        setToast({color: 'green-500', message: 'Profile saved successfully'});
         getUserInfo();
         getAllBlogs();
         navigate(RoutesEnum.admin);

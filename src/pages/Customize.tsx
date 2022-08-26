@@ -5,7 +5,7 @@ import {useAppContext} from '../context/AppContext';
 import PageLayout from '../layouts/PageLayout';
 
 const Customize = () => {
-    const {theme, setTheme} = useAppContext();
+    const {theme, setTheme, setToast} = useAppContext();
 
     const backgroundColors = ['zinc', 'slate', 'gray', 'neutral'];
     const primaryColors = [
@@ -35,6 +35,7 @@ const Customize = () => {
             method: BlogContract.setTheme,
             params: [...theme]
         });
+        setToast({color: 'green-500', message: 'Theme updated successfully'});
     };
 
     return (

@@ -8,6 +8,8 @@ export interface ButtonProps {
 }
 
 export interface AppContentInterface {
+  toast: ToastNotification;
+  setToast: Dispatch<SetStateAction<ToastNotification>>;
   loading: boolean;
   isOwner: boolean;
   userInfo: UserInfoState;
@@ -60,4 +62,9 @@ export interface UserInfoState {
   loading: boolean;
   data: UserInfoContractData & UserInfo;
   error?: string;
+}
+
+export interface ToastNotification {
+  color: 'green-500' | 'red-500';
+  message: string;
 }
