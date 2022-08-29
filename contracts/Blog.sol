@@ -12,6 +12,12 @@ contract Blog is Initializable, UUPSUpgradeable, OwnableUpgradeable {
     Counters.Counter private numBlogPosts;
     Counters.Counter internal commentIds;
 
+    struct Theme{
+        string background;
+        string primary;
+        string text;
+    }
+
     struct UserInfo {
         address walletAddress;
         string dataStorageHash;
@@ -29,8 +35,10 @@ contract Blog is Initializable, UUPSUpgradeable, OwnableUpgradeable {
         bool isPublished;
         string publishDate;
         string[] previousStorageHashes;
+        string tags;
     }
 
+    Theme theme;
     UserInfo user;
     BlogPost[] blogPosts;
     BlogPost[] deletedBlogPosts;
@@ -44,6 +52,11 @@ contract Blog is Initializable, UUPSUpgradeable, OwnableUpgradeable {
     function initialize() public initializer onlyProxy {
         __Ownable_init();
         __UUPSUpgradeable_init();
+        theme = Theme({
+            background:'white',
+            primary:'indigo',
+            text:'black'
+        });
     }
 
     function _authorizeUpgrade(address) internal override onlyOwner {}
@@ -80,7 +93,8 @@ contract Blog is Initializable, UUPSUpgradeable, OwnableUpgradeable {
     function addBlog(
         string calldata _storageHash,
         bool _isPublished,
-        string calldata _publishDate
+        string calldata _publishDate,
+        string calldata _tags
     ) public payable onlyOwner {
         string[] memory _previousStorageHashes;
         numBlogPosts.increment();
@@ -89,7 +103,8 @@ contract Blog is Initializable, UUPSUpgradeable, OwnableUpgradeable {
             storageHash: _storageHash,
             isPublished: _isPublished,
             publishDate: _publishDate,
-            previousStorageHashes: _previousStorageHashes
+            previousStorageHashes: _previousStorageHashes,
+            tags:_tags
         });
         blogPosts.push(blog);
     }
@@ -97,7 +112,8 @@ contract Blog is Initializable, UUPSUpgradeable, OwnableUpgradeable {
     function editBlog(
         uint256 id,
         string calldata _storageHash,
-        string calldata _publishDate
+        string calldata _publishDate,
+        string calldata _tags
     ) public payable onlyOwner {
         uint256 index = _getBlogIndexById(id);
         blogPosts[index].previousStorageHashes.push(
@@ -105,6 +121,7 @@ contract Blog is Initializable, UUPSUpgradeable, OwnableUpgradeable {
         );
         blogPosts[index].storageHash = _storageHash;
         blogPosts[index].publishDate = _publishDate;
+        blogPosts[index].tags = _tags;
     }
 
     function deleteBlog(uint256 _id) public payable onlyOwner {
@@ -292,6 +309,19 @@ contract Blog is Initializable, UUPSUpgradeable, OwnableUpgradeable {
             emailSubscribers[i] = emailSubscribers[i + 1];
         }
         emailSubscribers.pop();
+    }
+
+    // Theming
+    function getTheme() public view returns (Theme memory) {
+        return theme;
+    }
+
+    function setTheme(string calldata _background, string calldata _primary, string calldata _text) public payable {
+        theme = Theme({
+            background: _background,
+            primary: _primary,
+            text: _text
+        });
     }
 
     // Helpers
