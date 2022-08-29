@@ -27,8 +27,16 @@ const Create: FunctionComponent<{ edit?: boolean }> = ({edit}) => {
     const {search} = useLocation();
     const query = useMemo(() => new URLSearchParams(search), [search]);
     const navigate = useNavigate();
-    const {ownerAddress, blogs, getAllBlogs, isOwner, loading, theme} =
-    useAppContext();
+
+    const {
+        ownerAddress,
+        blogs,
+        getAllBlogs,
+        isOwner,
+        loading,
+        theme,
+        setToast
+    } = useAppContext();
 
     const [editId, setEditId] = useState<number | undefined>();
     const [isLoading, setLoading] = useState<boolean>(false);
@@ -101,12 +109,17 @@ const Create: FunctionComponent<{ edit?: boolean }> = ({edit}) => {
                 method: BlogContract.editBlog,
                 params: [editId, res.data, now] as EditBlogContractParams
             });
+            setToast({
+                color: 'green-500',
+                message: 'Blog post updated successfully'
+            });
         } else {
             await window.point.contract.send({
                 contract: BlogContract.name,
                 method: BlogContract.addBlog,
                 params: [res.data, isPublished, now] as AddBlogContractParams
             });
+            setToast({color: 'green-500', message: 'Blog post added successfully'});
         }
         getAllBlogs();
         navigate('/');

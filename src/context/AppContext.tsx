@@ -1,5 +1,9 @@
 import {createContext, useContext, useState, useEffect} from 'react';
-import {AppContentInterface, UserInfoState} from '../@types/interfaces';
+import {
+    AppContentInterface,
+    ToastNotification,
+    UserInfoState
+} from '../@types/interfaces';
 import {BlogContract, RoutesEnum} from '../@types/enums';
 import {useNavigate} from 'react-router-dom';
 import utils from './utils';
@@ -7,6 +11,8 @@ import useBlogs from './useBlogs';
 import {Theme} from '../@types/types';
 
 const AppContext = createContext({
+    toast: {color: 'green-500', message: ''},
+    setToast: () => {},
     loading: true,
     isOwner: false,
     blogs: {loading: true, data: []},
@@ -32,6 +38,10 @@ export const ProvideAppContext = ({children}: { children: any }) => {
 
     const Blogs = useBlogs();
 
+    const [toast, setToast] = useState<ToastNotification>({
+        color: 'green-500',
+        message: ''
+    });
     const [loading, setLoading] = useState<boolean>(true);
     const [isOwner, setIsOwner] = useState<boolean>(false);
     const [userInfo, setUserInfo] = useState<UserInfoState>({
@@ -111,6 +121,8 @@ export const ProvideAppContext = ({children}: { children: any }) => {
     return (
         <AppContext.Provider
             value={{
+                toast,
+                setToast,
                 loading,
                 isOwner,
                 ...Blogs,
