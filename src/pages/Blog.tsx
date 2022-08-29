@@ -250,6 +250,18 @@ const BlogPage = () => {
                             </div>
                         ) : null}
 
+                        <div className='my-4 flex items-center space-x-1'>
+                            <h6 className='text-lg font-bold mr-1'>Tags:</h6>
+                            {original.tags.split(',').map((tag) => (
+                                <p
+                                    key={tag}
+                                    className={`p-1 px-2.5 rounded-full bg-${theme[2]} bg-opacity-10 text-sm`}
+                                >
+                                    {tag}
+                                </p>
+                            ))}
+                        </div>
+
                         <div className='mt-8 mb-12 relative'>
                             <div className={`sticky bg-${theme[0]} top-14 py-3`}>
                                 <h6 className='text-lg font-bold'>

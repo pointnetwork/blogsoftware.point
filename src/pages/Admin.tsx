@@ -106,8 +106,10 @@ const Admin = () => {
     async function handleDebounceFn(inputValue: string) {
         const _data = await handleDataChange(filter);
         setData(
-            _data.filter((blog) =>
-                blog.title.toLowerCase().includes(inputValue.toLowerCase())
+            _data.filter(
+                (blog) =>
+                    blog.title.toLowerCase().includes(inputValue.toLowerCase()) ||
+          blog.tags.toLowerCase().includes(inputValue.toLowerCase())
             )
         );
     }
