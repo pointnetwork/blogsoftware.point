@@ -23,7 +23,8 @@ const useBlogs = () => {
                     storageHash,
                     isPublished,
                     publishDate,
-                    previousStorageHashes
+                    previousStorageHashes,
+                    tags
                 ] = contractData;
                 const data = await utils.getDataFromStorage(storageHash);
                 return {
@@ -32,6 +33,7 @@ const useBlogs = () => {
                     storageHash,
                     isPublished,
                     publishDate,
+                    tags,
                     previousStorageHashes: previousStorageHashes.reverse()
                 } as Blog & BlogContractData;
             })

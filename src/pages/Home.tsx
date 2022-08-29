@@ -27,8 +27,10 @@ const Home = () => {
         setDisplayData(
             blogs.data
                 .filter((blog) => blog.isPublished)
-                .filter((blog) =>
-                    blog.title.toLowerCase().includes(inputValue.toLowerCase())
+                .filter(
+                    (blog) =>
+                        blog.title.toLowerCase().includes(inputValue.toLowerCase()) ||
+            blog.tags.toLowerCase().includes(inputValue.toLowerCase())
                 )
         );
     }

@@ -46,6 +46,7 @@ export interface BlogContractData {
   isPublished: boolean;
   publishDate: string;
   previousStorageHashes: string[];
+  tags: string;
 }
 
 export interface UserInfo {
