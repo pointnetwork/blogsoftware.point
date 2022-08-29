@@ -18,7 +18,7 @@ const BlogPreviewItem = ({
   deleted?: boolean;
   data: Blog & BlogContractData;
 }) => {
-    const {getAllBlogs, theme} = useAppContext();
+    const {getAllBlogs, theme, setToast} = useAppContext();
     const navigate = useNavigate();
 
     const [loading, setLoading] = useState<boolean>(false);
@@ -42,6 +42,7 @@ const BlogPreviewItem = ({
             params: [data.id]
         });
         await getAllBlogs();
+        setToast({color: 'green-500', message: 'Blog post moved to trash'});
         setRequestDelete(false);
         setLoading(false);
     };
@@ -52,6 +53,10 @@ const BlogPreviewItem = ({
             contract: BlogContract.name,
             method: BlogContract.publish,
             params: [data.id]
+        });
+        setToast({
+            color: 'green-500',
+            message: 'Blog post published & moved to published successfully'
         });
         await getAllBlogs();
         setLoading(false);
@@ -64,13 +69,17 @@ const BlogPreviewItem = ({
             method: BlogContract.unpublish,
             params: [data.id]
         });
+        setToast({
+            color: 'green-500',
+            message: 'Blog post unpublished & moved to drafts successfully'
+        });
         await getAllBlogs();
         setLoading(false);
     };
 
     return (
         <div
-            className={`flex p-3 rounded my-3 border border-${theme[2]} ${
+            className={`flex p-3 rounded-lg my-3 border border-${theme[2]} ${
                 admin ? 'mb-5' : ''
             } hover:shadow-lg border-opacity-20 relative`}
         >

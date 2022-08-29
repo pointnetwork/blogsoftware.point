@@ -25,7 +25,8 @@ const BlogPage = () => {
         visitorAddress,
         isOwner,
         getDeletedBlogs,
-        theme
+        theme,
+        setToast
     } = useAppContext();
 
     const [original, setOriginal] = useState<
@@ -124,6 +125,7 @@ const BlogPage = () => {
             method: BlogContract.likeBlogPost,
             params: [original?.id]
         });
+        setToast({color: 'green-500', message: 'Post liked successfully'});
         getLikesForBlogPost();
     };
 
@@ -133,6 +135,7 @@ const BlogPage = () => {
             method: BlogContract.unlikeBlogPost,
             params: [original?.id]
         });
+        setToast({color: 'green-500', message: 'Post unliked successfully'});
         getLikesForBlogPost();
     };
 
@@ -142,6 +145,7 @@ const BlogPage = () => {
             method: BlogContract.addCommentToBlogPost,
             params: [original?.id, commentText]
         });
+        setToast({color: 'green-500', message: 'Comment added successfully'});
         setCommentText('');
         getCommentsForBlogPost();
     };
@@ -152,6 +156,7 @@ const BlogPage = () => {
             method: BlogContract.deleteCommentForBlogPost,
             params: [original?.id, commentId]
         });
+        setToast({color: 'green-500', message: 'Comment deleted successfully'});
         setCommentText('');
         getCommentsForBlogPost();
     };
@@ -162,6 +167,7 @@ const BlogPage = () => {
             method: BlogContract.editCommentForBlogPost,
             params: [original?.id, editCommentId, commentText]
         });
+        setToast({color: 'green-500', message: 'Comment updated successfully'});
         setEditCommentId('');
         getCommentsForBlogPost();
     };
