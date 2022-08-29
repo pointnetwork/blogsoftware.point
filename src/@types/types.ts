@@ -1,13 +1,15 @@
 export type EditBlogContractParams = [
   id: number,
   _storageHash: string,
-  _publishDate: string
+  _publishDate: string,
+  _tags: string
 ];
 
 export type AddBlogContractParams = [
   _storageHash: string,
   _isPublished: boolean,
-  _publishDate: string
+  _publishDate: string,
+  _tags: string
 ];
 
 export type Comment = [

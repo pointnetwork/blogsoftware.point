@@ -2,6 +2,7 @@ import dayjs from 'dayjs';
 import {
     ChangeEvent,
     FunctionComponent,
+    KeyboardEvent,
     useEffect,
     useMemo,
     useState
@@ -10,6 +11,7 @@ import {useLocation, useNavigate} from 'react-router-dom';
 import ReactQuill from 'react-quill';
 import 'react-quill/dist/quill.snow.css';
 import Header from '../components/Header';
+import CloseIcon from '@mui/icons-material/Close';
 import ImageOutlinedIcon from '@mui/icons-material/ImageOutlined';
 import EditIcon from '@mui/icons-material/Edit';
 import {
@@ -43,6 +45,8 @@ const Create: FunctionComponent<{ edit?: boolean }> = ({edit}) => {
     const [cover, setCover] = useState<Blob | null>(null);
     const [title, setTitle] = useState<string>('');
     const [content, setContent] = useState<string>('');
+    const [tags, setTags] = useState<string[]>([]);
+    const [tagInput, setTagInput] = useState<string>('');
 
     useEffect(() => {
         if (!loading && !isOwner) {
@@ -71,6 +75,23 @@ const Create: FunctionComponent<{ edit?: boolean }> = ({edit}) => {
     useEffect(() => {
         loadBlog();
     }, [blogs, edit]);
+
+    const handleTagKeyDown = (e: KeyboardEvent<HTMLInputElement>) => {
+        if (e.key === 'Enter' && tagInput.length) {
+            setTags((prev) => [...prev, tagInput.toLowerCase()]);
+            setTagInput('');
+        }
+    // if (e.key === 'Backspace' && !tagInput.length) {
+    //   setTags((prev) => {
+    //     prev.pop();
+    //     return [...prev];
+    //   });
+    // }
+    };
+
+    const handleTagInput = (e: ChangeEvent<HTMLInputElement>) => {
+        setTagInput(e.target.value.toLowerCase());
+    };
 
     const handleFileInput = (e: ChangeEvent<HTMLInputElement>) => {
         setCover(e.target.files ? e.target.files[0] : null);
@@ -107,7 +128,12 @@ const Create: FunctionComponent<{ edit?: boolean }> = ({edit}) => {
             await window.point.contract.send({
                 contract: BlogContract.name,
                 method: BlogContract.editBlog,
-                params: [editId, res.data, now] as EditBlogContractParams
+                params: [
+                    editId,
+                    res.data,
+                    now,
+                    tags.join(',')
+                ] as EditBlogContractParams
             });
             setToast({
                 color: 'green-500',
@@ -117,7 +143,12 @@ const Create: FunctionComponent<{ edit?: boolean }> = ({edit}) => {
             await window.point.contract.send({
                 contract: BlogContract.name,
                 method: BlogContract.addBlog,
-                params: [res.data, isPublished, now] as AddBlogContractParams
+                params: [
+                    res.data,
+                    isPublished,
+                    now,
+                    tags.join(',')
+                ] as AddBlogContractParams
             });
             setToast({color: 'green-500', message: 'Blog post added successfully'});
         }
@@ -143,7 +174,7 @@ const Create: FunctionComponent<{ edit?: boolean }> = ({edit}) => {
                         onChange={(e) => setTitle(e.target.value)}
                         className='p-1 rounded border border-gray-300 w-full bg-transparent'
                     />
-                    <h3 className='text-lg font-bold mt-6 mb-2'>Content</h3>
+                    <h3 className='text-lg font-bold mt-6 pb-2'>Content</h3>
                     <ReactQuill
                         className='h-full'
                         theme='snow'
@@ -151,8 +182,8 @@ const Create: FunctionComponent<{ edit?: boolean }> = ({edit}) => {
                         onChange={setContent}
                     />
                 </div>
-                <div className='basis-72'>
-                    <h3 className='text-lg font-bold mb-2'>Cover Image</h3>
+                <div className='basis-72 overflow-y-scroll px-2'>
+                    <h3 className='text-lg font-bold mb-1'>Cover Image</h3>
                     <div className='relative'>
                         {cover ? (
                             <>
@@ -190,6 +221,33 @@ const Create: FunctionComponent<{ edit?: boolean }> = ({edit}) => {
                                 />
                             </div>
                         )}
+                    </div>
+                    <h3 className='text-lg font-bold mt-2 mb-1'>Add Tags</h3>
+                    <div className='border bg-transparent flex items-center flex-wrap p-1'>
+                        {tags.map((tag) => (
+                            <div
+                                className={`flex items-center p-1 pr-0 rounded-sm bg-${theme[2]} bg-opacity-10 border border-${theme[2]} hover:bg-opacity-30 m-1`}
+                                style={{fontSize: 12}}
+                                key={tag}
+                            >
+                                <p className='mr-1 capitalize'>{tag}</p>
+                                <CloseIcon
+                                    fontSize='small'
+                                    className='cursor-pointer'
+                                    onClick={() =>
+                                        setTags((prev) => [...prev.filter((t) => t !== tag)])
+                                    }
+                                />
+                            </div>
+                        ))}
+                        <input
+                            value={tagInput}
+                            type='text'
+                            placeholder='Type here...'
+                            className='w-full bg-transparent outline-none m-1 mt-2'
+                            onKeyDown={handleTagKeyDown}
+                            onChange={handleTagInput}
+                        />
                     </div>
                 </div>
             </main>
