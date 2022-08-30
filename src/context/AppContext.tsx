@@ -36,8 +36,6 @@ export const useAppContext = () => useContext(AppContext);
 export const ProvideAppContext = ({children}: { children: any }) => {
     const navigate = useNavigate();
 
-    const Blogs = useBlogs();
-
     const [toast, setToast] = useState<ToastNotification>({
         color: 'green-500',
         message: ''
@@ -58,6 +56,8 @@ export const ProvideAppContext = ({children}: { children: any }) => {
     const [ownerAddress, setOwnerAddress] = useState<string>('');
     const [ownerIdentity, setOwnerIdentity] = useState<string>('');
     const [theme, setTheme] = useState<Theme>(['white', 'indigo', 'black']);
+
+    const Blogs = useBlogs({setToast});
 
     useEffect(() => {
         (async () => {

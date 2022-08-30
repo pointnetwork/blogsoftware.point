@@ -98,62 +98,75 @@ const Create: FunctionComponent<{ edit?: boolean }> = ({edit}) => {
     };
 
     const handleSave = async (isPublished: boolean) => {
-        setLoading(true);
-        const now = dayjs().format('MMM DD, YYYY');
+        try {
+            setLoading(true);
+            const now = dayjs().format('MMM DD, YYYY');
 
-        let coverImage = '';
-        if (cover) {
-            const coverImageFormData = new FormData();
-            coverImageFormData.append('files', cover);
-            const {data} = await window.point.storage.postFile(coverImageFormData);
-            coverImage = data;
-        }
+            let coverImage = '';
+            if (cover) {
+                const coverImageFormData = new FormData();
+                coverImageFormData.append('files', cover);
+                const {data} = await window.point.storage.postFile(
+                    coverImageFormData
+                );
+                coverImage = data;
+            }
 
-        const form = JSON.stringify({
-            coverImage,
-            title,
-            content,
-            publisher: ownerAddress,
-            createdDate: now
-        } as Blog);
-        const file = new File([form], 'blog.json', {type: 'application/json'});
+            const form = JSON.stringify({
+                coverImage,
+                title,
+                content,
+                publisher: ownerAddress,
+                createdDate: now
+            } as Blog);
+            const file = new File([form], 'blog.json', {type: 'application/json'});
 
-        const formData = new FormData();
-        formData.append('files', file);
-        // Upload the File to arweave
-        const res = await window.point.storage.postFile(formData);
-        setLoading(false);
-        // Save data to smart contract
-        if (edit) {
-            await window.point.contract.send({
-                contract: BlogContract.name,
-                method: BlogContract.editBlog,
-                params: [
-                    editId,
-                    res.data,
-                    now,
-                    tags.join(',')
-                ] as EditBlogContractParams
-            });
+            const formData = new FormData();
+            formData.append('files', file);
+            // Upload the File to arweave
+            const res = await window.point.storage.postFile(formData);
+            setLoading(false);
+            // Save data to smart contract
+            if (edit) {
+                await window.point.contract.send({
+                    contract: BlogContract.name,
+                    method: BlogContract.editBlog,
+                    params: [
+                        editId,
+                        res.data,
+                        now,
+                        tags.join(',')
+                    ] as EditBlogContractParams
+                });
+                setToast({
+                    color: 'green-500',
+                    message: 'Blog post updated successfully'
+                });
+            } else {
+                await window.point.contract.send({
+                    contract: BlogContract.name,
+                    method: BlogContract.addBlog,
+                    params: [
+                        res.data,
+                        isPublished,
+                        now,
+                        tags.join(',')
+                    ] as AddBlogContractParams
+                });
+                setToast({
+                    color: 'green-500',
+                    message: 'Blog post added successfully'
+                });
+            }
+            getAllBlogs();
+            navigate('/');
+        } catch (error) {
+            setLoading(false);
             setToast({
-                color: 'green-500',
-                message: 'Blog post updated successfully'
+                color: 'red-500',
+                message: 'Failed to save the blog post. Please try again'
             });
-        } else {
-            await window.point.contract.send({
-                contract: BlogContract.name,
-                method: BlogContract.addBlog,
-                params: [
-                    res.data,
-                    isPublished,
-                    now,
-                    tags.join(',')
-                ] as AddBlogContractParams
-            });
-            setToast({color: 'green-500', message: 'Blog post added successfully'});
         }
-        getAllBlogs();
-        navigate('/');
     };
 
     const handlePublish = () => handleSave(true);

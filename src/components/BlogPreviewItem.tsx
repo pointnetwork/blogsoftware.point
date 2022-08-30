@@ -36,44 +36,65 @@ const BlogPreviewItem = ({
 
     const handleDelete = async () => {
         setLoading(true);
-        await window.point.contract.send({
-            contract: BlogContract.name,
-            method: BlogContract.deleteBlog,
-            params: [data.id]
-        });
-        await getAllBlogs();
-        setToast({color: 'green-500', message: 'Blog post moved to trash'});
-        setRequestDelete(false);
+        try {
+            await window.point.contract.send({
+                contract: BlogContract.name,
+                method: BlogContract.deleteBlog,
+                params: [data.id]
+            });
+            await getAllBlogs();
+            setToast({color: 'green-500', message: 'Blog post moved to trash'});
+            setRequestDelete(false);
+        } catch (error) {
+            setToast({
+                color: 'red-500',
+                message: 'Failed to delete the blog post. Please try again'
+            });
+        }
         setLoading(false);
     };
 
     const handlePublish = async () => {
         setLoading(true);
-        await window.point.contract.send({
-            contract: BlogContract.name,
-            method: BlogContract.publish,
-            params: [data.id]
-        });
-        setToast({
-            color: 'green-500',
-            message: 'Blog post published & moved to published successfully'
-        });
-        await getAllBlogs();
+        try {
+            await window.point.contract.send({
+                contract: BlogContract.name,
+                method: BlogContract.publish,
+                params: [data.id]
+            });
+            setToast({
+                color: 'green-500',
+                message: 'Blog post published & moved to published successfully'
+            });
+            await getAllBlogs();
+        } catch (error) {
+            setToast({
+                color: 'red-500',
+                message: 'Failed to publish the blog post. Please try again'
+            });
+        }
         setLoading(false);
     };
 
     const handleUnPublish = async () => {
         setLoading(true);
-        await window.point.contract.send({
-            contract: BlogContract.name,
-            method: BlogContract.unpublish,
-            params: [data.id]
-        });
-        setToast({
-            color: 'green-500',
-            message: 'Blog post unpublished & moved to drafts successfully'
-        });
-        await getAllBlogs();
+        try {
+            await window.point.contract.send({
+                contract: BlogContract.name,
+                method: BlogContract.unpublish,
+                params: [data.id]
+            });
+            setToast({
+                color: 'green-500',
+                message: 'Blog post unpublished & moved to drafts successfully'
+            });
+            await getAllBlogs();
+        } catch (error) {
+            setToast({
+                color: 'red-500',
+                message: 'Failed to unpublish the blog post. Please try again'
+            });
+        }
         setLoading(false);
     };
 

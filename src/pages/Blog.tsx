@@ -79,18 +79,25 @@ const BlogPage = () => {
     };
 
     const getCommentsForBlogPost = async () => {
-        const {data}: { data: Comment[] } = await window.point.contract.call({
-            contract: BlogContract.name,
-            method: BlogContract.getCommentsForBlogPost,
-            params: [original?.id]
-        });
-        const _comments = await Promise.all(
-            data.map(async ([_id, commentedBy, comment]) => {
-                const identity = await utils.getIdentityFromAddress(commentedBy);
-                return [_id, commentedBy, comment, identity] as Comment;
-            })
-        );
-        setComments(_comments.reverse());
+        try {
+            const {data}: { data: Comment[] } = await window.point.contract.call({
+                contract: BlogContract.name,
+                method: BlogContract.getCommentsForBlogPost,
+                params: [original?.id]
+            });
+            const _comments = await Promise.all(
+                data.map(async ([_id, commentedBy, comment]) => {
+                    const identity = await utils.getIdentityFromAddress(commentedBy);
+                    return [_id, commentedBy, comment, identity] as Comment;
+                })
+            );
+            setComments(_comments.reverse());
+        } catch (error) {
+            setToast({
+                color: 'red-500',
+                message: 'Failed to load comments for the blog post'
+            });
+        }
     };
 
     useEffect(() => {
@@ -120,56 +127,91 @@ const BlogPage = () => {
     };
 
     const handleLike = async () => {
-        await window.point.contract.send({
-            contract: BlogContract.name,
-            method: BlogContract.likeBlogPost,
-            params: [original?.id]
-        });
-        setToast({color: 'green-500', message: 'Post liked successfully'});
-        getLikesForBlogPost();
+        try {
+            await window.point.contract.send({
+                contract: BlogContract.name,
+                method: BlogContract.likeBlogPost,
+                params: [original?.id]
+            });
+            setToast({color: 'green-500', message: 'Post liked successfully'});
+            getLikesForBlogPost();
+        } catch (error) {
+            setToast({
+                color: 'red-500',
+                message: 'Failed to like the blog post. Please try again'
+            });
+        }
     };
 
     const handleUnlike = async () => {
-        await window.point.contract.send({
-            contract: BlogContract.name,
-            method: BlogContract.unlikeBlogPost,
-            params: [original?.id]
-        });
-        setToast({color: 'green-500', message: 'Post unliked successfully'});
-        getLikesForBlogPost();
+        try {
+            await window.point.contract.send({
+                contract: BlogContract.name,
+                method: BlogContract.unlikeBlogPost,
+                params: [original?.id]
+            });
+            setToast({color: 'green-500', message: 'Post unliked successfully'});
+            getLikesForBlogPost();
+        } catch (error) {
+            setToast({
+                color: 'red-500',
+                message: 'Failed to unlike the blog post. Please try again'
+            });
+        }
     };
 
     const handleAddComment = async () => {
-        await window.point.contract.send({
-            contract: BlogContract.name,
-            method: BlogContract.addCommentToBlogPost,
-            params: [original?.id, commentText]
-        });
-        setToast({color: 'green-500', message: 'Comment added successfully'});
-        setCommentText('');
-        getCommentsForBlogPost();
+        try {
+            await window.point.contract.send({
+                contract: BlogContract.name,
+                method: BlogContract.addCommentToBlogPost,
+                params: [original?.id, commentText]
+            });
+            setToast({color: 'green-500', message: 'Comment added successfully'});
+            setCommentText('');
+            getCommentsForBlogPost();
+        } catch (error) {
+            setToast({
+                color: 'red-500',
+                message: 'Failed to add the comment. Please try again'
+            });
+        }
     };
 
     const handleDeleteComment = async (commentId: string) => {
-        await window.point.contract.send({
-            contract: BlogContract.name,
-            method: BlogContract.deleteCommentForBlogPost,
-            params: [original?.id, commentId]
-        });
-        setToast({color: 'green-500', message: 'Comment deleted successfully'});
-        setCommentText('');
-        getCommentsForBlogPost();
+        try {
+            await window.point.contract.send({
+                contract: BlogContract.name,
+                method: BlogContract.deleteCommentForBlogPost,
+                params: [original?.id, commentId]
+            });
+            setToast({color: 'green-500', message: 'Comment deleted successfully'});
+            setCommentText('');
+            getCommentsForBlogPost();
+        } catch (error) {
+            setToast({
+                color: 'red-500',
+                message: 'Failed to delete the comment. Please try again'
+            });
+        }
     };
 
     const handleEditComment = async () => {
-        await window.point.contract.send({
-            contract: BlogContract.name,
-            method: BlogContract.editCommentForBlogPost,
-            params: [original?.id, editCommentId, commentText]
-        });
-        setToast({color: 'green-500', message: 'Comment updated successfully'});
-        setEditCommentId('');
-        getCommentsForBlogPost();
+        try {
+            await window.point.contract.send({
+                contract: BlogContract.name,
+                method: BlogContract.editCommentForBlogPost,
+                params: [original?.id, editCommentId, commentText]
+            });
+            setToast({color: 'green-500', message: 'Comment updated successfully'});
+            setEditCommentId('');
+            getCommentsForBlogPost();
+        } catch (error) {
+            setToast({
+                color: 'red-500',
+                message: 'Failed to update the comment. Please try again'
+            });
+        }
     };
 
     return (

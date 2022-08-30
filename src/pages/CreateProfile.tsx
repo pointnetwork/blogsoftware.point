@@ -39,34 +39,42 @@ const CreateProfile = ({edit}: { edit?: boolean }) => {
 
     const handleFinish = async () => {
         setLoading(true);
-        let avatarImage = '';
-        if (avatar) {
-            const avatarFormData = new FormData();
-            avatarFormData.append('files', avatar);
-            const {data} = await window.point.storage.postFile(avatarFormData);
-            avatarImage = data;
+        try {
+            let avatarImage = '';
+            if (avatar) {
+                const avatarFormData = new FormData();
+                avatarFormData.append('files', avatar);
+                const {data} = await window.point.storage.postFile(avatarFormData);
+                avatarImage = data;
+            }
+            const form = JSON.stringify({
+                avatar: avatarImage,
+                about
+            } as UserInfo);
+            const file = new File([form], 'user.json', {type: 'application/json'});
+
+            const formData = new FormData();
+            formData.append('files', file);
+            // Upload the File to arweave
+            const res = await window.point.storage.postFile(formData);
+            setLoading(false);
+
+            await window.point.contract.send({
+                contract: BlogContract.name,
+                method: BlogContract.saveUserInfo,
+                params: [ownerAddress, res.data]
+            });
+            setToast({color: 'green-500', message: 'Profile saved successfully'});
+            getUserInfo();
+            getAllBlogs();
+            navigate(RoutesEnum.admin);
+        } catch (error) {
+            setLoading(false);
+            setToast({
+                color: 'red-500',
+                message: 'Failed to save the profile. Please try again'
+            });
         }
-        const form = JSON.stringify({
-            avatar: avatarImage,
-            about
-        } as UserInfo);
-        const file = new File([form], 'user.json', {type: 'application/json'});
-
-        const formData = new FormData();
-        formData.append('files', file);
-        // Upload the File to arweave
-        const res = await window.point.storage.postFile(formData);
-        setLoading(false);
-
-        await window.point.contract.send({
-            contract: BlogContract.name,
-            method: BlogContract.saveUserInfo,
-            params: [ownerAddress, res.data]
-        });
-        setToast({color: 'green-500', message: 'Profile saved successfully'});
-        getUserInfo();
-        getAllBlogs();
-        navigate(RoutesEnum.admin);
     };
 
     return (
