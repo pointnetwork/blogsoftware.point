@@ -7,23 +7,30 @@ import {BlogContract, RoutesEnum} from '../@types/enums';
 
 const IdentityInfo = ({admin}: { admin?: boolean }) => {
     const navigate = useNavigate();
-    const {ownerIdentity, userInfo, isOwner, theme} = useAppContext();
+    const {ownerIdentity, userInfo, isOwner, theme, setToast} = useAppContext();
 
     const [avatar, setAvatar] = useState<Blob | null>(null);
     const [isFollowing, setIsFollowing] = useState<boolean>(false);
     const [numFollowers, setNumFollowers] = useState<number | string>('');
 
     const getInitialData = async () => {
-        const {data} = await window.point.contract.call({
-            contract: BlogContract.name,
-            method: BlogContract.isFollowing
-        });
-        setIsFollowing(data);
-        if (userInfo.data.avatar) {
-            const blob = await window.point.storage.getFile({id: userInfo.data.avatar});
-            setAvatar(blob);
+        try {
+            const {data} = await window.point.contract.call({
+                contract: BlogContract.name,
+                method: BlogContract.isFollowing
+            });
+            setIsFollowing(data);
+            if (userInfo.data.avatar) {
+                const blob = await window.point.storage.getFile({id: userInfo.data.avatar});
+                setAvatar(blob);
+            }
+            getNumFollowers();
+        } catch (error) {
+            setToast({
+                color: 'red-500',
+                message: 'Failed to fetch user information. Please reload the page'
+            });
         }
-        getNumFollowers();
     };
 
     useEffect(() => {
@@ -31,29 +38,58 @@ const IdentityInfo = ({admin}: { admin?: boolean }) => {
     }, []);
 
     const getNumFollowers = async () => {
-        const {data} = await window.point.contract.call({
-            contract: BlogContract.name,
-            method: BlogContract.getNumFollowers
-        });
-        setNumFollowers(data);
+        try {
+            const {data} = await window.point.contract.call({
+                contract: BlogContract.name,
+                method: BlogContract.getNumFollowers
+            });
+            setNumFollowers(data);
+        } catch (error) {
+            setToast({
+                color: 'red-500',
+                message: 'Failed to load the followers. Please reload the page'
+            });
+        }
     };
 
     const follow = async () => {
-        await window.point.contract.send({
-            contract: BlogContract.name,
-            method: BlogContract.follow
-        });
-        setIsFollowing(true);
-        getNumFollowers();
+        try {
+            await window.point.contract.send({
+                contract: BlogContract.name,
+                method: BlogContract.follow
+            });
+            setIsFollowing(true);
+            getNumFollowers();
+            setToast({
+                color: 'red-500',
+                message: 'You are now following' + ownerIdentity
+            });
+        } catch (error) {
+            setToast({
+                color: 'red-500',
+                message: 'Failed to follow the blog. Please try again'
+            });
+        }
     };
 
     const unfollow = async () => {
-        await window.point.contract.send({
-            contract: BlogContract.name,
-            method: BlogContract.unfollow
-        });
-        setIsFollowing(false);
-        getNumFollowers();
+        try {
+            await window.point.contract.send({
+                contract: BlogContract.name,
+                method: BlogContract.unfollow
+            });
+            setIsFollowing(false);
+            getNumFollowers();
+            setToast({
+                color: 'red-500',
+                message: 'You unfollowed' + ownerIdentity
+            });
+        } catch (error) {
+            setToast({
+                color: 'red-500',
+                message: 'Failed to unfollow the blog. Please try again'
+            });
+        }
     };
 
     return !userInfo.loading ? (

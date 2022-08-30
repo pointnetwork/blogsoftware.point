@@ -30,19 +30,29 @@ const Customize = () => {
     ];
 
     const handleSetTheme = async () => {
-        await window.point.contract.send({
-            contract: BlogContract.name,
-            method: BlogContract.setTheme,
-            params: [...theme]
-        });
-        setToast({color: 'green-500', message: 'Theme updated successfully'});
+        try {
+            await window.point.contract.send({
+                contract: BlogContract.name,
+                method: BlogContract.setTheme,
+                params: [...theme]
+            });
+            setToast({color: 'green-500', message: 'Theme updated successfully'});
+        } catch (error) {
+            setToast({
+                color: 'red-500',
+                message: 'Failed to save the theme. Please try again'
+            });
+        }
     };
 
     return (
         <PageLayout>
             <Header />
             <main className='py-6 mx-auto' style={{maxWidth: '1000px'}}>
-                <h1 className='text-3xl font-bold'>Customize your Blog</h1>
+                <div className='flex justify-between'>
+                    <h1 className='text-3xl font-bold'>Customize your Blog</h1>
+                    <PrimaryButton onClick={handleSetTheme}>Update Theme</PrimaryButton>
+                </div>
                 <div className='flex mt-3 space-x-24'>
                     <div className='flex-1'>
                         <h2 className='font-medium text-lg -mb-2'>
