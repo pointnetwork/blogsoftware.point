@@ -16,8 +16,8 @@ const getIdentityFromAddress = async (owner: string) => {
 };
 
 const getDataFromStorage = async (storageHash: string) => {
-    const {data} = await axios.get(`/_storage/${storageHash}`);
-    return data;
+    const {data} = await window.point.storage.getString({id: storageHash});
+    return JSON.parse(data);
 };
 
 const utils = Object.freeze({
