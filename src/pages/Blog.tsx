@@ -216,7 +216,7 @@ const BlogPage = () => {
 
     return (
         <PageLayout>
-            <Header />
+            <Header isProfile={true}/>
             <main className='pb-4 pt-8 mx-auto' style={{maxWidth: '720px'}}>
                 {original ? (
                     <>

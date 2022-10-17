@@ -47,7 +47,7 @@ const Customize = () => {
 
     return (
         <PageLayout>
-            <Header />
+            <Header isProfile={false}/>
             <main className='py-6 mx-auto' style={{maxWidth: '1000px'}}>
                 <div className='flex justify-between'>
                     <h1 className='text-3xl font-bold'>Customize your Blog</h1>

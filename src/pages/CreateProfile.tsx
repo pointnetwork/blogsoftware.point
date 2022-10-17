@@ -6,6 +6,7 @@ import PageLayout from '../layouts/PageLayout';
 import ImageOutlinedIcon from '@mui/icons-material/ImageOutlined';
 import {BlogContract, RoutesEnum} from '../@types/enums';
 import {UserInfo} from '../@types/interfaces';
+import Header from '../components/Header';
 
 const CreateProfile = ({edit}: { edit?: boolean }) => {
     const [loading, setLoading] = useState<boolean>(false);
@@ -79,12 +80,7 @@ const CreateProfile = ({edit}: { edit?: boolean }) => {
 
     return (
         <PageLayout>
-            <header className={`py-3 sticky top-0 bg-${theme[0]} shadow z-10`}>
-                <div className='mx-auto' style={{maxWidth: '1000px'}}>
-                    {/* Logo will go here */}
-                    <span className='font-medium'>BlogSoftware</span>
-                </div>
-            </header>
+            <Header isProfile={true} edit={edit}/>
             <main className='mt-8 mx-auto' style={{maxWidth: '1000px'}}>
                 <h1 className='text-3xl font-bold mb-6'>
                     {edit ? 'Update' : 'Complete'} Your Profile

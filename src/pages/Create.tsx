@@ -174,7 +174,7 @@ const Create: FunctionComponent<{ edit?: boolean }> = ({edit}) => {
 
     return (
         <PageLayout>
-            <Header />
+            <Header isProfile={true}/>
             <main
                 className='flex mx-auto pt-4 overflow-hidden'
                 style={{maxWidth: '1000px', height: window.screen.height - 276}}

@@ -2,13 +2,15 @@ import {useNavigate} from 'react-router-dom';
 import {RoutesEnum} from '../@types/enums';
 import {useAppContext} from '../context/AppContext';
 import {OutlinedButton, PrimaryButton} from './Button';
+import HeaderImage from "../components/HeaderImage";
 
-const Header = () => {
+const Header = ({isProfile, edit} : {isProfile?:boolean, edit?:boolean}) => {
     const {isOwner, theme} = useAppContext();
 
     const navigate = useNavigate();
 
     return (
+        <>
         <header className={`py-3 sticky top-0 bg-${theme[0]} shadow-lg z-10`}>
             <div
                 className='mx-auto flex items-center justify-between'
@@ -32,7 +34,12 @@ const Header = () => {
                     </div>
                 ) : null}
             </div>
+            
         </header>
+        {isProfile ? (
+            <HeaderImage edit={edit}/>
+            ): null}
+        </>
     );
 };
 

@@ -43,7 +43,7 @@ const Home = () => {
     return (
         <PageLayout>
             <div className='h-screen overflow-hidden'>
-                <Header />
+                <Header isProfile={false}/>
                 <main
                     className='flex mt-4 mx-auto'
                     style={{maxWidth: '1000px', height: window.screen.height - 220}}

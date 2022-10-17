@@ -122,7 +122,7 @@ const Admin = () => {
     return (
         <PageLayout>
             <div className='h-screen overflow-hidden'>
-                <Header />
+                <Header isProfile={true}/>
                 <main
                     className='flex mt-4 mx-auto'
                     style={{maxWidth: '1000px', height: window.screen.height - 220}}

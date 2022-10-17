@@ -51,6 +51,7 @@ export interface BlogContractData {
 
 export interface UserInfo {
   avatar: string;
+  headerImage: string;
   about: string;
 }
 
