@@ -76,6 +76,11 @@ const Create: FunctionComponent<{ edit?: boolean }> = ({edit}) => {
         loadBlog();
     }, [blogs, edit]);
 
+    useEffect(() => {
+        // Customize buttons from editor toolbar
+        document.documentElement.style.setProperty('--quill-button-color', theme[2]);
+    }, []);
+
     const handleTagKeyDown = (e: KeyboardEvent<HTMLInputElement>) => {
         if (e.key === 'Enter' && tagInput.length) {
             setTags((prev) => [...prev, tagInput.toLowerCase()]);
