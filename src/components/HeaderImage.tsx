@@ -12,14 +12,13 @@ const HeaderImage = ({edit, setImageHeader}: { edit?: boolean, setImageHeader?: 
     const {theme, userInfo} = useAppContext();
 
     const getInitialData = async () => {
-        if (edit) {
-            setLoading(true);
-            if (userInfo.data.headerImage) {
-                const blob = await window.point.storage.getFile({id: userInfo.data.headerImage});
-                setHeaderImage(blob);
-            }
-            setLoading(false);
+        setLoading(true);
+        if (userInfo.data.headerImage) {
+            const blob = await window.point.storage.getFile({id: userInfo.data.headerImage});
+            setHeaderImage(blob);
+            if (setImageHeader) setImageHeader(blob); 
         }
+        setLoading(false);
     };
 
     useEffect(() => {
@@ -29,7 +28,7 @@ const HeaderImage = ({edit, setImageHeader}: { edit?: boolean, setImageHeader?: 
 
     const handleFileInput = (e: ChangeEvent<HTMLInputElement>) => {
         setHeaderImage(e.target.files ? e.target.files[0] : null);
-        if (setImageHeader) setImageHeader(headerImage); 
+        if (setImageHeader) setImageHeader(e.target.files ? e.target.files[0] : null); 
     };
 
     return (
@@ -62,7 +61,7 @@ const HeaderImage = ({edit, setImageHeader}: { edit?: boolean, setImageHeader?: 
                     />
            
             )}
-            {headerImage ? (
+            {headerImage && edit ? (
                 <p
                     className={`relative text-sm mt-4 transition-all text-${theme[2]} text-opacity-50 hover:text-opacity-100`}
                 >

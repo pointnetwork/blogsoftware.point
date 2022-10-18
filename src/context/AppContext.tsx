@@ -48,7 +48,8 @@ export const ProvideAppContext = ({children}: { children: any }) => {
             walletAddress: '',
             about: '',
             avatar: '',
-            dataStorageHash: ''
+            dataStorageHash: '',
+            headerImage: ''
         }
     });
     const [visitorAddress, setVisitorAddress] = useState<string>('');
