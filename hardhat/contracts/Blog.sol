@@ -12,7 +12,7 @@ contract Blog is Initializable, UUPSUpgradeable, OwnableUpgradeable {
     Counters.Counter private numBlogPosts;
     Counters.Counter internal commentIds;
 
-    struct Theme{
+    struct Theme {
         string background;
         string primary;
         string text;

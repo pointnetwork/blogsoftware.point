@@ -4,7 +4,7 @@ import {useAppContext} from '../context/AppContext';
 import {OutlinedButton, PrimaryButton} from './Button';
 import HeaderImage from "../components/HeaderImage";
 
-const Header = ({isProfile, edit} : {isProfile?:boolean, edit?:boolean}) => {
+const Header = ({isProfile, edit, setImageHeader} : {isProfile?:boolean, edit?:boolean, setImageHeader?:Function}) => {
     const {isOwner, theme} = useAppContext();
 
     const navigate = useNavigate();
@@ -37,7 +37,7 @@ const Header = ({isProfile, edit} : {isProfile?:boolean, edit?:boolean}) => {
             
         </header>
         {isProfile ? (
-            <HeaderImage edit={edit}/>
+            <HeaderImage edit={edit} setImageHeader={setImageHeader}/>
             ): null}
         </>
     );
