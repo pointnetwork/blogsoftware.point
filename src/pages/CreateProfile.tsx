@@ -11,6 +11,7 @@ import Header from '../components/Header';
 const CreateProfile = ({edit}: { edit?: boolean }) => {
     const [loading, setLoading] = useState<boolean>(false);
     const [avatar, setAvatar] = useState<Blob | null>(null);
+    const [headerImage, setHeaderImage] = useState<Blob | null>(null);
     const [about, setAbout] = useState<string>('');
     const [showModal, setShowModal] = useState<boolean>(false);
 
@@ -55,8 +56,18 @@ const CreateProfile = ({edit}: { edit?: boolean }) => {
                 const {data} = await window.point.storage.postFile(avatarFormData);
                 avatarImage = data;
             }
+
+            let coverImage = '';
+            if (headerImage) {
+                const coverFormData = new FormData();
+                coverFormData.append('files', headerImage);
+                const {data} = await window.point.storage.postFile(coverFormData);
+                coverImage = data;
+            }
+            
             const form = JSON.stringify({
                 avatar: avatarImage,
+                headerImage: coverImage,
                 about
             } as UserInfo);
             const file = new File([form], 'user.json', {type: 'application/json'});
@@ -87,7 +98,7 @@ const CreateProfile = ({edit}: { edit?: boolean }) => {
 
     return (
         <PageLayout>
-            <Header isProfile={true} edit={edit}/>
+            <Header isProfile={true} edit={true} setImageHeader={setHeaderImage}/>
             <main className='mt-8 mx-auto' style={{maxWidth: '1000px'}}>
                 <h1 className='text-3xl font-bold mb-6'>
                     {edit ? 'Update' : 'Complete'} Your Profile

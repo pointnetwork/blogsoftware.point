@@ -3,7 +3,7 @@ import {useNavigate} from 'react-router-dom';
 import ImageOutlinedIcon from '@mui/icons-material/ImageOutlined';
 import {useAppContext} from '../context/AppContext';
 
-const HeaderImage = ({edit}: { edit?: boolean }) => {
+const HeaderImage = ({edit, setImageHeader}: { edit?: boolean, setImageHeader?: Function }) => {
 
     const navigate = useNavigate();
 
@@ -15,7 +15,7 @@ const HeaderImage = ({edit}: { edit?: boolean }) => {
         if (edit) {
             setLoading(true);
             if (userInfo.data.headerImage) {
-                const blob = await window.point.storage.getFile({id: userInfo.data.avatar});
+                const blob = await window.point.storage.getFile({id: userInfo.data.headerImage});
                 setHeaderImage(blob);
             }
             setLoading(false);
@@ -29,6 +29,7 @@ const HeaderImage = ({edit}: { edit?: boolean }) => {
 
     const handleFileInput = (e: ChangeEvent<HTMLInputElement>) => {
         setHeaderImage(e.target.files ? e.target.files[0] : null);
+        if (setImageHeader) setImageHeader(headerImage); 
     };
 
     return (
@@ -66,7 +67,7 @@ const HeaderImage = ({edit}: { edit?: boolean }) => {
                     className={`relative text-sm mt-4 transition-all text-${theme[2]} text-opacity-50 hover:text-opacity-100`}
                 >
                     <span className='absolute left-1/2 -translate-x-1/2 cursor-pointer underline'>
-                    Change
+                    Change Cover
                     </span>
                     <input
                         type='file'
