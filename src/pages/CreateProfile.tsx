@@ -30,6 +30,12 @@ const CreateProfile = ({edit}: { edit?: boolean }) => {
                 const blob = await window.point.storage.getFile({id: userInfo.data.avatar});
                 setAvatar(blob);
             }
+
+            if (userInfo.data.headerImage) {
+                const blob = await window.point.storage.getFile({id: userInfo.data.headerImage});
+                setHeaderImage(blob);
+            }
+
             setLoading(false);
         }
     };

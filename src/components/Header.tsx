@@ -36,8 +36,9 @@ const Header = ({isProfile, edit, setImageHeader} : {isProfile?:boolean, edit?:b
             </div>
             
         </header>
-        
-        <HeaderImage edit={edit} setImageHeader={setImageHeader}/>
+        {isProfile ? (
+            <HeaderImage edit={edit} setImageHeader={setImageHeader}/>
+        ) : null}
         
         </>
     );
