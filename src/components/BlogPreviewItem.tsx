@@ -195,7 +195,7 @@ const BlogPreviewItem = ({
                     dangerouslySetInnerHTML={{__html: `<p>${data.content.slice(0, 200)}...</p>`}}
                 ></p>
                 <div className='flex items-center space-x-1 my-2'>
-                    {data.tags.split(',').map((tag) => (
+                    {data.tags?.split(',').map((tag) => (
                         <p
                             key={tag}
                             className={`p-0.5 px-2 rounded-full bg-${theme[2]} bg-opacity-10`}
