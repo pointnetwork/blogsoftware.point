@@ -113,7 +113,7 @@ const BlogPreviewItem = ({
                             className={`absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 bg-${theme[0]} p-5 rounded`}
                         >
                             <h3 className='text-lg font-medium'>
-                Are your sure you want to move this blog to Trash?
+                Are your sure you want to move this blog post to Trash?
                             </h3>
                             <div className='flex justify-end space-x-4 mt-4'>
                                 <OutlinedButton onClick={() => setRequestDelete(false)}>
@@ -174,7 +174,7 @@ const BlogPreviewItem = ({
                     <img
                         src={URL.createObjectURL(coverImage)}
                         className='h-full w-full object-cover'
-                        alt='cover for blog'
+                        alt='cover for blog post'
                     />
                 ) : (
                     <p className={`text-sm ${theme[2]}`}>No Image Uploaded</p>

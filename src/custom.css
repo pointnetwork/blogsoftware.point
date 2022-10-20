@@ -10,3 +10,22 @@
 * {
   font-family: Inter;
 }
+
+:root {
+  --quill-button-color: #444;
+}
+
+/* ReactQuill custom styles */
+.ql-toolbar .ql-stroke {
+  fill: none;
+  stroke: var(--quill-button-color);
+}
+
+.ql-toolbar .ql-fill {
+  fill: var(--quill-button-color);
+  stroke: none;
+}
+
+.ql-toolbar .ql-picker {
+  color: var(--quill-button-color);
+}
