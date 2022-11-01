@@ -312,7 +312,7 @@ contract Blog is Initializable, UUPSUpgradeable, OwnableUpgradeable {
         string calldata _background,
         string calldata _primary,
         string calldata _text
-    ) public payable onlyOwner {
+    ) public onlyOwner {
         theme = Theme({
             background: _background,
             primary: _primary,
