@@ -1,12 +1,13 @@
-import {ButtonProps} from '../@types/interfaces';
-import {useAppContext} from '../context/AppContext';
+import {FunctionComponent, useContext} from 'react';
+import {ThemeContext} from '../context/ThemeContext';
+import {ButtonProps} from '../@types/types';
 
-const PrimaryButton = ({
+const PrimaryButton: FunctionComponent<ButtonProps> = ({
     children,
     disabled = false,
     onClick
-}: ButtonProps) => {
-    const {theme} = useAppContext();
+}) => {
+    const {theme} = useContext(ThemeContext);
     return (
         <button
             onClick={onClick}
@@ -18,12 +19,12 @@ const PrimaryButton = ({
     );
 };
 
-const OutlinedButton = ({
+const OutlinedButton: FunctionComponent<ButtonProps> = ({
     children,
     disabled = false,
     onClick
-}: ButtonProps) => {
-    const {theme} = useAppContext();
+}) => {
+    const {theme} = useContext(ThemeContext);
     return (
         <button
             onClick={onClick}
@@ -35,7 +36,7 @@ const OutlinedButton = ({
     );
 };
 
-const ErrorButton = ({children, disabled = false, onClick}: ButtonProps) => (
+const ErrorButton: FunctionComponent<ButtonProps> = ({children, disabled = false, onClick}) => (
     <button
         onClick={onClick}
         disabled={disabled}

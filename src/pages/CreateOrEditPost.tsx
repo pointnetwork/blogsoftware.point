@@ -1,8 +1,8 @@
-import dayjs from 'dayjs';
 import {
     ChangeEvent,
     FunctionComponent,
     KeyboardEvent,
+    useContext,
     useEffect,
     useMemo,
     useState
@@ -19,62 +19,34 @@ import {
     OutlinedButton,
     PrimaryButton
 } from '../components/Button';
-import {useAppContext} from '../context/AppContext';
-import {Blog} from '../@types/interfaces';
-import {BlogContract, RoutesEnum} from '../@types/enums';
+import {RoutesEnum} from '../@types/enums';
 import PageLayout from '../layouts/PageLayout';
-import {AddBlogContractParams, EditBlogContractParams} from '../@types/types';
+import {UserContext} from '../context/UserContext';
+import {ThemeContext} from '../context/ThemeContext';
+import {PostsContext} from '../context/PostsContext';
 
-const Create: FunctionComponent<{ edit?: boolean }> = ({edit}) => {
+const CreateOrEditPost: FunctionComponent<{ edit?: boolean }> = ({edit}) => {
     const {search} = useLocation();
     const query = useMemo(() => new URLSearchParams(search), [search]);
+    const id = Number(query.get('id'));
     const navigate = useNavigate();
 
-    const {
-        ownerAddress,
-        blogs,
-        getAllBlogs,
-        isOwner,
-        loading,
-        theme,
-        setToast
-    } = useAppContext();
+    const {isOwner, userLoading} = useContext(UserContext);
+    const {theme} = useContext(ThemeContext);
+    const {posts, postSaving, createOrEditPost} = useContext(PostsContext);
+    const post = useMemo(() => edit ? posts.find(p => p.id === id) : null, [posts, id, edit]);
 
-    const [editId, setEditId] = useState<number | undefined>();
-    const [isLoading, setLoading] = useState<boolean>(false);
-    const [cover, setCover] = useState<Blob | null>(null);
-    const [title, setTitle] = useState<string>('');
-    const [content, setContent] = useState<string>('');
-    const [tags, setTags] = useState<string[]>([]);
+    const [cover, setCover] = useState<Blob | null>(post?.coverImage ?? null);
+    const [title, setTitle] = useState<string>(post?.title ?? '');
+    const [content, setContent] = useState<string>(post?.content ?? '');
+    const [tags, setTags] = useState<string[]>(post?.tags.split(',').filter(tag => Boolean(tag)) ?? []);
     const [tagInput, setTagInput] = useState<string>('');
 
     useEffect(() => {
-        if (!loading && !isOwner) {
+        if (!userLoading && !isOwner) {
             navigate(RoutesEnum.home, {replace: true});
         }
-    }, [isOwner, loading]);
-
-    const loadBlog = async () => {
-        if (edit && !blogs.loading) {
-            const id = query.get('id');
-            if (id) {
-                const reqBlog = blogs.data.find((blog) => blog.storageHash === id);
-                if (reqBlog) {
-                    setEditId(reqBlog.id);
-                    setTitle(reqBlog.title);
-                    setContent(reqBlog.content);
-                    if (reqBlog.coverImage) {
-                        const blob = await window.point.storage.getFile({id: reqBlog.coverImage});
-                        setCover(blob);
-                    }
-                }
-            }
-        }
-    };
-
-    useEffect(() => {
-        loadBlog();
-    }, [blogs, edit]);
+    }, [isOwner, userLoading]);
 
     useEffect(() => {
         // Customize buttons from editor toolbar
@@ -86,12 +58,6 @@ const Create: FunctionComponent<{ edit?: boolean }> = ({edit}) => {
             setTags((prev) => [...prev, tagInput.toLowerCase()]);
             setTagInput('');
         }
-    // if (e.key === 'Backspace' && !tagInput.length) {
-    //   setTags((prev) => {
-    //     prev.pop();
-    //     return [...prev];
-    //   });
-    // }
     };
 
     const handleTagInput = (e: ChangeEvent<HTMLInputElement>) => {
@@ -102,80 +68,16 @@ const Create: FunctionComponent<{ edit?: boolean }> = ({edit}) => {
         setCover(e.target.files ? e.target.files[0] : null);
     };
 
-    const handleSave = async (isPublished: boolean) => {
-        try {
-            setLoading(true);
-            const now = dayjs().format('MMM DD, YYYY');
-
-            let coverImage = '';
-            if (cover) {
-                const coverImageFormData = new FormData();
-                coverImageFormData.append('files', cover);
-                const {data} = await window.point.storage.postFile(
-                    coverImageFormData
-                );
-                coverImage = data;
-            }
-
-            const form = JSON.stringify({
-                coverImage,
-                title,
-                content,
-                publisher: ownerAddress,
-                createdDate: now
-            } as Blog);
-            const file = new File([form], 'blog.json', {type: 'application/json'});
-
-            const formData = new FormData();
-            formData.append('files', file);
-            // Upload the File to arweave
-            const res = await window.point.storage.postFile(formData);
-            setLoading(false);
-            // Save data to smart contract
-            if (edit) {
-                await window.point.contract.send({
-                    contract: BlogContract.name,
-                    method: BlogContract.editBlog,
-                    params: [
-                        editId,
-                        res.data,
-                        now,
-                        tags.join(',')
-                    ] as EditBlogContractParams
-                });
-                setToast({
-                    color: 'green-500',
-                    message: 'Blog post updated successfully'
-                });
-            } else {
-                await window.point.contract.send({
-                    contract: BlogContract.name,
-                    method: BlogContract.addBlog,
-                    params: [
-                        res.data,
-                        isPublished,
-                        now,
-                        tags.join(',')
-                    ] as AddBlogContractParams
-                });
-                setToast({
-                    color: 'green-500',
-                    message: 'Blog post added successfully'
-                });
-            }
-            getAllBlogs();
-            navigate('/');
-        } catch (error) {
-            setLoading(false);
-            setToast({
-                color: 'red-500',
-                message: 'Failed to save the blog post. Please try again'
-            });
-        }
+    const handleSave = (publish: boolean) => {
+        createOrEditPost({
+            title,
+            tags: tags.join(','),
+            content,
+            coverImage: cover,
+            editId: edit ? id : null,
+            publish
+        });
     };
-
-    const handlePublish = () => handleSave(true);
-    const handleSaveDraft = () => handleSave(false);
 
     return (
         <PageLayout>
@@ -229,7 +131,7 @@ const Create: FunctionComponent<{ edit?: boolean }> = ({edit}) => {
                                     className={`text-${theme[2]} text-opacity-40 -mt-2`}
                                 />
                                 <p className={`text-${theme[2]} text-opacity-40 mt-1`}>
-                  Select a Cover Image
+                                    Select a Cover Image
                                 </p>
                                 <input
                                     type='file'
@@ -272,21 +174,21 @@ const Create: FunctionComponent<{ edit?: boolean }> = ({edit}) => {
             <div className='mt-6 bg-transparent border-t border-gray-200 pt-3'>
                 <div className='flex space-x-4 mx-auto' style={{maxWidth: '1000px'}}>
                     <PrimaryButton
-                        disabled={isLoading || (!edit && (!title || !content))}
-                        onClick={handlePublish}
+                        disabled={postSaving || (!edit && (!title || !content))}
+                        onClick={() => {handleSave(true);}}
                     >
                         {edit ? 'Update' : 'Publish'}
                     </PrimaryButton>
-                    {!edit ? (
+                    {!edit && (
                         <OutlinedButton
-                            disabled={!title || isLoading}
-                            onClick={handleSaveDraft}
+                            disabled={!title || postSaving}
+                            onClick={() => {handleSave(false);}}
                         >
-              Save Draft
+                            Save Draft
                         </OutlinedButton>
-                    ) : null}
-                    <ErrorButton disabled={isLoading} onClick={() => navigate(-1)}>
-            Cancel
+                    )}
+                    <ErrorButton disabled={postSaving} onClick={() => navigate(-1)}>
+                        Cancel
                     </ErrorButton>
                 </div>
             </div>
@@ -294,4 +196,4 @@ const Create: FunctionComponent<{ edit?: boolean }> = ({edit}) => {
     );
 };
 
-export default Create;
+export default CreateOrEditPost;

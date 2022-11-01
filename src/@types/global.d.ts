@@ -1,7 +1,8 @@
 export {};
 
 declare global {
-  interface Window {
-    point: any;
-  }
+    interface Window {
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        point: any;
+    }
 }

@@ -1,3 +1,0 @@
-export const trimAccount = (account) => `${account.slice(0, 10)}...`;
-
-// add other util / helper functions here...
