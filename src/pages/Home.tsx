@@ -1,4 +1,4 @@
-import {ChangeEvent, FunctionComponent, useContext, useState} from 'react';
+import {ChangeEvent, FunctionComponent, useContext, useMemo, useState} from 'react';
 import BlogPreviewItem from '../components/BlogPreviewItem';
 import Header from '../components/Header';
 import IdentityInfo from '../components/IdentityInfo';
@@ -18,13 +18,16 @@ const Home: FunctionComponent = () => {
         setSearchTerm(event.target.value);
     }
     
-    const displayData = posts
-        .filter((post) => post.isPublished)
-        .filter(
-            (post) =>
-                post.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
+    const displayData = useMemo(
+        () => posts
+            .filter((post) => post.isPublished)
+            .filter(
+                (post) =>
+                    post.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
                 post.tags.toLowerCase().includes(searchTerm.toLowerCase())
-        );
+            ),
+        [posts, searchTerm]
+    );
 
     return (
         <PageLayout>
