@@ -172,7 +172,6 @@ export const ProvidePostsContext: FunctionComponent<PropsWithChildren> = ({child
                     message: 'Blog post added successfully'
                 });
                 setPosts(prevState => [
-                    ...prevState,
                     {
                         id: (prevState[0]?.id ?? 0) + 1,
                         title,
@@ -185,7 +184,8 @@ export const ProvidePostsContext: FunctionComponent<PropsWithChildren> = ({child
                         previousStorageHashes: [],
                         publishDate: now,
                         createdDate: now
-                    }
+                    },
+                    ...prevState
                 ]);
             }
             navigate('/');
@@ -202,6 +202,10 @@ export const ProvidePostsContext: FunctionComponent<PropsWithChildren> = ({child
     const deletePost = async (id: number) => {
         setPostSaving(true);
         try {
+            const deletedPost = posts.find(post => post.id === id);
+            if (!deletedPost) {
+                throw new Error('Trying to delete non-existing post');
+            }
             await window.point.contract.send({
                 contract: BlogContract.name,
                 method: BlogContract.deleteBlog,
@@ -209,6 +213,7 @@ export const ProvidePostsContext: FunctionComponent<PropsWithChildren> = ({child
             });
             setToast({color: 'green-500', message: 'Blog post moved to trash'});
             setPosts(prevState => prevState.filter(post => post.id !== id));
+            setDeletedPosts(prevState => [deletedPost, ...prevState]);
         } catch (e) {
             console.error(e);
             setToast({
