@@ -1,15 +1,15 @@
-import {Dispatch, SetStateAction} from 'react';
+import {ChangeEventHandler, FunctionComponent, useContext} from 'react';
 import SearchIcon from '@mui/icons-material/Search';
-import {useAppContext} from '../context/AppContext';
+import {ThemeContext} from '../context/ThemeContext';
 
-const SearchBar = ({
+const SearchBar: FunctionComponent<{
+    value: string;
+    onChange: ChangeEventHandler<HTMLInputElement>
+}> = ({
     value,
     onChange
-}: {
-  value: string;
-  onChange: Dispatch<SetStateAction<string>>;
 }) => {
-    const {theme} = useAppContext();
+    const {theme} = useContext(ThemeContext);
 
     return (
         <div className={`sticky top-0 bg-${theme[0]} z-10 pb-3`}>

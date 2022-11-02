@@ -3,6 +3,7 @@
     "/create": "index.html",
     "/edit": "index.html",
     "/blog": "index.html",
+    "/deleted_blog": "index.html",
     "/admin": "index.html",
     "/profile": "index.html",
     "/edit_profile": "index.html",

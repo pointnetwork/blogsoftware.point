@@ -28,6 +28,7 @@ export enum BlogContract {
 export enum RoutesEnum {
   home = '/',
   blog = '/blog',
+  deleted_blog = '/deleted_blog',
   admin = '/admin',
   create = '/create',
   edit = '/edit',
@@ -35,3 +36,26 @@ export enum RoutesEnum {
   edit_profile = '/edit_profile',
   customize = '/customize',
 }
+
+export const backgroundColors = ['zinc', 'slate', 'gray', 'neutral'];
+
+export const primaryColors = [
+    'red',
+    'orange',
+    'amber',
+    'yellow',
+    'lime',
+    'green',
+    'emerald',
+    'teal',
+    'cyan',
+    'sky',
+    'blue',
+    'indigo',
+    'violet',
+    'purple',
+    'fuchsia',
+    'pink',
+    'rose',
+    'slate'
+];

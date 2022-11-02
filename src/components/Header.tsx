@@ -1,10 +1,13 @@
 import {useNavigate} from 'react-router-dom';
 import {RoutesEnum} from '../@types/enums';
-import {useAppContext} from '../context/AppContext';
 import {OutlinedButton, PrimaryButton} from './Button';
+import {FunctionComponent, useContext} from 'react';
+import {UserContext} from '../context/UserContext';
+import {ThemeContext} from '../context/ThemeContext';
 
-const Header = () => {
-    const {isOwner, theme} = useAppContext();
+const Header: FunctionComponent = () => {
+    const {isOwner} = useContext(UserContext);
+    const {theme} = useContext(ThemeContext);
 
     const navigate = useNavigate();
 

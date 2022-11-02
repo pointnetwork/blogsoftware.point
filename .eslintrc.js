@@ -46,7 +46,7 @@ module.exports = {
         'semi': ['error', 'always'],
         'linebreak-style': 'off',
         'no-fallthrough': 'off',
-        'no-console': 'warn', // TODO: replace console with logger in helpers and set to error
+        'no-console': ['warn', {allow: ['error']}],
         'no-debugger': 'error',
         'max-len': [
             'warn',
@@ -110,5 +110,15 @@ module.exports = {
     // 'import/imports-first': ['error', 'absolute-first'],
     // 'import/extensions': ['error', 'never'],
     // 'import/no-unresolved': 'off',
-    }
+    },
+    overrides: [
+        {
+            files: ['hardhat/**/*', 'watch.docker.js'],
+            rules: {'no-console': 'off'}
+        },
+        {
+            files: ['*.js'],
+            rules: {'@typescript-eslint/explicit-module-boundary-types': 'off'}
+        }
+    ]
 };

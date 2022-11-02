@@ -1,15 +1,18 @@
-import {useEffect, useState} from 'react';
-import {useAppContext} from '../context/AppContext';
+import {FunctionComponent, useContext, useEffect, useState} from 'react';
 import Loader from './Loader';
 import EditIcon from '@mui/icons-material/Edit';
 import {useNavigate} from 'react-router-dom';
 import {BlogContract, RoutesEnum} from '../@types/enums';
+import {ToastContext} from '../context/ToastContext';
+import {ThemeContext} from '../context/ThemeContext';
+import {UserContext} from '../context/UserContext';
 
-const IdentityInfo = ({admin}: { admin?: boolean }) => {
+const IdentityInfo: FunctionComponent<{ admin?: boolean }> = ({admin}) => {
     const navigate = useNavigate();
-    const {ownerIdentity, userInfo, isOwner, theme, setToast} = useAppContext();
+    const {setToast} = useContext(ToastContext);
+    const {theme} = useContext(ThemeContext);
+    const {ownerIdentity, userInfo, isOwner, userLoading} = useContext(UserContext);
 
-    const [avatar, setAvatar] = useState<Blob | null>(null);
     const [isFollowing, setIsFollowing] = useState<boolean>(false);
     const [numFollowers, setNumFollowers] = useState<number | string>('');
 
@@ -20,10 +23,6 @@ const IdentityInfo = ({admin}: { admin?: boolean }) => {
                 method: BlogContract.isFollowing
             });
             setIsFollowing(data);
-            if (userInfo.data.avatar) {
-                const blob = await window.point.storage.getFile({id: userInfo.data.avatar});
-                setAvatar(blob);
-            }
             getNumFollowers();
         } catch (error) {
             setToast({
@@ -92,7 +91,9 @@ const IdentityInfo = ({admin}: { admin?: boolean }) => {
         }
     };
 
-    return !userInfo.loading ? (
+    return userLoading ? (
+        <Loader>Loading User Info...</Loader>
+    ) : (
         <>
             {admin ? (
                 <div
@@ -103,7 +104,7 @@ const IdentityInfo = ({admin}: { admin?: boolean }) => {
                     <EditIcon fontSize='small' />
                 </div>
             ) : null}
-            {!isOwner ? (
+            {!isOwner && (
                 <div className='flex justify-end'>
                     <button
                         className={`rounded-full px-3 py-1 font-medium ${
@@ -119,12 +120,12 @@ const IdentityInfo = ({admin}: { admin?: boolean }) => {
                         {isFollowing ? 'Unfollow' : 'Follow'}
                     </button>
                 </div>
-            ) : null}
+            )}
             <div className='relative'>
                 <div className='h-56 w-56 bg-gray-200 rounded-full self-center mb-4'>
-                    {avatar && (
+                    {userInfo.avatar && (
                         <img
-                            src={URL.createObjectURL(avatar)}
+                            src={URL.createObjectURL(userInfo.avatar)}
                             alt='avatar'
                             className='w-full h-full rounded-full object-cover'
                         />
@@ -134,11 +135,9 @@ const IdentityInfo = ({admin}: { admin?: boolean }) => {
             <h2 className='text-xl font-bold mt-2'>{ownerIdentity}</h2>
             <p className='text-sm'>{numFollowers} followers</p>
             <div className='relative mt-2 mb-4'>
-                <p className='text-sm opacity-80'>{userInfo.data.about}</p>
+                <p className='text-sm opacity-80'>{userInfo.about}</p>
             </div>
         </>
-    ) : (
-        <Loader>Loading User Info...</Loader>
     );
 };
 

@@ -1,4 +1,6 @@
-const ColorImports = () => (
+import {FunctionComponent} from 'react';
+
+const ColorImports: FunctionComponent = () => (
     <div className='hidden'>
         <div className='bg-red-500 border-red-500 text-red-500'></div>
         <div className='bg-orange-500 border-orange-500 text-orange-500'></div>

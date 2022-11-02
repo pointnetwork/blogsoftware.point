@@ -1,81 +1,34 @@
-import React, {ChangeEvent, useEffect, useState} from 'react';
+import React, {ChangeEvent, FunctionComponent, useContext, useEffect, useState} from 'react';
 import {OutlinedButton, PrimaryButton} from '../components/Button';
 import {useNavigate} from 'react-router-dom';
-import {useAppContext} from '../context/AppContext';
 import PageLayout from '../layouts/PageLayout';
 import ImageOutlinedIcon from '@mui/icons-material/ImageOutlined';
-import {BlogContract, RoutesEnum} from '../@types/enums';
-import {UserInfo} from '../@types/interfaces';
+import {UserContext} from '../context/UserContext';
+import {ThemeContext} from '../context/ThemeContext';
 
-const CreateProfile = ({edit}: { edit?: boolean }) => {
-    const [loading, setLoading] = useState<boolean>(false);
-    const [avatar, setAvatar] = useState<Blob | null>(null);
-    const [about, setAbout] = useState<string>('');
+const CreateOrEditProfile: FunctionComponent<{ edit?: boolean }> = ({edit}) => {
+    const {userInfo, userSaving, saveUserInfo, userLoading, userError} = useContext(UserContext);
+    const {theme} = useContext(ThemeContext);
+
+    const [avatar, setAvatar] = useState<Blob | null>(userInfo.avatar);
+    const [about, setAbout] = useState<string>(userInfo.about);
+    useEffect(() => {
+        if (userInfo.about) {
+            setAbout(userInfo.about);
+        }
+        if (userInfo.avatar) {
+            setAvatar(userInfo.avatar);
+        }
+    }, [userInfo]);
 
     const navigate = useNavigate();
-
-    const {ownerAddress, userInfo, getUserInfo, getAllBlogs, theme, setToast} =
-    useAppContext();
-
-    const getInitialData = async () => {
-        if (edit) {
-            setLoading(true);
-            setAbout(userInfo.data.about);
-            if (userInfo.data.avatar) {
-                const blob = await window.point.storage.getFile({id: userInfo.data.avatar});
-                setAvatar(blob);
-            }
-            setLoading(false);
-        }
-    };
-
-    useEffect(() => {
-        getInitialData();
-    }, [edit, userInfo]);
 
     const handleFileInput = (e: ChangeEvent<HTMLInputElement>) => {
         setAvatar(e.target.files ? e.target.files[0] : null);
     };
 
-    const handleFinish = async () => {
-        setLoading(true);
-        try {
-            let avatarImage = '';
-            if (avatar) {
-                const avatarFormData = new FormData();
-                avatarFormData.append('files', avatar);
-                const {data} = await window.point.storage.postFile(avatarFormData);
-                avatarImage = data;
-            }
-            const form = JSON.stringify({
-                avatar: avatarImage,
-                about
-            } as UserInfo);
-            const file = new File([form], 'user.json', {type: 'application/json'});
-
-            const formData = new FormData();
-            formData.append('files', file);
-            // Upload the File to arweave
-            const res = await window.point.storage.postFile(formData);
-            setLoading(false);
-
-            await window.point.contract.send({
-                contract: BlogContract.name,
-                method: BlogContract.saveUserInfo,
-                params: [ownerAddress, res.data]
-            });
-            setToast({color: 'green-500', message: 'Profile saved successfully'});
-            getUserInfo();
-            getAllBlogs();
-            navigate(RoutesEnum.admin);
-        } catch (error) {
-            setLoading(false);
-            setToast({
-                color: 'red-500',
-                message: 'Failed to save the profile. Please try again'
-            });
-        }
-    };
+    if (userLoading) return <PageLayout loading/>;
+    if (userError) return <PageLayout error/>;
 
     return (
         <PageLayout>
@@ -114,12 +67,12 @@ const CreateProfile = ({edit}: { edit?: boolean }) => {
                                 alt='profile'
                             />
                         )}
-                        {avatar ? (
+                        {avatar && (
                             <p
                                 className={`relative text-sm mt-4 transition-all text-${theme[2]} text-opacity-50 hover:text-opacity-100`}
                             >
                                 <span className='absolute left-1/2 -translate-x-1/2 cursor-pointer underline'>
-                  Change
+                                    Change
                                 </span>
                                 <input
                                     type='file'
@@ -128,7 +81,7 @@ const CreateProfile = ({edit}: { edit?: boolean }) => {
                                     onChange={handleFileInput}
                                 />
                             </p>
-                        ) : null}
+                        )}
                     </div>
                     <div className='flex-1'>
                         <h3 className='font-bold text-lg mb-2'>A Little About You</h3>
@@ -147,16 +100,16 @@ const CreateProfile = ({edit}: { edit?: boolean }) => {
                         </div>
                         <div className='flex space-x-3'>
                             <PrimaryButton
-                                disabled={!avatar || !about || loading}
-                                onClick={handleFinish}
+                                disabled={!avatar || !about || userSaving}
+                                onClick={() => {saveUserInfo({avatar, about});}}
                             >
-                                {loading ? 'Please Wait' : edit ? 'Update Profile' : 'Finish'}
+                                {userSaving ? 'Please Wait' : edit ? 'Update Profile' : 'Finish'}
                             </PrimaryButton>
-                            {edit ? (
+                            {edit && (
                                 <OutlinedButton onClick={() => navigate(-1)}>
-                  Cancel
+                                    Cancel
                                 </OutlinedButton>
-                            ) : null}
+                            )}
                         </div>
                     </div>
                 </div>
@@ -165,4 +118,4 @@ const CreateProfile = ({edit}: { edit?: boolean }) => {
     );
 };
 
-export default CreateProfile;
+export default CreateOrEditProfile;

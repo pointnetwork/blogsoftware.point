@@ -1,12 +1,8 @@
-import {useEffect} from 'react';
-import {useAppContext} from '../context/AppContext';
+import {FunctionComponent, useContext} from 'react';
+import {ToastContext} from '../context/ToastContext';
 
-const Alert = () => {
-    const {toast, setToast} = useAppContext();
-
-    useEffect(() => {
-        if (toast.message) {setTimeout(() => setToast({color: 'green-500', message: ''}), 3000);}
-    }, [toast]);
+const Alert: FunctionComponent = () => {
+    const {toast} = useContext(ToastContext);
 
     return (
         <div

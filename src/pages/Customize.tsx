@@ -1,49 +1,12 @@
-import {BlogContract} from '../@types/enums';
+import {backgroundColors, primaryColors} from '../@types/enums';
 import {PrimaryButton} from '../components/Button';
 import Header from '../components/Header';
-import {useAppContext} from '../context/AppContext';
 import PageLayout from '../layouts/PageLayout';
+import {FunctionComponent, useContext} from 'react';
+import {ThemeContext} from '../context/ThemeContext';
 
-const Customize = () => {
-    const {theme, setTheme, setToast} = useAppContext();
-
-    const backgroundColors = ['zinc', 'slate', 'gray', 'neutral'];
-    const primaryColors = [
-        'red',
-        'orange',
-        'amber',
-        'yellow',
-        'lime',
-        'green',
-        'emerald',
-        'teal',
-        'cyan',
-        'sky',
-        'blue',
-        'indigo',
-        'violet',
-        'purple',
-        'fuchsia',
-        'pink',
-        'rose',
-        'slate'
-    ];
-
-    const handleSetTheme = async () => {
-        try {
-            await window.point.contract.send({
-                contract: BlogContract.name,
-                method: BlogContract.setTheme,
-                params: [...theme]
-            });
-            setToast({color: 'green-500', message: 'Theme updated successfully'});
-        } catch (error) {
-            setToast({
-                color: 'red-500',
-                message: 'Failed to save the theme. Please try again'
-            });
-        }
-    };
+const Customize: FunctionComponent = () => {
+    const {theme, setTheme, saveTheme} = useContext(ThemeContext);
 
     return (
         <PageLayout>
@@ -51,12 +14,12 @@ const Customize = () => {
             <main className='py-6 mx-auto' style={{maxWidth: '1000px'}}>
                 <div className='flex justify-between'>
                     <h1 className='text-3xl font-bold'>Customize your Blog</h1>
-                    <PrimaryButton onClick={handleSetTheme}>Update Theme</PrimaryButton>
+                    <PrimaryButton onClick={saveTheme}>Update Theme</PrimaryButton>
                 </div>
                 <div className='flex mt-3 space-x-24'>
                     <div className='flex-1'>
                         <h2 className='font-medium text-lg -mb-2'>
-              Choose your background
+                            Choose your background
                         </h2>
                         <div className='mt-4'>
                             {backgroundColors.map((color) => (
@@ -162,7 +125,7 @@ const Customize = () => {
 
                     <div className='flex-1'>
                         <h2 className='font-medium text-lg -mb-2'>
-              Choose your primary color
+                            Choose your primary color
                         </h2>
                         <div className='mt-4'>
                             <div className='grid grid-cols-4 gap-2'>
@@ -186,13 +149,13 @@ const Customize = () => {
                                 ))}
                             </div>
                             <div className='mt-12 mb-4'>
-                You can navigate to other pages to have a look at the newer
-                theme. But you'll need to come back to this page and click the
-                "Update Theme" button below to apply the new theme.
+                                You can navigate to other pages to have a look at the newer
+                                theme. But you'll need to come back to this page and click the
+                                "Update Theme" button below to apply the new theme.
                             </div>
                             <div className='flex justify-end'>
-                                <PrimaryButton onClick={handleSetTheme}>
-                  Update Theme
+                                <PrimaryButton onClick={saveTheme}>
+                                    Update Theme
                                 </PrimaryButton>
                             </div>
                         </div>

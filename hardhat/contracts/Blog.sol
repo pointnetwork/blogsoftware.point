@@ -12,14 +12,14 @@ contract Blog is Initializable, UUPSUpgradeable, OwnableUpgradeable {
     Counters.Counter private numBlogPosts;
     Counters.Counter internal commentIds;
 
-    struct Theme{
+    struct Theme {
         string background;
         string primary;
         string text;
     }
 
     struct UserInfo {
-        address walletAddress;
+        address walletAddress; // @deprecated
         string dataStorageHash;
     }
 
@@ -62,18 +62,14 @@ contract Blog is Initializable, UUPSUpgradeable, OwnableUpgradeable {
     function _authorizeUpgrade(address) internal override onlyOwner {}
 
     // User Info methods
-    function getUserInfo() public view returns (UserInfo memory) {
-        return user;
+    function getUserInfo() public view returns (string memory) {
+        return user.dataStorageHash;
     }
 
     function saveUserInfo(
-        address _walletAddress,
-        string calldata _dataStorageHash
-    ) public payable {
-        user = UserInfo({
-            walletAddress: _walletAddress,
-            dataStorageHash: _dataStorageHash
-        });
+        string calldata dataStorageHash
+    ) public onlyOwner {
+        user.dataStorageHash = dataStorageHash;
     }
 
     // Blog Post methods
@@ -95,7 +91,7 @@ contract Blog is Initializable, UUPSUpgradeable, OwnableUpgradeable {
         bool _isPublished,
         string calldata _publishDate,
         string calldata _tags
-    ) public payable onlyOwner {
+    ) public onlyOwner {
         string[] memory _previousStorageHashes;
         numBlogPosts.increment();
         BlogPost memory blog = BlogPost({
@@ -114,7 +110,7 @@ contract Blog is Initializable, UUPSUpgradeable, OwnableUpgradeable {
         string calldata _storageHash,
         string calldata _publishDate,
         string calldata _tags
-    ) public payable onlyOwner {
+    ) public onlyOwner {
         uint256 index = _getBlogIndexById(id);
         blogPosts[index].previousStorageHashes.push(
             blogPosts[index].storageHash
@@ -124,7 +120,7 @@ contract Blog is Initializable, UUPSUpgradeable, OwnableUpgradeable {
         blogPosts[index].tags = _tags;
     }
 
-    function deleteBlog(uint256 _id) public payable onlyOwner {
+    function deleteBlog(uint256 _id) public onlyOwner {
         uint256 requiredBlogIndex = _getBlogIndexById(_id);
         deletedBlogPosts.push(blogPosts[requiredBlogIndex]);
         for (uint256 i = requiredBlogIndex; i < blogPosts.length - 1; i++) {
@@ -133,13 +129,13 @@ contract Blog is Initializable, UUPSUpgradeable, OwnableUpgradeable {
         blogPosts.pop();
     }
 
-    function publish(uint256 _id) public payable onlyOwner {
+    function publish(uint256 _id) public onlyOwner {
         uint256 requiredBlogIndex = _getBlogIndexById(_id);
         BlogPost storage requiredBlog = blogPosts[requiredBlogIndex];
         requiredBlog.isPublished = true;
     }
 
-    function unpublish(uint256 _id) public payable onlyOwner {
+    function unpublish(uint256 _id) public onlyOwner {
         uint256 requiredBlogIndex = _getBlogIndexById(_id);
         BlogPost storage requiredBlog = blogPosts[requiredBlogIndex];
         requiredBlog.isPublished = false;
@@ -154,9 +150,7 @@ contract Blog is Initializable, UUPSUpgradeable, OwnableUpgradeable {
         return commentsByBlogPostId[_id];
     }
 
-    function addCommentToBlogPost(uint256 _id, string calldata _comment)
-        public
-        payable
+    function addCommentToBlogPost(uint256 _id, string calldata _comment) public
     {
         Comment memory comment = Comment({
             id: commentIds.current(),
@@ -171,7 +165,7 @@ contract Blog is Initializable, UUPSUpgradeable, OwnableUpgradeable {
         uint256 _blogId,
         uint256 _commentId,
         string calldata _comment
-    ) public payable {
+    ) public {
         for (uint256 i = 0; i < commentsByBlogPostId[_blogId].length; i++) {
             if (commentsByBlogPostId[_blogId][i].id == _commentId) {
                 if (
@@ -185,9 +179,7 @@ contract Blog is Initializable, UUPSUpgradeable, OwnableUpgradeable {
         }
     }
 
-    function deleteCommentForBlogPost(uint256 _blogId, uint256 _commentId)
-        public
-        payable
+    function deleteCommentForBlogPost(uint256 _blogId, uint256 _commentId) public
     {
         uint256 index;
         for (uint256 i = 0; i < commentsByBlogPostId[_blogId].length; i++) {
@@ -222,7 +214,7 @@ contract Blog is Initializable, UUPSUpgradeable, OwnableUpgradeable {
         return likesByBlogPostId[_id];
     }
 
-    function likeBlogPost(uint256 _id) public payable {
+    function likeBlogPost(uint256 _id) public {
         for (uint256 i = 0; i < likesByBlogPostId[_id].length; i++) {
             if (likesByBlogPostId[_id][i] == msg.sender) {
                 revert("You have already liked the blog");
@@ -231,7 +223,7 @@ contract Blog is Initializable, UUPSUpgradeable, OwnableUpgradeable {
         likesByBlogPostId[_id].push(msg.sender);
     }
 
-    function unlikeBlogPost(uint256 _id) public payable {
+    function unlikeBlogPost(uint256 _id) public {
         uint256 index;
         for (uint256 i = 0; i < likesByBlogPostId[_id].length; i++) {
             if (likesByBlogPostId[_id][i] == msg.sender) {
@@ -316,7 +308,11 @@ contract Blog is Initializable, UUPSUpgradeable, OwnableUpgradeable {
         return theme;
     }
 
-    function setTheme(string calldata _background, string calldata _primary, string calldata _text) public payable {
+    function setTheme(
+        string calldata _background,
+        string calldata _primary,
+        string calldata _text
+    ) public onlyOwner {
         theme = Theme({
             background: _background,
             primary: _primary,

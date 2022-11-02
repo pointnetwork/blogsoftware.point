@@ -1,21 +1,28 @@
-import {useCallback, useEffect, useState} from 'react';
-import {useNavigate} from 'react-router-dom';
-import _debounce from 'lodash/debounce';
+import {
+    ChangeEvent,
+    FunctionComponent,
+    useContext,
+    useEffect,
+    useMemo,
+    useState
+} from 'react';
+import {useLocation, useNavigate} from 'react-router-dom';
 import BlogPreviewItem from '../components/BlogPreviewItem';
 import Header from '../components/Header';
 import IdentityInfo from '../components/IdentityInfo';
 import Loader from '../components/Loader';
 import {PrimaryButton} from '../components/Button';
-import {useAppContext} from '../context/AppContext';
-import {Blog, BlogContractData} from '../@types/interfaces';
 import {RoutesEnum} from '../@types/enums';
 import PageLayout from '../layouts/PageLayout';
 import SearchBar from '../components/SearchBar';
+import {ThemeContext} from '../context/ThemeContext';
+import {UserContext} from '../context/UserContext';
+import {PostsContext} from '../context/PostsContext';
 
 enum BlogFilterOptions {
-  published = 'published',
-  drafts = 'drafts',
-  trash = 'trash',
+    published = 'published',
+    drafts = 'drafts',
+    trash = 'trash',
 }
 
 const emptyMessages = {
@@ -29,94 +36,63 @@ const FilterOption = ({
     filter,
     onClick
 }: {
-  children: string;
-  filter: string;
-  onClick: any;
+    children: string;
+    filter: string;
+    onClick: (value: string) => void
 }) => {
-    const {theme} = useAppContext();
+    const {theme} = useContext(ThemeContext);
 
     return (
         <div
-            id={children}
             className={`font-medium cursor-pointer mb-2 capitalize p-1 px-3 rounded-full ${
                 filter === children
                     ? `text-white bg-${theme[1]}-500`
                     : 'opacity-50 hover:opacity-90'
             }`}
-            onClick={onClick}
+            onClick={() => {onClick(children);}}
         >
             {children}
         </div>
     );
 };
 
-const Admin = () => {
+const Admin: FunctionComponent = () => {
     const navigate = useNavigate();
-    const {blogs, getDeletedBlogs, isOwner, loading} = useAppContext();
-
-    const [isLoading, setLoading] = useState<boolean>(false);
+    const {isOwner, userLoading} = useContext(UserContext);
+    const {posts, deletedPosts, postsLoading} = useContext(PostsContext);
     const [searchTerm, setSearchTerm] = useState<string>('');
-    const [data, setData] = useState<(Blog & BlogContractData)[]>([]);
-    const [filter, setFilter] = useState<keyof typeof BlogFilterOptions>(
-    new URL(window.location.href).searchParams.get(
-        'filter'
-    ) as keyof typeof BlogFilterOptions
-    );
+
+    const {search} = useLocation();
+    const query = useMemo(() => new URLSearchParams(search), [search]);
+    const filter = query.get('filter') as keyof typeof BlogFilterOptions ?? BlogFilterOptions.published;
+
+    const displayedPosts = useMemo(() => {
+        const unfilteredPosts = filter === BlogFilterOptions.trash ? deletedPosts : posts;
+        const filteredPosts = unfilteredPosts
+            .filter(p => filter === BlogFilterOptions.published
+                ? p.isPublished
+                : filter === BlogFilterOptions.drafts
+                    ? !p.isPublished
+                    : true);
+        return searchTerm ? filteredPosts.filter(
+            (p) =>
+                p.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
+                p.tags.toLowerCase().includes(searchTerm.toLowerCase())
+        ) : filteredPosts;
+    }, [posts, deletedPosts, filter, searchTerm]);
 
     useEffect(() => {
-        if (!loading && !isOwner) navigate(RoutesEnum.home, {replace: true});
-    }, [isOwner, loading]);
-
-    useEffect(() => {
-        (async () => {
-            if (!filter) setFilter(BlogFilterOptions.published);
-            setLoading(true);
-            setData(await handleDataChange(filter));
-            setLoading(false);
-            setSearchTerm('');
-        })();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [filter, blogs.data]);
-
-    const handleDataChange = async (
-        filter: string
-    ): Promise<(Blog & BlogContractData)[]> => {
-        switch (filter) {
-            case BlogFilterOptions.published:
-                return blogs.data.filter((d) => d.isPublished);
-            case BlogFilterOptions.drafts:
-                return blogs.data.filter((d) => !d.isPublished);
-            case BlogFilterOptions.trash:
-                return await getDeletedBlogs();
-            default:
-                return [];
+        if (!userLoading && !isOwner) {
+            navigate(RoutesEnum.home, {replace: true});
         }
+    }, [isOwner, userLoading]);
+
+    const handleFilterChange = (value: string) => {
+        navigate(`${RoutesEnum.admin}?filter=${value}`);
     };
 
-    const handleFilterChange = (e: any) => {
-        navigate(`${RoutesEnum.admin}?filter=${e.target.id}`);
-        setFilter(e.target.id);
-    };
-
-    const debounceFn = useCallback(_debounce(handleDebounceFn, 500), [
-        blogs,
-        filter
-    ]);
-
-    async function handleDebounceFn(inputValue: string) {
-        const _data = await handleDataChange(filter);
-        setData(
-            _data.filter(
-                (blog) =>
-                    blog.title.toLowerCase().includes(inputValue.toLowerCase()) ||
-          blog.tags.toLowerCase().includes(inputValue.toLowerCase())
-            )
-        );
-    }
-
-    function handleChange(event: any) {
+    function handleChange(event: ChangeEvent<HTMLInputElement>) {
         setSearchTerm(event.target.value);
-        debounceFn(event.target.value);
     }
 
     return (
@@ -131,7 +107,7 @@ const Admin = () => {
                         <div className='flex items-center justify-between mr-5'>
                             <h2 className='text-3xl font-bold'>Your Blog Posts</h2>
                             <PrimaryButton onClick={() => navigate(RoutesEnum.create)}>
-                Create New Blog Post
+                                Create New Blog Post
                             </PrimaryButton>
                         </div>
                         <div className='mt-4 mb-2 flex items-center text-sm'>
@@ -150,23 +126,23 @@ const Admin = () => {
                             className='overflow-y-scroll pr-6'
                             style={{height: window.screen.height - 360}}
                         >
-                            {isLoading || blogs.loading ? (
+                            {postsLoading ? (
                                 <Loader>Loading Blog Posts...</Loader>
-                            ) : data.length ? (
-                                data.map((blog, i) => (
+                            ) : displayedPosts.length ? (
+                                displayedPosts.map((post) => (
                                     <BlogPreviewItem
                                         deleted={filter === BlogFilterOptions.trash}
-                                        data={blog}
+                                        data={post}
                                         admin
-                                        key={i}
+                                        key={post.id}
                                     />
                                 ))
                             ) : (
                                 <div className='font-medium pt-2 opacity-70'>
                                     <p className='text-2xl'>
-                                        {!searchTerm
-                                            ? emptyMessages[filter]
-                                            : `No blogs found for search term: "${searchTerm}"`}
+                                        {searchTerm
+                                            ? `No blogs found for search term: "${searchTerm}"`
+                                            : emptyMessages[filter]}
                                     </p>
                                 </div>
                             )}
