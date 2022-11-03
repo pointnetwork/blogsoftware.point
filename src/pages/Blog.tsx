@@ -14,6 +14,7 @@ import {PostsContext} from '../context/PostsContext';
 import {ToastContext} from '../context/ToastContext';
 import {UserContext} from '../context/UserContext';
 import {ThemeContext} from '../context/ThemeContext';
+import HeaderImage from '../components/HeaderImage';
 
 const BlogPage: FunctionComponent<{deleted?: boolean}> = ({deleted}) => {
     const navigate = useNavigate();
@@ -22,7 +23,7 @@ const BlogPage: FunctionComponent<{deleted?: boolean}> = ({deleted}) => {
     const id = Number(query.get('id'));
 
     const {theme} = useContext(ThemeContext);
-    const {visitorAddress, isOwner, visitorIdentity} = useContext(UserContext);
+    const {visitorAddress, isOwner, visitorIdentity, userInfo} = useContext(UserContext);
     const {setToast} = useContext(ToastContext);
     const {posts, deletedPosts, postsError, postsLoading} = useContext(PostsContext);
     const post = useMemo(
@@ -245,7 +246,7 @@ const BlogPage: FunctionComponent<{deleted?: boolean}> = ({deleted}) => {
 
     return (
         <PageLayout>
-            <Header />
+            <Header><HeaderImage headerImage={userInfo.headerImage}/></Header>
             <main className='pb-4 pt-8 mx-auto' style={{maxWidth: '720px'}}>
                 <div
                     className='flex items-center opacity-40 cursor-pointer hover:opacity-90 transition-all -ml-4'

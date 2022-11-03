@@ -18,6 +18,7 @@ import SearchBar from '../components/SearchBar';
 import {ThemeContext} from '../context/ThemeContext';
 import {UserContext} from '../context/UserContext';
 import {PostsContext} from '../context/PostsContext';
+import HeaderImage from '../components/HeaderImage';
 
 enum BlogFilterOptions {
     published = 'published',
@@ -58,7 +59,7 @@ const FilterOption = ({
 
 const Admin: FunctionComponent = () => {
     const navigate = useNavigate();
-    const {isOwner, userLoading} = useContext(UserContext);
+    const {isOwner, userLoading, userInfo} = useContext(UserContext);
     const {posts, deletedPosts, postsLoading} = useContext(PostsContext);
     const [searchTerm, setSearchTerm] = useState<string>('');
 
@@ -98,7 +99,7 @@ const Admin: FunctionComponent = () => {
     return (
         <PageLayout>
             <div className='h-screen overflow-hidden'>
-                <Header />
+                <Header><HeaderImage headerImage={userInfo.headerImage}/></Header>
                 <main
                     className='flex mt-4 mx-auto'
                     style={{maxWidth: '1000px', height: window.screen.height - 220}}

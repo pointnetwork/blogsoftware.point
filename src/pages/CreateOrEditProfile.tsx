@@ -1,16 +1,27 @@
-import React, {ChangeEvent, FunctionComponent, useContext, useEffect, useState} from 'react';
-import {OutlinedButton, PrimaryButton} from '../components/Button';
+import React, {
+    ChangeEvent,
+    FunctionComponent,
+    useContext,
+    useEffect,
+    useRef,
+    useState
+} from 'react';
+import {ErrorButton, OutlinedButton, PrimaryButton} from '../components/Button';
 import {useNavigate} from 'react-router-dom';
 import PageLayout from '../layouts/PageLayout';
 import ImageOutlinedIcon from '@mui/icons-material/ImageOutlined';
 import {UserContext} from '../context/UserContext';
 import {ThemeContext} from '../context/ThemeContext';
+import Header from '../components/Header';
+import HeaderImage from '../components/HeaderImage';
 
 const CreateOrEditProfile: FunctionComponent<{ edit?: boolean }> = ({edit}) => {
     const {userInfo, userSaving, saveUserInfo, userLoading, userError} = useContext(UserContext);
     const {theme} = useContext(ThemeContext);
 
+    const [showModal, setShowModal] = useState<boolean>(false);
     const [avatar, setAvatar] = useState<Blob | null>(userInfo.avatar);
+    const [headerImage, setHeaderImage] = useState<Blob | null>(null);
     const [about, setAbout] = useState<string>(userInfo.about);
     useEffect(() => {
         if (userInfo.about) {
@@ -23,6 +34,12 @@ const CreateOrEditProfile: FunctionComponent<{ edit?: boolean }> = ({edit}) => {
 
     const navigate = useNavigate();
 
+    const hiddenFileInput = useRef<HTMLInputElement>(null);
+
+    const handleFileButtonClick = ()  => {
+        hiddenFileInput?.current?.click();
+    };
+
     const handleFileInput = (e: ChangeEvent<HTMLInputElement>) => {
         setAvatar(e.target.files ? e.target.files[0] : null);
     };
@@ -32,12 +49,9 @@ const CreateOrEditProfile: FunctionComponent<{ edit?: boolean }> = ({edit}) => {
 
     return (
         <PageLayout>
-            <header className={`py-3 sticky top-0 bg-${theme[0]} shadow z-10`}>
-                <div className='mx-auto' style={{maxWidth: '1000px'}}>
-                    {/* Logo will go here */}
-                    <span className='font-medium'>BlogSoftware</span>
-                </div>
-            </header>
+            <Header>
+                <HeaderImage headerImage={headerImage} setHeaderImage={setHeaderImage}/>
+            </Header>
             <main className='mt-8 mx-auto' style={{maxWidth: '1000px'}}>
                 <h1 className='text-3xl font-bold mb-6'>
                     {edit ? 'Update' : 'Complete'} Your Profile
@@ -68,19 +82,35 @@ const CreateOrEditProfile: FunctionComponent<{ edit?: boolean }> = ({edit}) => {
                             />
                         )}
                         {avatar && (
-                            <p
-                                className={`relative text-sm mt-4 transition-all text-${theme[2]} text-opacity-50 hover:text-opacity-100`}
-                            >
-                                <span className='absolute left-1/2 -translate-x-1/2 cursor-pointer underline'>
-                                    Change
-                                </span>
-                                <input
-                                    type='file'
-                                    title='Upload a file'
-                                    className='absolute w-20 h-6 opacity-0 left-1/2 -translate-x-1/2 cursor-pointer'
-                                    onChange={handleFileInput}
-                                />
-                            </p>
+                            <div className='flex items-center justify-center space-x-3'>
+                                <p
+                                    className={`text-sm mt-4 transition-all text-${theme[2]} text-opacity-50 hover:text-opacity-100`}
+                                >
+                                    <span
+                                        onClick={handleFileButtonClick}
+                                        className='left-1/2 -translate-x-1/2 cursor-pointer underline'
+                                    >
+                                        Change
+                                    </span>
+                                    <input
+                                        type='file'
+                                        title='Upload a file'
+                                        ref={hiddenFileInput}
+                                        className='w-20 h-6 opacity-0 left-1/2 -translate-x-1/2 cursor-pointer hidden'
+                                        onChange={handleFileInput}
+                                    />
+                                </p>
+                                <p
+                                    className={`text-sm mt-4 transition-all text-${theme[2]} text-opacity-50 hover:text-opacity-100`}
+                                >
+                                    <span
+                                        className='cursor-pointer underline'
+                                        onClick={() => setShowModal(true)}
+                                    >
+                                        Remove
+                                    </span>
+                                </p>
+                            </div>
                         )}
                     </div>
                     <div className='flex-1'>
@@ -100,8 +130,8 @@ const CreateOrEditProfile: FunctionComponent<{ edit?: boolean }> = ({edit}) => {
                         </div>
                         <div className='flex space-x-3'>
                             <PrimaryButton
-                                disabled={!avatar || !about || userSaving}
-                                onClick={() => {saveUserInfo({avatar, about});}}
+                                disabled={userSaving}
+                                onClick={() => {saveUserInfo({avatar, about, headerImage});}}
                             >
                                 {userSaving ? 'Please Wait' : edit ? 'Update Profile' : 'Finish'}
                             </PrimaryButton>
@@ -113,6 +143,34 @@ const CreateOrEditProfile: FunctionComponent<{ edit?: boolean }> = ({edit}) => {
                         </div>
                     </div>
                 </div>
+                {showModal && (
+                    <div className='fixed z-50 top-0 left-0 h-screen w-screen'>
+                        <div className='relative h-full w-full'>
+                            <div className='absolute h-full w-full bg-black opacity-60'></div>
+                            <div
+                                className={`absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 bg-${theme[0]} p-5 rounded`}
+                            >
+                                <h3 className='text-lg font-medium'>
+                                    Are you sure you want to remove your profile image?
+                                </h3>
+                                <div className='flex justify-end space-x-4 mt-4'>
+                                    <OutlinedButton onClick={() => setShowModal(false)}>
+                                        Cancel
+                                    </OutlinedButton>
+                                    <ErrorButton
+                                        disabled={userSaving}
+                                        onClick={() => {
+                                            setAvatar(null);
+                                            setShowModal(false);
+                                        }}
+                                    >
+                                        Remove
+                                    </ErrorButton>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                )}
             </main>
         </PageLayout>
     );

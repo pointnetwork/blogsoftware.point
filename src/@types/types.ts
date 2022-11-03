@@ -31,6 +31,7 @@ export type BlogPost = {
 export type UserInfo = {
     avatar: Blob | null;
     about: string;
+    headerImage: Blob | null;
 }
 
 export type ToastNotification = {

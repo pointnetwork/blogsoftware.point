@@ -22,7 +22,7 @@ type UserContext = {
     ownerAddress: string;
     ownerIdentity: string;
     isOwner: boolean;
-    saveUserInfo: (info: Pick<UserInfo, 'avatar' | 'about'>) => Promise<void>;
+    saveUserInfo: (info: Pick<UserInfo, 'avatar' | 'about' | 'headerImage'>) => Promise<void>;
 }
 
 export const UserContext = createContext<UserContext>({} as unknown as UserContext);
@@ -36,7 +36,8 @@ export const ProvideUserContext: FunctionComponent<PropsWithChildren> = ({childr
     const [userError, setUserError] = useState<boolean>(false);
     const [userInfo, setUserInfo] = useState<UserInfo>({
         about: '',
-        avatar: null
+        avatar: null,
+        headerImage: null
     });
     const [visitorAddress, setVisitorAddress] = useState<string>('');
     const [visitorIdentity, setVisitorIdentity] = useState<string>('');
@@ -77,10 +78,19 @@ export const ProvideUserContext: FunctionComponent<PropsWithChildren> = ({childr
             setVisitorIdentity(visitorId);
 
             if (dataStorageHash) {
-                const {about, avatar} = await utils.getDataFromStorage(dataStorageHash);
+                const {
+                    about,
+                    avatar,
+                    headerImage
+                } = await utils.getDataFromStorage(dataStorageHash);
                 setUserInfo({
                     about,
-                    avatar: avatar ? await window.point.storage.getFile({id: avatar}) : null
+                    avatar: avatar
+                        ? await window.point.storage.getFile({id: avatar})
+                        : null,
+                    headerImage: headerImage
+                        ? await window.point.storage.getFile({id: headerImage})
+                        : null
                 });
             } else if (_isOwner) {
                 navigate(RoutesEnum.profile, {replace: true});
@@ -95,7 +105,7 @@ export const ProvideUserContext: FunctionComponent<PropsWithChildren> = ({childr
         getData();
     }, []);
 
-    const saveUserInfo = async (info: Pick<UserInfo, 'avatar' | 'about'>) => {
+    const saveUserInfo = async (info: Pick<UserInfo, 'avatar' | 'about' | 'headerImage'>) => {
         setUserSaving(true);
         try {
             let avatarImage = '';
@@ -105,8 +115,16 @@ export const ProvideUserContext: FunctionComponent<PropsWithChildren> = ({childr
                 const {data} = await window.point.storage.postFile(avatarFormData);
                 avatarImage = data;
             }
+            let headerImage = '';
+            if (info.headerImage) {
+                const headerImageFormData = new FormData();
+                headerImageFormData.append('files', info.headerImage);
+                const {data} = await window.point.storage.postFile(headerImageFormData);
+                headerImage = data;
+            }
             const form = JSON.stringify({
                 avatar: avatarImage,
+                headerImage,
                 about: info.about
             });
             const file = new File([form], 'user.json', {type: 'application/json'});
