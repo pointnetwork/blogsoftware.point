@@ -12,6 +12,8 @@ import PageLayout from '../layouts/PageLayout';
 import ImageOutlinedIcon from '@mui/icons-material/ImageOutlined';
 import {UserContext} from '../context/UserContext';
 import {ThemeContext} from '../context/ThemeContext';
+import Header from '../components/Header';
+import HeaderImage from '../components/HeaderImage';
 
 const CreateOrEditProfile: FunctionComponent<{ edit?: boolean }> = ({edit}) => {
     const {userInfo, userSaving, saveUserInfo, userLoading, userError} = useContext(UserContext);
@@ -19,6 +21,7 @@ const CreateOrEditProfile: FunctionComponent<{ edit?: boolean }> = ({edit}) => {
 
     const [showModal, setShowModal] = useState<boolean>(false);
     const [avatar, setAvatar] = useState<Blob | null>(userInfo.avatar);
+    const [headerImage, setHeaderImage] = useState<Blob | null>(null);
     const [about, setAbout] = useState<string>(userInfo.about);
     useEffect(() => {
         if (userInfo.about) {
@@ -46,12 +49,9 @@ const CreateOrEditProfile: FunctionComponent<{ edit?: boolean }> = ({edit}) => {
 
     return (
         <PageLayout>
-            <header className={`py-3 sticky top-0 bg-${theme[0]} shadow z-10`}>
-                <div className='mx-auto' style={{maxWidth: '1000px'}}>
-                    {/* Logo will go here */}
-                    <span className='font-medium'>BlogSoftware</span>
-                </div>
-            </header>
+            <Header>
+                <HeaderImage headerImage={headerImage} setHeaderImage={setHeaderImage}/>
+            </Header>
             <main className='mt-8 mx-auto' style={{maxWidth: '1000px'}}>
                 <h1 className='text-3xl font-bold mb-6'>
                     {edit ? 'Update' : 'Complete'} Your Profile
@@ -88,8 +88,9 @@ const CreateOrEditProfile: FunctionComponent<{ edit?: boolean }> = ({edit}) => {
                                 >
                                     <span
                                         onClick={handleFileButtonClick}
-                                        className='left-1/2 -translate-x-1/2 cursor-pointer underline'>
-                    Change
+                                        className='left-1/2 -translate-x-1/2 cursor-pointer underline'
+                                    >
+                                        Change
                                     </span>
                                     <input
                                         type='file'
@@ -104,8 +105,9 @@ const CreateOrEditProfile: FunctionComponent<{ edit?: boolean }> = ({edit}) => {
                                 >
                                     <span
                                         className='cursor-pointer underline'
-                                        onClick={() => setShowModal(true)}>
-                    Remove
+                                        onClick={() => setShowModal(true)}
+                                    >
+                                        Remove
                                     </span>
                                 </p>
                             </div>
@@ -129,7 +131,7 @@ const CreateOrEditProfile: FunctionComponent<{ edit?: boolean }> = ({edit}) => {
                         <div className='flex space-x-3'>
                             <PrimaryButton
                                 disabled={userSaving}
-                                onClick={() => {saveUserInfo({avatar, about});}}
+                                onClick={() => {saveUserInfo({avatar, about, headerImage});}}
                             >
                                 {userSaving ? 'Please Wait' : edit ? 'Update Profile' : 'Finish'}
                             </PrimaryButton>
